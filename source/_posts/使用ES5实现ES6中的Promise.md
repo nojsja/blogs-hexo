@@ -3,21 +3,25 @@ title: "使用ES5手动实现ES6中的Promise API"
 catalog: true
 toc_nav_num: true
 date: 2018-10-31 01:15:00
-subtitle: "animation javascript"
+subtitle: "es6 promise"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - Promise
 - ES6
 catagories:
 - Javascript
-- ES6
 updateDate: 2018-10-31 01:15:00
 top: 1
 ---
 
 ![life is strange](/blogs/img/article/lifeIsStrange.jpg)
 
-### 使用ES5手动实现ES6中的Promise API
+
+[源代码 => github / nojsja / promise-self](https://github.com/NoJsJa/promise-nojsja)
+
+### 谈谈Promise
+---------------
+
 >Promise 对象是一个代理对象（代理一个值），被代理的值在Promise对象创建时可能是未知的。
 它允许你为异步操作的成功和失败分别绑定相应的处理方法（handlers）。 这让异步方法可以像
 同步方法那样返回值，但并不是立即返回最终执行结果，而是一个能代表未来出现的结果的promise对象。  
@@ -29,17 +33,12 @@ then 方法绑定的处理方法（handlers ）就会被调用（then方法包�
 onfulfilled 方法，当Promise状态为rejected时，调用 then 的 onrejected 方法，
 所以在异步操作的完成和绑定处理方法之间不存在竞争）。  
 
-[源代码 => github / nojsja / promise-self](https://github.com/NoJsJa/promise-nojsja)
-
-#### 谈谈Promise
----------------
-
-##### 一个 Promise有以下几种状态
+#### 一个 Promise有以下几种状态
  * pending: 初始状态，不是成功或失败状态。  
  * fulfilled: 意味着操作成功完成。  
  * rejected: 意味着操作失败。  
 
-##### Javascript事件循环
+#### Javascript事件循环
 关于js线程和事件循环可以看[这篇文章](https://zhuanlan.zhihu.com/p/33058983)
  * 创建Promise时传入的函数的执行应该延迟到下一次事件循环中，而不应该在主线程执行栈中被调用。
  * Promise.then传入的onResolve, onReject函数的执行也应该延迟到下一次事件循环。  
@@ -58,7 +57,7 @@ console.log('b');
 
 ```
 
-##### Promise.all(iterable)
+#### Promise.all(iterable)
 这个方法返回一个新的promise对象，该promise对象当iterable参数对象里所有的promise对象
 都成功的时候才会触发成功，一旦有任何一个iterable里面的promise对象失败则立即触发该promise
 对象的失败。这个新的promise对象在触发成功状态以后，会把一个包含iterable里所有promise返回值
@@ -76,13 +75,13 @@ console.log('b');
 并且将该value传递给对应的then方法。通常而言，如果你不知道一个值是否是Promise对象，
 使用Promise.resolve(value) 来返回一个Promise对象,这样就能将该value以Promise对象形式使用。
 
-#### Promise分析和实现
+### Promise分析和实现
 --------------------
 
-##### 实现难点分析
+#### 实现难点分析
 在思考实现原理的时候，Promise.then这个方法花了我最长的时间，一个Promise对象可以使用then方法接收一个成功的回调函数和一个错误的回调函数，哪个回调函数的最终被执行取决于当前Promise对象的最终状态，可以使用promise.then(fn1, fn2).then(fn3, fn4).then(fn5, fn6)这种链式回调连接无数个异步方法。如果前一个then方法中的 success callback 或 fail callback 也返回了一个Promise对象的话，那么当前Promise对象的状态最终还是要取决于返回的这个Promise对象，就像发生了状态之间的传递一样。并且在这样的条件下，各个then方法链接的函数仍然能保持顺序依次执行。
 
-##### 难点分析和解决
+#### 难点分析和解决
 通过以上对then方法的分析，我们可以看出，promise.then方法的状态都是独立的，promise.then的回调方法中可以再次返回一个Promise对象，我们姑且把这一过程称为父Promise和子Promise的状态传递和继承，所以在设计then方法时应当考虑then方法返回的其实应该是一个具有独立状态的Promise对象，只不过该Promise对象的状态还需要看then方法传入的两个回调函数是不是返回了另一个Promise对象，如果返回了，那么就要发生状态传递。我们可以用设计模式中观察者模式的思想来定义一个Promise对象，Promise对象可以有三种状态，成功和失败状态的变化会触发各自对应的观察者函数事件，所以每一个Promise.then方法其实就是在对一个Promise对象做状态事件注册，事件注册和状态改变这两个操作是相互独立的。那么如何把当前父Promise的对象状态和then函数中返回的Promise对象的状态联系起来呢？这个逻辑就是下面代码中的`analysisPromise`方法，它的作用就是分析一个回调的返回值，将当前Promise对象状态改变的方法`reject`和`resolve`递归传递下去，各个不同的调用栈对应各个不同的执行上下文，但是目的只有一个就是改变最初传入的那个Promise对象的状态。
 
 * promise.then的设计
@@ -186,7 +185,7 @@ var analysisPromise = function (x, resolve, reject) {
 };
 ```
 
-##### 其它部分的实现
+#### 其它部分的实现
 * catch方法  
 这边只是简单的捕获了一下错误然后调用回调函数即可。
 ```js
@@ -274,6 +273,6 @@ Promise.reject = function (reason) {
 };
 ```
 
-#### 总结
+### 总结
 --------
 Promise实现的难点其实是怎样考虑那个状态传递的过程(`analysisPromise`方法的实现)，各种回调的设计容易让人混乱，需要考虑各个promise对象的`原子性`同时又要保持各个可能出现相互嵌套的promise对象之间的依赖和联系。如果结构设计地比较合理的话，`Promise.all`、`Promise.race`这两个方法是很容易被实现出来的，因为它们只是对多个promise对象的状态管理而已。

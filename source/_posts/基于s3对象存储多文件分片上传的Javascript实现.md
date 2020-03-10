@@ -2,19 +2,18 @@
 title: "基于s3对象存储多文件分片上传的Javascript实现"
 catalog: true
 toc_nav_num: true
-date: 2019-10-02 16:18:00
-subtitle: "s3 javascript"
+date: 2020-03-07 16:18:00
+subtitle: "aws s3 javascript"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - FileUpload
-- s3
+- AWS
+- S3
 catagories:
 - Javascript
-updateDate: 2019-10-02 21:02:00
+updateDate: 2020-03-07 16:18:00
 top: 1
 ---
-
-## 基于s3对象存储多文件分片上传的Javascript实现
 
 ### Contents
 

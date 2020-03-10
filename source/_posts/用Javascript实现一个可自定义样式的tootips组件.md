@@ -10,13 +10,9 @@ tags:
 - ES5
 catagories:
 - Javascript
-- ES5
 updateDate: 2018-11-06 19:16:00
 top: 
 ---
-
-
-### 用Javascript实现一个可自定义样式的tootips组件
 
 #### 前言
 
@@ -280,4 +276,4 @@ Tootips.init($('#t1'), {
 
 实现方式可能还需要优化，但暂时能够满足项目需求 ...
 
-##### 感谢阅读...
+##### 感谢阅读

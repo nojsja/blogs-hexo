@@ -3,7 +3,7 @@ title: "Electron+Mobx+React开发记录(二)"
 catalog: true
 toc_nav_num: true
 date:   2018-10-26 19:43:00
-subtitle: "animation javascript"
+subtitle: "Electron Mobx React"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - ES6
@@ -11,32 +11,30 @@ tags:
 - Mobx
 - Electron
 catagories:
-- ES6
-- React
 - Mobx
 - Electron
 updateDate: 2018-10-26 19:43:00
 top: 
 ---
 
-### Electron+Mobx+React开发记录(二)
-
 ![Hello World](/blogs/img/article/Fly.jpg)
 
-### \> Contents
+### Contents
+
 1. 前言
 2. webpack4图片打包的问题
 3. webpack4样式表打包分离
 4. 应用构建工具electron-builder配置
 5. 应用构建工具electron-builder的问题
 
-#### 前言
+### 前言
 -------------
 [前一篇文章](www.jianshu.com/p/53d74df07e4c)主要记录了开发环境的搭建和一些开发时遇到的问题，这篇文章主要说说自己在coding work之后进行应用打包时遇到的问题(webpack打包和electron打包)，[项目地址](https://github.com/NoJsJa/electronux)。
 
-#### webpack4图片打包的问题
+### webpack4图片打包的问题
 ------------------------------------------
-##### 1. jsx中声明的img:src不能被webpack识别和打包
+
+#### jsx中声明的img:src不能被webpack识别和打包
 在jsx中使用图片时，如下：
 ```html
 <div className="install-item-image" onClick={() => {showTerminalInfo(item.label)}}>
@@ -62,7 +60,7 @@ const requireContext = require.context('resources/install', true, /.*/);
 requireContext.keys().map(requireContext);
 ```
 
-##### 2. 生产环境和开发环境的publicPath配置
+#### 生产环境和开发环境的publicPath配置
 关于publicPath这里有一篇说得比较清楚的[文章](https://www.jianshu.com/p/cbe81be10d78)
 > output.path ： 硬盘上的路径，也就是你打算把文件打包到你的哪个目录，与发布时的路径完全无关。  
 
@@ -105,7 +103,7 @@ entry: [
 ...
 ```
 
-##### 3. 统一生产环境和开发环境的资源引用路径
+#### 统一生产环境和开发环境的资源引用路径
 可以在webpack.config文件中指定`resolve.alias`来将一个绝对路径重命名，然后在项目任意位置直接使用重命名路径就行了，不用在import的时候搞很多相对路径声明`../../../`，如下：
 * 声明：  
 ```
@@ -124,9 +122,9 @@ resolve: {
 <img src="resources/install/albert.png"}>
 ```
 
-#### webpack4样式表打包分离
+### webpack4样式表打包分离
 ------------------------------------------
-##### 1. css属性`backgroup-image: url(...)`的路径统一
+#### css属性`backgroup-image: url(...)`的路径统一
 我们在webpack.config中指定`resolve.alias`之后，如果你要在css属性中引用那个绝对路径的别名的话，需要在img:url字符前多加一个`~`路径转换符号，来让webpack为你自动替换路径，如下：
 ```css
 .router-left-background {
@@ -137,7 +135,7 @@ resolve: {
   background-size: cover; /* cover size */
 }
 ```
-##### 2. 将样式表从bundle.js文件中分离
+#### 将样式表从bundle.js文件中分离
 如果项目比较大的话，直接将样式表压缩进bundle.js文件中会导致页面首页加载时间比较长，这里我们使用`extract-text-webpack-plugin`webpack插件分离样式表，然后在index.html引入样式表，这样页面加载的时候浏览器就会发送异步请求来同时加载bundle.js文件和css文件，极大地提高加载速度。
 * index.html
 
@@ -249,7 +247,7 @@ module.exports = {
     ...
 ```
 
-#### 应用构建工具electron-builder配置
+### 应用构建工具electron-builder配置
 ----------------------------------------------------
 ```json
 {
@@ -280,22 +278,22 @@ electron-builder打包主要解决两个问题，一是怎么打包前端界面�
 
 配置说明详细见[官方文档](https://www.electron.build/configuration/configuration)
 
-#### 应用构建工具electron-builder的问题
+### 应用构建工具electron-builder的问题
 -------------------------------------------------
-##### 1. 国内墙导致打包工具依赖下载失败
+#### 国内墙导致打包工具依赖下载失败
 运行electron-builder的时候会首先下载各个打包依赖，但是如果直接下载是会失败的(下载源文件存在github)。但我这边终端是用polipo配置了http-proxy的，下载的时候还是很慢，最后仍会导致下载失败，这个真的比较头痛，我索性将git仓库clone到自己搭建的vps虚拟机上(日本节点)，然后在服务器上运行一次打包命令，再把`~/.cache/electron-builder`、`~/.cache/electron`这两个打包工具生成的目录直接下载到本地对应的目录下，最后在本地运行打包命令的时候就不会再去下载依赖了。
 
-##### 2. 打包成AppImage后在运行时不能使用chmod更改文件权限的问题
+#### 打包成AppImage后在运行时不能使用chmod更改文件权限的问题
 先来看一段Linux上常见的AppImage打包应用的定义：  
 > AppImage不把Linux应用程序安装在文件系统相应的目录中，相反，它没有进行实际的安装，AppImage文件只是个压缩文件，在它运行时候`挂载`，用AppImage打包的程序，一个程序就是一个文件。  
 
 在我的应用中需要执行一些shell脚本获取系统信息，但是这些脚本在第一次运行的时候是需要使用node.js中fs模块的`fs.chmod`方法对shell脚本进行赋予可执行权限的(chmod 755)，但是AppImage运行时是不允许动态更改文件属性的，所有挂载的Applmage文件都是只读的，无奈，我放弃了将应用打包成AppImage这种格式。
 为了便于测试可以直接打包成zip文件，解压后就能运行，如果要安装到不同的发行版的话还能打包成`pacman`、`deb`、`rpm`、`tar.gz`等文件。
 
-##### 3. arar加密打包时造成绝对路径查找失败
+#### arar加密打包时造成绝对路径查找失败
 electron-builder的打包参数中有一个参数是`asar: true/false`，如果指定了为true的话打包后的压缩包内的源代码是会被arar加密的，这个对一些不开源的代码来说还是很有必要，但在我这个应用中应用在运行的时候会动态加载一些自定义的模块文件，如果你加载的路径用的是绝对路径的话，这个加载过程就会失败，因为如果启用了arar的话，我们资源目录下所有的源代码都只是一个加密的压缩包，此时你是不能通过系统的绝对路径来找到我们要引入的那个模块代码路径的，当然如果你手动解压arar压缩包的话就能看到所有源代码的目录结构了。
 
-##### 4. 外部引用资源(img:src / css:url)的相对路径和绝对路径
+#### 外部引用资源(img:src / css:url)的相对路径和绝对路径
 html demo:
 ```html
 <div className="install-item-image" onClick={() => {showTerminalInfo(item.label)}}>
@@ -341,7 +339,7 @@ window.loadURL(url.format({
 </html>
 ```
 
-##### 5. 使用node.js对shell脚本赋予可执行权限
+#### 使用node.js对shell脚本赋予可执行权限
 node.js的fs模块可以为文件赋予可执行权限，并且`fs.chmod`命令不用额外申请权限，估计是如果当前用户可以以root权限运行文件的话，node会自动为你获取权限。  
 * 定义fsChmod模块递归为一个目录内的所有文件授予权限：
 
@@ -389,4 +387,4 @@ const fsChmodShell = require('./app/services/middleware/fs-chmod-shell.js');
 fsChmodShell();
 ```
 
-##### 感谢阅读，如有错误，还请指正：- )
+### 感谢阅读，如有错误，还请指正：- )

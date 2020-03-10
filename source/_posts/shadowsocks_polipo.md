@@ -1,3 +1,20 @@
+---
+title: "polipo服务配置shadowsocks终端代理"
+catalog: true
+toc_nav_num: true
+date:   2018-04-04 16:30:35
+subtitle: "shadowsocks polipo"
+header-img: "/blogs/img/article_header/article_header.png"
+tags:
+- Shadowsocks
+- Polipo
+- Proxy
+catagories:
+- Linux
+updateDate: 2018-04-04 16:30:35
+top: 
+---
+
 在linux系统中，一般配置好shadowsocks之后，浏览器设置好代理，浏览器就可以翻墙。但是由于ss使用的是`socks5`协议，而大部分终端都只支持`http`和`https`等协议，终端是无法直接通过ss来翻墙。通过polipo这个轻量级的缓存web代理程序来转换，可实现终端翻墙。
 
 #### 安装shadowsocks[](http://keliu.me/2018/12/08/ss/#%E5%AE%89%E8%A3%85shadowsocks)

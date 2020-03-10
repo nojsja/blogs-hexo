@@ -1,10 +1,30 @@
-1. proxychains安装  
+---
+title: "proxychains终端代理"
+catalog: true
+toc_nav_num: true
+date:   2018-04-04 16:30:35
+subtitle: "proxy linux"
+header-img: "/blogs/img/article_header/article_header.png"
+tags:
+- Proxychains
+- Linux
+- Proxy
+catagories:
+- Linux
+updateDate: 2018-04-04 16:30:35
+top: 
+---
+
+### proxychains安装  
+
 `sudo apt install proxychains`
 
-2. 编辑proxychains配置  
+### 编辑proxychains配置  
+
 `vim /etc/proxychains.conf`
 
-3. 将socks4 127.0.0.1 9095改为  
+### 将socks4 127.0.0.1 9095改为  
+
 `socks5 127.0.0.1 1080`
 
 ps: 默认的socks4 127.0.0.1 9095是tor代理，而socks5 127.0.0.1 1080是shadowsocks的代理，proxychains.conf文件说明了代理配置格式,如下,这里根据自己使用的代理来配置就行了。  
@@ -25,7 +45,7 @@ ProxyList format
 105 #       http    192.168.39.93   8080
 ```
 
-4.使用方法  
+### 使用方法  
 在需要代理的命令前加上 proxychains ，如：
 ```bash
 proxychains wget http://xxx.com/xxx.zip

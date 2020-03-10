@@ -10,10 +10,8 @@ tags:
 catagories:
 - Javascript
 updateDate: 2018-11-05 01:10:00
-top: 1
+top: 
 ---
-
-### 简单实现一个Javascript动画处理类
 
 #### 预览图
 ----------------
@@ -265,4 +263,5 @@ anime.start('#animationTarget');
 #### 总结
 -------------
 JavaScript动画的性能比CSS动画低很多，平时实际做页面时应该尽量使用CSS3和Canvas来实现动画效果，但是一名合格的JSER，也应该对Js的动画实现原理熟知，知道怎样优化动画性能，以及运用适合的设计模式优化代码结构。
-##### 感谢阅读...
+
+##### 感谢阅读

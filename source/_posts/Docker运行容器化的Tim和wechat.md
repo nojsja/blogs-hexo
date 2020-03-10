@@ -3,20 +3,16 @@ title: "Docker 运行容器化的Tim和wechat"
 catalog: true
 toc_nav_num: true
 date:  2018-11-06 19:16:00
-subtitle: "animation javascript"
+subtitle: "docker linux-qq/wechat"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - Linux
 - Docker
 catagories:
 - Linux
-- Docker
 updateDate: 2018-11-06 19:16:00
 top: 
 ---
-
-
-## Docker 运行容器化的Tim和wechat
 
 ### Contents
 * 安装docker

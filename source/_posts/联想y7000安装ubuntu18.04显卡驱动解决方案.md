@@ -3,23 +3,21 @@ title: "联想y7000安装ubuntu18.04显卡驱动解决方案"
 catalog: true
 toc_nav_num: true
 date: 2019-09-29 10:49:00
-subtitle: "animation javascript"
+subtitle: "y7000 ubuntu18.04"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Animation
+- Linux
+- Ubuntu18.04
 catagories:
 - Linux
 updateDate: 2019-09-29 10:49:00
-top: 1
+top: 
 ---
 
-# 
-
-## 联想y7000安装ubuntu18.04显卡驱动解决方案
 
 ![Desktop](/blogs/img/article/Desktop3.png)
 ![Desktop](/blogs/img/article/Desktop2.png)
-![Desktop](/blogs/img/article/resources/Desktop.png)
+![Desktop](/blogs/img/article/Desktop.png)
 
 ### Contents
 

@@ -1,21 +1,32 @@
-### 原生Js实现瀑布流效果
----------------------
+---
+title: "原生Js实现瀑布流效果"
+catalog: true
+toc_nav_num: true
+date:   2018-04-01 16:01:26
+subtitle: "javascript waterFall"
+header-img: "/blogs/img/article_header/article_header.png"
+tags:
+- Javascript
+- WaterFall
+catagories:
+- Javascript
+updateDate: 2018-04-01 16:01:26
+top: 
+---
 
 #### 盗用的效果图
-![preview](../normal/water-fall-layout/waterfall.gif)
+![preview](/blogs/img/article/waterfall-1.gif)
 
 #### 效果分析
 瀑布流中图片的宽度都是固定的，但是高度需要设置为auto以使图片不变形，高度不固定。首先想到能不能用float属性让图片流动，想象中很美好，实际效果如下，可以看到因为第三个元素的高度问题，第二行元素流动时被第三个元素挡住，导致了布局错乱。
 
-![float](../normal/water-fall-layout/float-demo.jpg)  
+![float](/blogs/img/article/waterfall-2.jpg)  
 
 看看百度图片是怎么实现图片布局的，如下图，可以看出百度用了讨巧的办法，图片跟我们这个瀑布流的图片的宽高设定正好相反，百度图片的列数同样固定，但是高度也固定，而宽度不固定，这样处理的话正好能避免上面那个float流动的问题，这个... 好吧 最后我们还是来说说怎样实现我们效果图中那样的瀑布流布局。
 
-![baidu](../normal/water-fall-layout/baidu.jpg)  
+![baidu](/blogs/img/article/waterfall-3.jpg)  
 
 #### 解决方法
-
-##### 先贴代码
 
 * html结构如下，需要说明的是container元素是相对定位，每个item元素都是绝对定位，这样我们通过设置item元素的top和left值就能改变它们的位置了，图片的宽度是100%(这儿思考一下为什么img的父级需要设置box-sizing: border-box)。
 
@@ -140,5 +151,5 @@ var waterFallInit = function (wData) {
 
 ```
 
-##### 感谢阅读
+#### 感谢阅读
 _代码存放在github：[nojsja](https://github.com/NoJsJa/javascript-learning/tree/master/normal/water-fall-layout)_

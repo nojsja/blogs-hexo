@@ -1,7 +1,21 @@
-### Linux Mint18.3 日常软件安装配置
->实装机器是linux mint18.3，理论上也适用于ubuntu
+---
+title: "Linux Mint18.3 日常软件安装配置"
+catalog: true
+toc_nav_num: true
+date:   2018-04-04 16:30:35
+subtitle: "linux mint"
+header-img: "/blogs/img/article_header/article_header.png"
+tags:
+- Linux
+- Mint
+catagories:
+- Linux
+updateDate: 2018-04-04 16:30:35
+top: 
+---
 
-![city](./resources/city.jpg)
+![city](/blogs/img/article/city.jpg)
+>实装机器是linux mint18.3，理论上也适用于ubuntu
 
 #### contents
 1. QQ 8.1 的 安装配置
@@ -136,5 +150,5 @@ sudo apt-get install shadowsocks-qt5
 8. 高效网页截图编辑插件
 >另一个好用的截图插件
 
-##### 感谢阅读
+#### 感谢阅读
 有时间还会继续更新本文

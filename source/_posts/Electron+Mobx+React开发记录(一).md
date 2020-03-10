@@ -3,7 +3,7 @@ title: "Electron+Mobx+React开发记录"
 catalog: true
 toc_nav_num: true
 date:   2019-10-14 16:18:46
-subtitle: "animation javascript"
+subtitle: "Electron Mobx React"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - ES6
@@ -11,17 +11,15 @@ tags:
 - Mobx
 - Electron
 catagories:
-- ES6
-- React
 - Mobx
 - Electron
 updateDate: 2019-10-14 16:18:46
-top: 
+top: 1
 ---
 
-![Hello World](https://upload-images.jianshu.io/upload_images/3019242-489c253a35a8c7ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![Hello World](/blogs/img/article/Fly.jpg)
 
-### \> Contents
+### Contents
 1. 前言
 2. 开发环境搭建
 3. 引入Webpack4.0前端打包工具
@@ -52,7 +50,7 @@ top:
 
 ### 开发环境搭建
 ------------------------
-##### 代码目录结构
+#### 代码目录结构
 ```sh
 electronux  
 |---- [dir ] app ( 主代码目录 )
@@ -93,7 +91,7 @@ electronux
 
 ```
 
-##### 项目环境依赖配置文件
+#### 项目环境依赖配置文件
 ```json
 {
   "name": "electronux",
@@ -192,7 +190,7 @@ electronux
 ### 引入Webpack4.0前端打包工具
 ---------------------------------------------
 
-##### webpack开发环境配置文件
+#### webpack开发环境配置文件
 ```js
 const path = require('path');
 const webpack = require('webpack');
@@ -303,10 +301,10 @@ module.exports = {
 主进程管理所有的web页面和它们对应的渲染进程。 每个渲染进程都是独立的，它只关心它所运行的 web 页面。
 在页面中调用与 GUI 相关的原生 API 是不被允许的，因为在 web 页面里操作原生的 GUI 资源是非常危险的，而且容易造成资源泄露。 如果你想在 web 页面里使用 GUI 操作，其对应的渲染进程必须与主进程进行通讯，请求主进程进行相关的 GUI 操作。
 
-##### 创建主进程
+#### 创建主进程
 在index.js文件中我们引入electron和所有的自定义模块文件，并根据开发环境或是生产环境来进行主进程窗口加载，开发环境下使用`http协议`加载由webpack-dev-server启动的http服务，生产环境下使用`file协议`加载本地由webpack打包好的前端bundle.js文件，所以开发环境下`npm start`指令其实主要是执行了两步操作，一是启动webpack-dev-server，此时已经可以通过外部浏览器访问到localhost:3000的http服务，只不过我们实际是用electron之中的chromium浏览器来加载的，它与node.js主进程共享同一个chrome v8引擎，所以理论上，在页面加载后，你同样可以在渲染进程中使用node.js API，比如用使用fs模块访问文件系统。
 
-##### 主进程代码热更新
+#### 主进程代码热更新
 我用了nodemon工具实现了主进程代码热更新，如果不用nodemon工具那么 `npm start-electron`命令实际是执行`cross-env NODE_ENV=development electron index`，就是简单的用electron启动主进程文件，使用nodemon之后`npm start-electron`实际上是执行`nodemon --exec 'cross-env NODE_ENV=development electron index'`，最后在package.json文件中增加一个nodemonConfig字段用于指定哪些文件需要纳入nodemon监听即可。
 
 => package.json中定义的启动脚本：
@@ -419,7 +417,7 @@ app.on('activate', () => {
 ### 前端界面React + Mobx 代码结构和热更新
 -------------------------------------------------------------
 
-##### 代码结构
+#### 代码结构
 1. App.js前端入口文件
 入口文件基本是整个前端应用的关键点，我们使用`mobx-react`包提供的Provider组件加载整个应用，并把各个应用模块(按功能划分)的mobx store示例作为props属性传入Provider，在各个组建中使用修饰器`@inject`就能直接使用store实例了，页面层次比较多的话最好使用React Router进行路由管理，值得注意的是React Router V4版本跟之前版本的理念和使用方式有很大区别，可以去官网查阅相关文档[react-router4](https://reacttraining.com/react-router/web/guides/quick-start)
 
@@ -566,7 +564,7 @@ export default Clean;
 页面的每个渲染进程(ipcRender)，虽然说可以直接使用node.js原生模块和api，但是不建议在渲染进程中过度使用原生模块，一是因为一些node.js原生模块并没有考虑到进程安全的问题，第二个原因是渲染进程应该专注处理页面交互和数据处理问题，划清代码的功能区域，把和系统交互的问题交由主进程(ipcMain)处理，把网络数据请求也交由各自的service服务，减少不必要的模块和数据耦合。渲染进程通过ipc通信向主进程发送处理请求，主进程和service负责原始数据的获取和网络数据的传输，最后主进程通过ipc通信向对应的渲染进程返回处理结果，service拿到的网络数据也通过回调事件发送给渲染进程。项目中我把mobx store作为和主进程通信的桥梁，mobx store向主进程发送信号，同时也在接收到主进程的ipc通信事件后再把主进程发回来的数据更新到各个observer。总之主进程和service服务负责系统交互、原始数据获取和传输，渲染进程mobx store负责响应信号和事件进行业务数据更新，各个view子组件只负责页面渲染和用户交互。
 
 
-##### 前端代码热更新
+#### 前端代码热更新
 1. webpack.config.js中启动webpack-dev-server的热更新功能
 
 ```js
@@ -596,7 +594,7 @@ render(
 ```
 ### Linux桌面客户端开发遇到的问题
 -------------------------------------------------------
-##### 使用node.js子进程child_process执行shell脚本时无法取得系统root权限
+#### 使用node.js子进程child_process执行shell脚本时无法取得系统root权限
 项目中有的脚本需要使用root权限，比如安装和卸载软件、扫描系统关键路径，node.js里执行shell脚本可以使用child_process模块(node.js子进程)，child_process有几个方法，`spawn`、`exec`、`execFile`、`fork`，它们都能创建子进程以执行指定文件或命令，具体的使用方法见[Node API](http://nodejs.cn/api/child_process.html#child_process_asynchronous_process_creation)，如果我们的脚本或指令需要使用root权限那可就麻烦了，桌面应用又不是终端，不可能用着用着让用户去终端输入密码吧，况且只是在开发环境下能看到终端输出，应用打包安装运行起来后就是一个独立的应用程序了，根本没法输入终端密码，仔细查阅了Electron官网API发现electron官方并没有集成一个什么系统权限调用窗口之类的组件。没办法了，这种情况下手动写出了两种方法：
 1. 调用获取系统权限的系统自带组件来执行自定义命令和脚本
 2. 封装一个弹窗组件来获取用户首次输入的密码，然后手动把密码记录到文件中，应用启动的时候从文件中读出密码，在使用child_process创建子进程的时候再监听子进程的输出事件和错误事件，然后把读取到的保存在内存中的密码以输入流(input stream)的形式发送给child_process创建的子进程，子进程读取到输入流传入的密码后就能继续执行了。  
@@ -609,4 +607,5 @@ render(
 __具体代码见__：[github/nojsja/electronux/app/utils/sudo-prompt.js](/blogs/img/article/mobx10.png)  
 
 _感谢阅读，文章中出现的错误之处还请多指正~_  
-##### 未完待续.....
+
+### 未完待续

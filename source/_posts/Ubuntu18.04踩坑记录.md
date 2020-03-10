@@ -1,6 +1,22 @@
-![welcome / home](https://upload-images.jianshu.io/upload_images/3019242-7632da3ebbcad605.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+---
+title: "Ubuntu18.04踩坑记录"
+catalog: true
+toc_nav_num: true
+date:   2018-04-04 16:30:35
+subtitle: "ubuntu18.04 linux"
+header-img: "/blogs/img/article_header/article_header.png"
+tags:
+- Ubuntu18.04
+- Linux
+catagories:
+- Linux
+updateDate: 2018-04-04 16:30:35
+top: 1
+---
 
-## > Contents
+![welcome / home](/blogs/img/article/Ubuntu18.04-1.jpg)
+
+#### Contents
 __________
 
 * Wine应用启动后出现WineSystemTray 托盘的问题
@@ -46,9 +62,9 @@ __________
 
 #### Wine应用启动后出现WineSystemTray托盘的问题
 ____________________________________________
-![wine_tray.png](https://upload-images.jianshu.io/upload_images/3019242-1f62afa75df79ab9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![wine_tray.png](/blogs/img/article/Ubuntu18.04-2.png)
 
-![tray.png](https://upload-images.jianshu.io/upload_images/3019242-6121a50df5b57569.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![tray.png](/blogs/img/article/Ubuntu18.04-3.png)
 1. 操作系统Linux Mint18.3
 右键点击面板(状态栏)，选择 - 向面板添加小程序，选择小程序 - 系统托盘，点击+号添加，之后Wine安装的应用和其它应用的图标就被系统托盘管理了。
 
@@ -236,11 +252,10 @@ ______________
 
 #### Ubuntu18.04 定制Mac主题
 __________________________
-![thunder_qq_baidu.png](https://upload-images.jianshu.io/upload_images/3019242-72be25731510c870.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-![overview.png](https://upload-images.jianshu.io/upload_images/3019242-bea700f5d28f6dc6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![overview.png](/blogs/img/article/Ubuntu18.04-5.png)
 
-![desktop.png](https://upload-images.jianshu.io/upload_images/3019242-9d2a491b512d8ef5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![desktop.png](/blogs/img/article/Ubuntu18.04-6.png)
 
 
 1. 安装gnome-tweak-tool 和 chrome-gnome-shell 插件 (`sudo aptitude install [name]`)
@@ -257,9 +272,9 @@ __________________________
 
 #### Ubuntu18.04 自己定制 登录、锁屏界面的图片和样式
 --------------------------------------------------------------------------------------------
-![lockscreen.png](https://upload-images.jianshu.io/upload_images/3019242-a64f6f7c07ab0a1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![lockscreen.png](/blogs/img/article/Ubuntu18.04-7.png)
 
-![loginscreen.png](https://upload-images.jianshu.io/upload_images/3019242-394fd692233cd1f6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![loginscreen.png](/blogs/img/article/Ubuntu18.04-8.png)
 
 1. 安装脚本 => [github / nojsja / login-manager-config-ubuntu](https://github.com/NoJsJa/maintenance/tree/master/code/shell/desktop/login-manager-config-ubuntu)  
 2. 说明=> 脚本通过更改/usr/share/gnome-shell/theme/ubuntu.css文件中声明的样式来修改系统登录页面按钮布局和背景图片的地址，使用ImageMagick包的`convert -blur`命令制作了毛玻璃效果的登录背景图片，最后还生成了一个SetAsWallpaper脚本，可以在文件夹中的图片文件上右键点击选择运行这个脚本(它会自动把目标图片更改成桌面壁纸和毛玻璃效果化的登录背景图)，最后锁屏壁纸需要用户手动安装`gnome-tweak-tool`进行更改。  
@@ -297,16 +312,15 @@ ScriptFile=/usr/share/plymouth/themes/[THEME]/[THEME].script
 ---------------------------------------------------------------------------------------------
 >解决方法是去tweak设置里关闭[Dash to dock]的开关，别担心，关闭后，[Dash to dock]仍然正常工作，但是再也不会同时出现两个dock栏的尴尬情况了。  
 
-![dock-noise.png](https://upload-images.jianshu.io/upload_images/3019242-3a9630451042f241.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![dock-noise.png](/blogs/img/article/Ubuntu18.04-9.png)
 
-![dock-single.png](https://upload-images.jianshu.io/upload_images/3019242-9126548febe2e407.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![dock-single.png](/blogs/img/article/Ubuntu18.04-10.png)
 
-![dock-tweak.png](https://upload-images.jianshu.io/upload_images/3019242-1a0694d56a4ed2e3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 #### Ubuntu18.04 添加软件源提示：没有Release文件，忽略源的问题
 ________________________________________________________
-![source.png](https://upload-images.jianshu.io/upload_images/3019242-9f1d06791873819d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![dock-tweak.png](/blogs/img/article/Ubuntu18.04-11.png)
 
 1. 打开 软件与更新
 2. 选择那个源点击编辑
@@ -483,7 +497,6 @@ $: bash genpac-command --del-rules opendesktop.org
 $: bash genpac-command --del-rules opendesktop.org atom.io
 ```
 => __不过我遇到了代理pac文件配置好后，firefox和google浏览器仍然不能FQ的情况，仔细排查原因，我发现因为之前我不是用的pac全局代理，是通过浏览器的SwitchOmega插件来手动代理的，这个插件会接管浏览器的网络代理权限，我们需要到浏览器设置里面把网络代理设置为系统代理，以火狐浏览器为例：__
-![firefox_proxy.png](https://upload-images.jianshu.io/upload_images/3019242-e478210d6ce4fcc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 #### Atom编辑器内存占用过大的问题
 ______________________________
@@ -491,7 +504,7 @@ ______________________________
 
 #### Grub2 主题安装
 _________________
-![Vimix.png](https://upload-images.jianshu.io/upload_images/3019242-3d400e0326427464.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![source.png](/blogs/img/article/Ubuntu18.04-12.png)
 >Grub2就是引导操作系统启动的东西，开机的时候如果是多系统，就会显示多系统的启动菜单，如图，这个启动菜单可以自定义主题。
 
 1. 解压下载的主题文件 => [Vimix](https://pan.baidu.com/s/1ioMub2JmHlIzHJbS2_2gRQ)，得到Vimix文件夹(这里提供我用的一个主题，也可以自已去下载其它主题)
@@ -508,7 +521,7 @@ _________________
 
 #### Ubuntu18.04 解决下载额外数据文件失败：ttf-mscorefonts-installer
 _________________________________________________________
-![ttf.png](https://upload-images.jianshu.io/upload_images/3019242-ea6c22ed54d4a7fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![firefox_proxy.png](/blogs/img/article/Ubuntu18.04-13.png)
 
 1. [sourceforge](http://sourceforge.net/projects/corefonts/files/the%20fonts/final/)下载如图所示11个exe文件并放入一个文件夹，比如： /home/nojsja/Downloads/ttf-mscorefonts-installer
 2. 运行字体配置程序
@@ -725,7 +738,7 @@ _______________________________
 
 #### 实用网站推荐
 _______________
-![infinity.png](https://upload-images.jianshu.io/upload_images/3019242-8cb909b68a48dd3f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![Vimix.png](/blogs/img/article/Ubuntu18.04-14.png)
 
 * [Wallpaper](https://wallpapershome.com/)  => 高清桌面壁纸下载，支持多种分辨率(★★★★★)
 * [flaticon](https://www.flaticon.com) => 免费图标下载网站，支持svg和png两种格式
