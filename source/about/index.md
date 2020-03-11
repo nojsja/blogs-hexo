@@ -1,8 +1,8 @@
 ---
 layout: "about"
-title: "About"
+title: "Thinking"
 date: 2017-10-03 10:48:33
-description: "走在成为极客的路上"
+description: "一定有什么事儿还没发生"
 header-img: "/blogs/img/header_img/about.jpg"
 aplayer: true
 fixed: false
@@ -10,29 +10,25 @@ fixed: false
 
 ### 一句话
 
->Just do it !    (翻译：我只是个搞 IT的！哭笑脸)
+>Style hungry, Stay foolish.
 
 ### 关于我
 
->一个莫名其妙的，喜欢敲代码，喜欢研究技术的，表面上高冷、不苟言笑的，
->
->偶尔又嬉皮笑脸，偶尔又特立独行的，双重性格的技术爱好者！
+>一个Coder，喜欢敲代码，喜欢研究技术的，表面上不苟言笑的.
+>一个Photograher，喜欢拍照，静物摄影和人像摄影.
+>一个Gamer，Xbox One X 我的爱.
 
 ### 兴趣方向
 
-> 容器云（Docker、Kubernetes等）相关生态技术研究。
+> Javascript生态/Electron/Linux
 
 ### 参与社区
 
- > CSDN博客:http://blog.csdn.net/huwh_
+ > 简书:https://www.jianshu.com/u/d5c8b784c1d0
  >
- > Github:https://github.com/huweihuang
- >
- > 阿里云栖社区:https://yq.aliyun.com/u/huweihuang
- >
- > DockOne社区:http://dockone.io/people/胡伟煌
+ > Github:https://github.com/NoJSJa
 
 ### 联系我
 
->Email: huweihuang@foxmail.com
+>Email: yangwei13@outlook.com
 
