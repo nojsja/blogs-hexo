@@ -6,9 +6,8 @@ date:   2018-04-04 16:30:35
 subtitle: "proxy linux"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Proxychains
-- Linux
 - Proxy
+- Shadowsocks
 catagories:
 - Linux
 updateDate: 2018-04-04 16:30:35

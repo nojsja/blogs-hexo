@@ -92,6 +92,10 @@ friends: [
         title: "简书 NoJsJa",
         href: "https://www.jianshu.com/u/d5c8b784c1d0"
     },
+    {
+        title: "Cnode",
+        href: "https://cnodejs.org/"
+    },
 ]
 
 
@@ -129,11 +133,12 @@ highlight:
 default_category: article
 category_map:
   Docker: docker
-  Kubernetes: kubernetes
   Golang: golang
   Nginx: nginx
-  Etcd: etcd
-  Database: database
+  Linux: linux
+  Mobx: mobx
+  Electron: electron
+  Sass: sass
 
 tag_map:
 home_posts_tag: true # show posts tags
@@ -187,8 +192,8 @@ markdown:
 
 # MeingJS support for Aplayer
 # reference: https://github.com/metowolf/MetingJS & https://github.com/MoePlayer/APlayer
-metingjs: false
-data-id: 2423410161
+metingjs: true
+data-id: 3147590894
 data-server: netease  
 data-type: playlist
 data-fixed: true
@@ -226,4 +231,4 @@ deploy:
   # repository: https://github.com/NoJsJa/blogs
   repository: https://gitee.com/nojsjaOSC/blogs
   branch: master
-  message: Update Init
+  message: update
