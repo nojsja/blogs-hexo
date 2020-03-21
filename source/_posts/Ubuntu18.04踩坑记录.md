@@ -112,11 +112,13 @@ $: apt-get install libldap-2.4-2:i386
 
 3.使用docker安装[Tim](https://hub.docker.com/r/bestwu/qq) 和 [wechat](https://hub.docker.com/r/bestwu/wechat)，[docker环境安装教程](https://www.runoob.com/docker/ubuntu-docker-install.html)
 
-4.安装好微信后如果发现不能输入文字(其实可以输入和发送，只是文字透明的)，可以使用这个文件[riched20.dll](https://pan.baidu.com/s/1-ScZvkmR9oZPdiFurdKQdA)(提取密码：rofj)替换掉微信所在容器下的C盘的`/windows/system32/riched20.dll`，容器路径一般在：`~/.cxoffice/[你的容器名]/drive_c/`。
+4.wine环境下(crossover/deepin)安装好微信后如果发现不能输入文字(其实可以输入和发送，只是文字透明的)，可以使用这个文件[riched20.dll](https://pan.baidu.com/s/1-ScZvkmR9oZPdiFurdKQdA)(提取密码：rofj)替换掉微信所在容器下的C盘的`/windows/system32/riched20.dll`，容器路径一般在：`~/.cxoffice/[你的容器名]/drive_c/`。
 
-5.如果运行微信时发现界面有一个黑框不能关闭，只需要在聊天输入框中键入中文“不”然后再删除即可让黑框消失(原因:微信会根据你输入的字作为关键字在你现有表情中找符合的表情并显示出来提示你可用,但并没有很好的兼容这个功能变成一个黑框了，所以手动消除黑框的办法只有打关键字然后删除)。
+5.wine环境下(crossover/deepin)如果运行微信时发现界面有一个黑框不能关闭，只需要在聊天输入框中键入中文“不”然后再删除即可让黑框消失(原因:微信会根据你输入的字作为关键字在你现有表情中找符合的表情并显示出来提示你可用,但并没有很好的兼容这个功能变成一个黑框了，所以手动消除黑框的办法只有打关键字然后删除)。
 
-6.如果运行微信的时候不能发送图片，尝试安装 `sudo apt install libjpeg62:i386`，临时解决办法是把图片文件拖动到`收藏`，然后从收藏转发即可。
+6.wine环境下(crossover/deepin)如果运行微信的时候不能发送图片，尝试安装 `sudo apt install libjpeg62:i386`，临时解决办法是把图片文件拖动到`收藏`，然后从收藏转发即可。
+
+7.wine环境下(crossover/deepin)如果运行QQ发现收到的图片一直加载不出来(刚登录开始可以，过一会就不行了)，那么可以在QQ登录界面设置一下网络代理(http/socks)，注意本地代理情况下代理地址不能使用localhost/127.0.0.1此类的IP，使用0.0.0.0是可以的。
 
 #### Ubuntu 18.04开机启动特别慢的问题
 _________________________________
