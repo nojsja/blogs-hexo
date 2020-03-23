@@ -599,9 +599,9 @@ render(
 1. 调用获取系统权限的系统自带组件来执行自定义命令和脚本
 2. 封装一个弹窗组件来获取用户首次输入的密码，然后手动把密码记录到文件中，应用启动的时候从文件中读出密码，在使用child_process创建子进程的时候再监听子进程的输出事件和错误事件，然后把读取到的保存在内存中的密码以输入流(input stream)的形式发送给child_process创建的子进程，子进程读取到输入流传入的密码后就能继续执行了。  
 
-![electron_pssword.png](/blogs/blogs/img/article/mobx9.png)
+![electron_pssword.png](/blogs/img/article/mobx9.png)
 
-![install_permission.png](https://upload-images.jianshu.io/upload_images/3019242-ab7ac0ed65c892be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![install_permission.png](/blogs/img/article/mobx10.png)
 
 
 __具体代码见__：[github/nojsja/electronux/app/utils/sudo-prompt.js](/blogs/img/article/mobx10.png)  
