@@ -1,5 +1,5 @@
 ---
-title: "基于s3对象存储多文件分片上传的Javascript实现"
+title: "基于s3对象存储多文件分片上传的Javascript实现(一)"
 catalog: true
 toc_nav_num: true
 date: 2020-03-07 16:18:00
@@ -12,10 +12,10 @@ tags:
 catagories:
 - Javascript
 updateDate: 2020-03-07 16:18:00
-top: 1
+top: 2
 ---
 
-### Contents
+### 目录
 
 1. 概述
 

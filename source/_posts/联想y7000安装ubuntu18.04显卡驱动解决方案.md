@@ -19,7 +19,7 @@ top:
 ![Desktop](/blogs/img/article/Desktop2.png)
 ![Desktop](/blogs/img/article/Desktop.png)
 
-### Contents
+### 目录
 
 1. 笔记本配置和操作系统版本
 

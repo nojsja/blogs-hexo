@@ -11,12 +11,12 @@ tags:
 catagories:
 - Linux
 updateDate: 2018-04-04 16:30:35
-top: 1
+top: 2
 ---
 
 ![welcome / home](/blogs/img/article/Ubuntu18.04-1.jpg)
 
-#### Contents
+#### 目录
 __________
 
 * Wine应用启动后出现WineSystemTray 托盘的问题
@@ -36,6 +36,7 @@ __________
 * Ubuntu18.04 使用[Dash to dock]插件时同时出现两个dock的问题
 * Ubuntu18.04 添加软件源提示：没有Release文件，忽略源的问题
 * Ubuntu18.04 解决一些软件依赖不满足问题的问题
+* Ubuntu18.04 安装cinnamon桌面启动器
 * Linux分区过小导致后期容量不足解决方法
 * Shadowsocks-Qt5安装的问题
 * 使用polipo开启终端代理(需要先开启shadowsocks代理)
@@ -372,7 +373,34 @@ $: sudo gdebi netease-cloud-music_1.0.0_amd64_ubuntu18.04.deb
 $: sudo dpkg -i netease-cloud-music_1.0.0_amd64_ubuntu18.04.deb
 ```
 
+#### Ubuntu18.04 安装Cinnamon桌面启动器
+-------------------------------------
+>cinnamon桌面也是基于gtk的，所以gonome下的一些gtk主题和icon主题也能直接使用，切换桌面后可以在设置界面直接切换主题。deepin桌面也能安装，美观度很好，但是卡死问题比较严重，不太推荐，Cinnamon相较而言安装后bug较少，可以正常使用。
+
+已知问题：
+* Cinnamon桌面通知API可能有更改，常见的wine/crossover应用程序不能正常调用通知接口，QQ/Wehcat无法在通知栏提示消息，不太方便
+* 输入法ibus不支持，无法正常使用，可以使用fcitx拼音和基于fcitx框架的sogou拼音
+* 默认没有集成蓝牙管理器，需要安装`blueman`进行蓝牙管理
+* 锁屏界面可能会非常卡顿
+* Cinnamon面板(等同gnome任务栏)默认安装了`系统托盘`，可以解决wine应用程序托盘菜单变成小窗口的bug，在面板通知区域正常显示
+* Cinnamon桌面动画性能也很低效，建议强制使用独立显卡
+
+安装步骤：
+1. 添加仓库Key
+```bash
+$: sudo add-apt-repository ppa:embrosyn/cinnamon  
+$: sudo apt update && sudo apt install cinnamon
+```
+2. 安装完成了注销后可以在登录界面点击设置按钮选择进入某个桌面环境
+3. 卸载cinnamon
+```bash
+$: sudo apt-get install ppa-purge
+$: sudo ppa-purge ppa:embrosyn/cinnamon
+```
+
+
 #### Linux分区过小导致后期容量不足解决方法
+------------------------------------
 => 之前安装ubuntu 18.04的时候/var 分区只给了 1.5G，结果现在不够用了
 
 * 方法1

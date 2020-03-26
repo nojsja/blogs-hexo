@@ -14,6 +14,18 @@ updateDate: 2020-03-22 18:24:00
 top: 
 ---
 
+### 目录
+
+1. 前言
+
+2. 树形图功能需求以及遇到的问题分析
+
+3. 问题I：V4版本label自定义效果设置不生效
+
+4. 问题II：tree图使用自定义图片加载显示不完全
+
+5. 问题III：tree图自定义节点选中效果和组件自带渲染效果冲突
+
 ### 前言
 
 -------------
@@ -30,7 +42,7 @@ Echarts树形图Tree可以用来展示树形数据结构各节点的层级关系
 
 ![snapshot_select](/blogs/img/article/snapshot_select.png)
 
-2. 文件系统快照每一层级的节点标识(Symbol)可能不同，需要支持使用自定义图片，echarts的symbol是直接支持使用img-src和base63 img-str的，但是会遇到图片在某些时候不能完全被渲染(图片像是被设置了半透明)或直接完全不能被渲染出来的问题。
+2. 文件系统快照每一层级的节点标识(Symbol)可能不同，需要支持使用自定义图片，echarts的symbol是直接支持使用img-src和base64 img-str的，但是会遇到图片在某些时候不能完全被渲染(图片像是被设置了半透明)或直接完全不能被渲染出来的问题。
 
 ![tree-1](/blogs/img/article/tree-1.png)
 ![tree-2](/blogs/img/article/tree-2.png)

@@ -16,8 +16,13 @@ top: 1
 
 ![life is strange](/blogs/img/article/lifeIsStrange.jpg)
 
-
 [源代码 => github / nojsja / promise-self](https://github.com/NoJsJa/promise-nojsja)
+
+### 目录
+
+1. 谈谈Promise
+2. Promise分析和实现
+3. 总结
 
 ### 谈谈Promise
 ---------------

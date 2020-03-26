@@ -17,7 +17,7 @@ top:
 ![city](/blogs/img/article/city.jpg)
 >实装机器是linux mint18.3，理论上也适用于ubuntu
 
-#### contents
+#### 目录
 1. QQ 8.1 的 安装配置
 2. 微信的安装配置
 3. 印象笔记的安装配置
