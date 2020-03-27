@@ -27,14 +27,14 @@
 }
 .sidebar-container a:hover,
 .sidebar-container a:active {
-  color: #0085a1 !important;
+  color: #a3a3a3 !important;
 }
 .sidebar-container .tags a {
   border-color: #bfbfbf;
 }
 .sidebar-container .tags a:hover,
 .sidebar-container .tags a:active {
-  border-color: #0085a1;
+  border-color: #8a8a8a;
 }
 
 .sidebar-container .short-about img {
@@ -231,8 +231,8 @@ pre code {
 }
 .post-container .tags a:hover,
 .post-container .tags a:active {
-  color: #0085a1;
-  border-color: #0085a1;
+  color: grey;
+  border-color: grey;
 }
 
 @media only screen and (max-width: 767px) {
@@ -511,7 +511,7 @@ pre code {
 .post-preview > a:hover,
 .post-preview > a:focus {
   text-decoration: none;
-  color: #0085a1;
+  /* color: #43444c; */
 }
 .post-preview > a > .post-title {
   font-size: 21px;
@@ -529,7 +529,7 @@ pre code {
 .post-preview > .post-meta {
   font-family: 'Lora', 'Times New Roman', serif;
   color: #808080;
-  font-size: 16px;
+  font-size: 14px;
   font-style: italic;
   margin-top: 0;
 }
@@ -539,7 +539,7 @@ pre code {
 }
 .post-preview > .post-meta > a:hover,
 .post-preview > .post-meta > a:focus {
-  color: #0085a1;
+  color: #43444c;
   text-decoration: underline;
 }
 @media only screen and (min-width: 768px) {
@@ -557,11 +557,11 @@ pre code {
 }
 .post-content-preview {
   font-size: 13px;
-  font-style: italic;
+  font-style: normal;
   color: #a3a3a3;
 }
 .post-content-preview:hover {
-  color: #0085a1;
+  color: #8f8f8f;
 }
 @media only screen and (min-width: 768px) {
   .post-content-preview {
