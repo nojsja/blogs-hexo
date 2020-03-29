@@ -23,18 +23,21 @@
   text-decoration: none;
 }
 .sidebar-container a {
-  color: #bfbfbf !important;
+  color: #8a8a8a !important;
 }
 .sidebar-container a:hover,
 .sidebar-container a:active {
-  color: #a3a3a3 !important;
+  color: #578ef4 !important;
 }
 .sidebar-container .tags a {
   border-color: #bfbfbf;
+  transition: all .2s;
 }
 .sidebar-container .tags a:hover,
 .sidebar-container .tags a:active {
-  border-color: #8a8a8a;
+  border-color: #8a8a8a !important;
+  color: #8a8a8a !important;
+  scale: 1.1;
 }
 
 .sidebar-container .short-about img {
@@ -88,7 +91,7 @@ a {
 }
 a:hover,
 a:focus {
-  color: #0085a1;
+  color: #578ef4;
 }
 a img:hover,
 a img:focus {
@@ -164,7 +167,7 @@ pre code {
 }
 .post-container a:hover,
 .post-container a:focus {
-  color: #0085a1;
+  color: #578ef4;
 }
 .post-container h1,
 .post-container h2,
@@ -226,13 +229,13 @@ pre code {
   margin-top: 20px;
 }
 .post-container .tags a {
-  color: gray;
-  border-color: gray;
+  border-color: #a6a6a6;
+  color: #a6a6a6;
 }
 .post-container .tags a:hover,
 .post-container .tags a:active {
-  color: grey;
-  border-color: grey;
+  border-color: #a6a6a6;
+  color: #a6a6a6;
 }
 
 @media only screen and (max-width: 767px) {
@@ -378,14 +381,14 @@ pre code {
   }
   .navbar-custom.is-fixed .navbar-brand:hover,
   .navbar-custom.is-fixed .navbar-brand:focus {
-    color: #0085a1;
+    color: #578ef4;
   }
   .navbar-custom.is-fixed .nav li a {
     color: #404040;
   }
   .navbar-custom.is-fixed .nav li a:hover,
   .navbar-custom.is-fixed .nav li a:focus {
-    color: #0085a1;
+    color: #578ef4;
   }
   .navbar-custom.is-visible {
     /* if the user changes the scrolling direction, we show the header */
@@ -601,7 +604,7 @@ footer .copyright a {
 }
 footer .copyright a:hover,
 footer .copyright a:focus {
-  color: #0085a1;
+  color: #578ef4;
 }
 .floating-label-form-group {
   font-size: 14px;
@@ -648,7 +651,7 @@ footer .copyright a:focus {
   opacity: 1;
 }
 .floating-label-form-group-with-focus label {
-  color: #0085a1;
+  color: #578ef4;
 }
 form .row:first-child .floating-label-form-group {
   border-top: 1px solid #eeeeee;
@@ -673,8 +676,8 @@ form .row:first-child .floating-label-form-group {
 }
 .btn-default:hover,
 .btn-default:focus {
-  background-color: #0085a1;
-  border: 1px solid #0085a1;
+  background-color: #578ef4;
+  border: 1px solid #578ef4;
   color: white;
 }
 .pager {
@@ -710,8 +713,8 @@ form .row:first-child .floating-label-form-group {
 .pager li > a:hover,
 .pager li > a:focus {
   color: white;
-  background-color: #0085a1;
-  border: 1px solid #0085a1;
+  background-color: #578ef4;
+  border: 1px solid #578ef4;
 }
 .pager .disabled > a,
 .pager .disabled > a:hover,
@@ -724,12 +727,12 @@ form .row:first-child .floating-label-form-group {
 ::-moz-selection {
   color: white;
   text-shadow: none;
-  background: #0085a1;
+  background: #578ef4;
 }
 ::selection {
   color: white;
   text-shadow: none;
-  background: #0085a1;
+  background: #578ef4;
 }
 img::selection {
   color: white;
@@ -740,7 +743,7 @@ img::-moz-selection {
   background: transparent;
 }
 body {
-  webkit-tap-highlight-color: #0085a1;
+  webkit-tap-highlight-color: #578ef4;
 }
 /* Hux add tags support */
 .tags {
@@ -798,7 +801,7 @@ body {
 #tag_cloud .tag:hover,
 #tag_cloud a:active,
 #tag_cloud .tag:active {
-  background-color: #0085a1 !important;
+  background-color: #578ef4 !important;
 }
 @media only screen and (min-width: 768px) {
   #tag_cloud {
@@ -817,7 +820,7 @@ body {
   margin-top: 0px;
 }
 .listing-seperator {
-  color: #0085a1;
+  color: #578ef4;
   font-size: 21px !important;
 }
 .listing-seperator::before {
