@@ -54,6 +54,7 @@ __________
 * Ubuntu18.04 安装网易云音乐1.1.0后不能打开的解决方法
 * Ubuntu18.04 Crossover17安装QQ后乱码的解决方法
 * Ubuntu18.04 通过tweak安装gnome插件Blyr后设置插件报错
+* Ubuntu18.04 一直提示 “检测到系统程序出现问题”
 * Ubuntu18.04 Gnome-Shell 插件
 * Ubuntu18.04 插件 [ Dash to dock ] 一些常用设置
 * Ubuntu18.04 主题
@@ -643,6 +644,19 @@ _______________________________________________________
 ```sh
 # 安装依赖
 $: sudo apt-get install gir1.2-clutter-1.0 gir1.2-clutter-gst-3.0 gir1.2-gtkclutter-1.0
+```
+
+#### Ubuntu18.04 一直提示 “检测到系统程序出现问题”
+---------------------------------------
+ubuntu18.04已经移除了gksu软件，所以使用替代命令
+1. 添加alias命令
+```bash
+$: alias gksu='pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY'
+```
+2. 编辑错误报告相关设置  
+```bash
+$: gksu gedit /etc/default/apport
+# 把`enable = 1`改为`enable = 0`
 ```
 
 #### Ubuntu18.04 Gnome-Shell 插件
