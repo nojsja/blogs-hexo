@@ -757,6 +757,7 @@ _______________________________
 * tmux => 终端管理器(★★★★)
 * 深度终端(ubuntu商店下载) => 支持分屏，内置实用主题(★★★★☆)
 * 深度截图(ubuntu商店下载) => 支持截图编辑(★★★★★)
+* flameshot => 支持Ubuntu20.04的截图编辑工具(★★★★★)
 * [WebTorrent](https://webtorrent.io/desktop/)、[FrostWire](https://www.frostwire.com/) => bt下载工具，支持边下边播(★★★★)
 * [SmartGit](https://www.syntevo.com/smartgit/) => linux平台免费的GIT GUI工具(★★★★★)
 * FileZilla => ftp工具(★★★★★)

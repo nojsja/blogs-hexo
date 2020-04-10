@@ -378,8 +378,8 @@ function fsChmodShell() {
 module.exports = fsChmodShell;
 ```
 
-* 项目index.js中引入执行
-__注意：__请尽量不要在项目的index.js文件中进行运行时绝对路径查询(使用`path.resolve`)，因为在开发环境下我们的代码目录结构和electron-builder打包后生产环境下的的应用代码结构是不一样的，比如开发环境下，index.js文件位于项目根目录`/`下，shell文件夹(存放shell scripts)的路径是`/app/service/shell`，经过electron-builder打包后，index.js(实际上被编译成了一个可执行文件 )仍然位于根目录`/`下，但是shell文件夹位置却变成了`/resources/app/app/shell`，这样子如果在index.js文件中对shell文件夹进行绝对路径查询的话就会发生严重错误。electron-builder打包后的源代码会被放到资源目录`/resources/app`下，位于资源目录下的代码是可以进行运行时绝对路径查询(前提是没有开启`arar`源代码加密)和相对路径查询的。
+* 项目index.js中引入执行  
+__注意：__ 请尽量不要在项目文件中使用`__dirname`和`procoss.pwd()`來加载一个模块，例如`path.resolve(process.cwd(), 'path/to/file')`这样的绝对路径，而应该使用`app.getAppPath()`，相对应的获取运行时绝对路径命令更改为`path.resolve(app.getAppPath(), 'path/to/file')`(app是electron自带的属性)来获取运行时执行目录，`app.getAppPath()`一般是`package.json`所处的目录。因为在开发环境下我们的代码目录结构和electron-builder打包后生产环境下的的应用代码结构是不一样的，比如开发环境下，index.js文件位于项目根目录`/`下，shell文件夹(存放shell scripts)的路径是`/app/service/shell`，经过electron-builder打包后，index.js(实际上被编译成了一个可执行文件 )仍然位于根目录`/`下，但是shell文件夹位置却变成了`/resources/app/app/shell`，这样子如果在index.js文件中对shell文件夹进行绝对路径查询的话就会发生严重错误。electron-builder打包后的源代码会被放到资源目录`/resources/app`下，位于资源目录下的代码是可以进行运行时绝对路径查询(前提是没有开启`arar`源代码加密)和相对路径查询的。
 
 ```js
 const fsChmodShell = require('./app/services/middleware/fs-chmod-shell.js');
