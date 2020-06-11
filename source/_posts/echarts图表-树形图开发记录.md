@@ -8,7 +8,7 @@ header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - Echarts
 - React
-catagories:
+categories:
 - Echarts
 updateDate: 2020-03-22 18:24:00
 top: 

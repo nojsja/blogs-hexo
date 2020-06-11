@@ -1,8 +1,8 @@
 ---
 layout: "archive"
 title: "Archives"
-header-img: "/blogs/img/header_img/archive.jpg"
+header-img: "img/header_img/archive-bg.jpg"
 comments: false
-date: 2017-09-20 20:49:56
-description: "Hey, this is archives"
+date: 2017-03-20 20:49:56
+description: "Have goals that are actually meaningful to all of your brain, not just a piece, and immerse yourself in whatever it is you do."
 ---

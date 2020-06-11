@@ -3,9 +3,9 @@ layout: "about"
 title: "About"
 date: 2017-10-03 10:48:33
 description: "一定有什么事儿还没发生"
-header-img: "/blogs/img/header_img/about.jpg"
+header-img: "img/header_img/about.jpg"
 aplayer: true
-fixed: false
+comments: false
 ---
 
 ### 一句话

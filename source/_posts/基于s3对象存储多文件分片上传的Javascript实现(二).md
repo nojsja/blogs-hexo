@@ -9,11 +9,11 @@ tags:
 - FileUpload
 - Node
 - FS
-catagories:
-- Javascript
-- Node
 updateDate: 2020-03-26 16:18:00
 top: 2
+categories:
+- Javascript
+- Node
 ---
 
 ### 目录

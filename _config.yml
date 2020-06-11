@@ -3,20 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: NojsJa 
+title: NojsJa
 subtitle: 个人博客
-author: NoJsJa
-language:
+author: nojsja
+language: zh-CN
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://nojsja.github.io/blogs       # Note: don't forget to modify the CNAME file to your url
 root: /blogs
-#permalink: :year/:month/:day/:title/
-permalink: :category/:title/
+permalink: :year/:month/:day/:title/
 permalink_defaults:
-  lang: en
 
 #Custom Setting Start
 
@@ -25,58 +23,50 @@ SEOTitle: NoJsJa | Blog
 email: e-mail_address
 description: ""
 keyword: ""
-header-img: /blogs/img/header_img/home.jpg
-article-img: /blogs/img/article_header/article_bg.jpg
-404-img: /blogs/img/header_img/404.png
+header-img: img/header_img/home.jpg
+article-img: img/article_header/article_bg.jpg
+404-img: img/header_img/404.png
 signature: false #show signature
-signature-img: /blogs/img/signature/BeanTechSign-white.png 
-
+signature-img: img/signature/BeanTechSign-white.png 
 
 # SNS settings
-# RSS: false
-# weibo_username:     Demonbaneen
-# zhihu_username:     Demonbane
 github_username:    NoJsJa
-# twitter_username:   Demonbane_x
-# facebook_username:  xxx
-# linkedin_username:  xxx
+gitee_username:     nojsjaOSC
 
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 
-
-# Disqus settings
-#disqus_username: your-disqus-ID
-
-# Duoshuo settings
-# duoshuo_username: kaijun
-# Share component is depend on Comment so we can NOT use share only.
-#duoshuo_share: true                     # set to false if you want to use Comment without Sharing
-
-
 # Analytics settings
-#Baidu Analytics
-ba_track_id: xxx
+# Baidu Analytics
+# ba_track_id: 4cc1f2d8f3067386cc5cdb626a202900
 # Google Analytics
 ga_track_id: 'UA-XXXXXXXX-X'          # Format: UA-xxxxxx-xx
 ga_domain: yoursite
 
-
 # Sidebar settings
-sidebar: true                       # whether or not using Sidebar.
+sidebar: true                      # whether or not using Sidebar.
 sidebar-about-description: "Stay hungry,Stay foolish"
-sidebar-avatar: /blogs/img/avatar/nojsja.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: img/avatar/nojsja.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
 widgets:
-- featured-tags
+# - search
 - short-about
+- featured-tags
+# - visitor
 - recent-posts
 - friends-blog
-- archive
-#- category
+# - archive
+# - category
+
+## Search
+search:
+  enable: false
+  path: search.xml
+  field: post
+  content: true
 
 # widget behavior
 ## Archive
-archives-img: /blogs/img/header_img/archives-widget.jpg
+archives-img: img/header_img/archives-widget.jpg
 archive_type: 'monthly'
 show_count: true
 
@@ -99,9 +89,11 @@ friends: [
 ]
 
 
+math:
+  enable: true
+  engine: mathjax
+
 #Custom Setting End
-
-
 
 # Directory
 source_dir: source
@@ -109,12 +101,13 @@ public_dir: public
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
+photography_dir: photography
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
 
 # Writing
-new_post_name: :title.md # File name of new posts
+new_post_name: :year-:month-:day-:title.md # File name of new posts
 default_layout: post
 titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
@@ -130,16 +123,8 @@ highlight:
   tab_replace:
 
 # Category & Tag
-default_category: article
+default_category: uncategorized
 category_map:
-  Docker: docker
-  Golang: golang
-  Nginx: nginx
-  Linux: linux
-  Mobx: mobx
-  Electron: electron
-  Sass: sass
-
 tag_map:
 home_posts_tag: true # show posts tags
 
@@ -152,7 +137,7 @@ time_format: HH:mm:ss
 
 # Pagination
 ## Set per_page to 0 to disable pagination
-per_page: 12
+per_page: 15
 pagination_dir: archives
 
 archive_generator:
@@ -174,61 +159,92 @@ markdown:
   
 # Extensions
 ## Plugins: https://hexo.io/plugins/
-
-# recommended-posts
-# reference: https://github.com/huiwang/hexo-recommended-posts
-# recommended_posts:
-#   server: https://api.truelaurel.com #后端推荐服务器地址
-#   timeoutInMillis: 10000 #服务时长，超过此时长，则使用离线推荐模式
-#   internalLinks: 3 #内部文章数量
-#   externalLinks: 0 #外部文章数量
-#   autoDisplay: true, #自动在文章底部显示推荐文章
-#   titleHtml: <h2>推荐文章<span style="font-size:0.45em; color:gray"></span></h2> #自定义标题
-
-# hexo-tag-aplayer
-# reference: https://github.com/MoePlayer/hexo-tag-aplayer
-# aplayer:
-#   meting: true
-
-# MeingJS support for Aplayer
-# reference: https://github.com/metowolf/MetingJS & https://github.com/MoePlayer/APlayer
-metingjs: true
-data-id: 3147590894
-data-server: netease  
-data-type: playlist
-data-fixed: true
-  # data-mini:
-  # data-autoplay:    
-
-# Reward
-reward: false
-reward_comment: 赞赏一下
-wechatpay: wechatpay_url
-alipay: alipay_url
-
-# Share
-# Reference: https://github.com/overtrue/share.js
-share: true
-
-# Reference: https://github.com/YuyingWu/hexo-generator-index-plus
-index_generator_plus:
-  path: ''
-  per_page: 12
-
 ## Themes: https://hexo.io/themes/
-theme: huweihuang
+theme: snail
 
 #sitemap
 sitemap:
   path: sitemap.xml
+## Baidusitemap
+baidusitemap:
+path: baidusitemap.xml
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
-# repository: https://github.com/huweihuang/xxxxxxx.github.io.git
-# branch: master
 deploy:
   type: git
   # repository: https://github.com/NoJsJa/blogs
   repository: https://gitee.com/nojsjaOSC/blogs
   branch: master
   message: update
+
+## share
+share: true
+
+# Comment
+## This comment system is gitment
+## gitment url: https://github.com/imsun/gitment
+comment:
+  gitment:
+    enable: false
+    owner:
+    repo:
+    client_id:
+    client_secret:
+  livere:
+    enable: false
+  disqus:
+    enable: false
+    username:
+
+## music
+### netease; qqkg;
+### if your `library` is `qqkg`, please set `music` as the song url
+music:
+  enable: false
+  library: netease
+  music: https://kg.qq.com/node/play?s=7deFpz7Z26Jmv7di&g_f=share_html
+
+# Tip
+tip:
+  enable: true
+  copyright: Copyright © NoJsJa 2020
+  content: false
+
+# Background effects
+## If there is no effect after modification, please empty the cache and try again.
+## ⚠️ The following special effects will take up a lot of cpu resorces, please open it carefully.
+bg_effects:
+  enable: true
+  line:
+    enable: false
+    color: 129,200,61
+    pointColor: 129,200,61
+    opacity: 0.7
+    zIndex: -9
+    count: 99
+  mouse_click:
+    enable: false
+    content: '"🌱","just do it","🍀"'
+    color: '"rgb(121,93,179)"
+          ,"rgb(76,180,231)"
+          ,"rgb(184,90,154)"'
+  wave:
+    enable: true
+
+# Color Theme
+## light , dark or star
+## If you set the value of the `color_theme` to `dark`, set the value of the `highlight_theme` to `night` in `/theme/snail/config.yml`
+## `mouse_control` is only valid for star themes
+color_theme: light
+mouse_control: false
+
+# Visitor statistics
+visitor:
+  enable: false
+  type:
+
+# Chinese Blog
+chinese_blog:
+  enable: false
+  url: YOUR_CHINESE_BLOG_URL

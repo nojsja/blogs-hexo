@@ -8,7 +8,7 @@ header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - Ubuntu18.04
 - Linux
-catagories:
+categories:
 - Linux
 updateDate: 2018-04-04 16:30:35
 top: 2

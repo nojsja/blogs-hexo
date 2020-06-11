@@ -1,6 +1,6 @@
 ---
 layout: "tags"
 title: "Tags"
-description: "Hey, this is Tags."
-header-img: "/blogs/img/header_img/tag.png"
+description: "One way to get the most out of life is to look upon it as an adventure."
+header-img: "img/header_img/tag-bg.jpg"
 ---

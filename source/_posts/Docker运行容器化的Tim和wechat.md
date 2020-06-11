@@ -8,7 +8,7 @@ header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - Linux
 - Docker
-catagories:
+categories:
 - Linux
 updateDate: 2018-11-06 19:16:00
 top: 

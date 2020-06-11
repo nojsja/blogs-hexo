@@ -7,7 +7,7 @@ subtitle: "animation javascript"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - Animation
-catagories:
+categories:
 - Javascript
 updateDate: 2018-11-05 01:10:00
 top: 

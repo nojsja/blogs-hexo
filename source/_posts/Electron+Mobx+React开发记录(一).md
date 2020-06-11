@@ -10,7 +10,7 @@ tags:
 - React
 - Mobx
 - Electron
-catagories:
+categories:
 - Mobx
 - Electron
 updateDate: 2019-10-14 16:18:46
