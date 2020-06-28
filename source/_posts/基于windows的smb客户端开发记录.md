@@ -76,67 +76,139 @@ top: 1
 3. 托盘功能的实现
 4. windows安装包打包配置
 
-#### 集群节点管理
+#### 远程共享目录挂载
 
-1. nodejs实现添加节点-ping逻辑  
-使用[ping](https://github.com/danielzzz/node-ping)检测节点是否能联通，然后调用集群ID获取接口对比已经添加集群的ID和待添加集群的ID，判断是否重复添加同一个集群节点。
+1. 通用的命令执行函数(属于Sudo类的一个方法)
 ```js
-/**
-    * addNode [添加节点信息]
-    * @param  {[String]} node [节点名]
-    * @param  {[String]} type [节点类型]
-    * @param  {[String]} defaulted [是否为默认节点]
-    */
-  addNode({ host, type='INFINITY', defaulted=false }) {
-    return new Promise((resolve, reject) => {
-      ping.sys.probe(host, (isAlive) => {
-        let isFound;
-        if (!isAlive) {
-          return resolve({
-            code: 600,
-            result: global.lang.node.node_cannot_be_connected,
-          });
-        }
-        isFound = (this.get('node') || []).find(node => node.host === host);
+  const child = require('child_process');
+  const iconvLite = require('iconv-lite');
+  /**
+   * [exec 执行一个命令]
+   * @param  { [String] }  command    [命令]
+   * @param  { [Array | String] }   params  [参数数组]
+   * @param  { [Object] }  options [exec可定制的参数]
+   * @return { Promise }           [返回Promise对象]
+   */
+  async exec(_command, _params=[], _options={}) {
+    const self = this;
+    const params = Array.isArray(_params) ? _params.join(' ') : _params;
+    const options = (typeof (_options) === 'object') ? _options : {};
+    const command = `${_command} ${params}`;
+    
+    console.log(params, options, command);
 
-        if (isFound) {
-          return resolve({
-            code: 600,
-            result: global.lang.node.node_add_repeat,
-          });
+    return new Promise(async (resolve, reject) => {
+      child.exec(command, {...options, encoding: 'buffer'}, (_err, _stdout, _stderr) => {
+        if (_err) {
+          reject(_err);
+        } else if (_stderr && _stderr.toString()) {
+          reject(iconvLite.decode(_stderr,'cp936'));
+        } else {
+          resolve(iconvLite.decode(_stdout,'cp936'));
         }
-        this.getClusterID({ host }).then((rsp) => {
-          if (rsp.code === 200) {
-            if (rsp.result.isExit) {
-              resolve({
-                code: 600,
-                result: global.lang.node.node_add_repeat_cluster,
-              });
-            } else {
-              this.update('node', { host }, { host, type, defaulted, id: rsp.result.id }).then(() => {
-                resolve({
-                  code: 200,
-                  result: host
-                });
-              });
-            }
-          } else {
-            resolve(rsp);
-          }
-        });
-      })
-    })
+      });
+    });
   }
 
 ```
 
-2. 
+2. 获取空闲盘符和已经挂载盘符
+```js
+/**
+    * getSystemDriveLetter [获取系统已经挂载的磁盘]
+    * @return {[Array]} [盘符列表]
+    */
+  getSystemDriveLetter() {
+    return new Promise((resolve) => {
+      // cp.output.stdout.on('data', (d) => {
+      //   console.log('out', d.toString());
+      // })
+      // cp.output.stderr.on('data', () => {
+      //   console.log('err', d.toString());
+      // });
+      this.sudo.exec('fsutil fsinfo drives', [], { encoding: 'buffer' }).then((stdout) => {
+        // const driverstr = (iconvLite.decode(stdout,'cp936')); 
+        const driverstr = stdout;
+        const driverstrArr = driverstr.split(' ').filter(s => s !== os.EOL).map(s => s.replace('\\', ''));
+        const allDrivers = [
+          'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:',
+          'M:', 'N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:',
+          'W:', 'X:', 'Y:', 'Z:'
+        ];
+        driverstrArr.shift();
+        resolve({
+          code: 200,
+          result: {
+            mounted: driverstrArr,
+            available: allDrivers.filter(d => !driverstrArr.includes(d.toLocaleUpperCase()))
+          },
+        })
+      }, (err) => {
+        console.error(err);
+        resolve({
+          code: 600,
+          result: err,
+        });
+      });
+    })
+  }
+```
 
-#### 集群用户登录
+2. 通过UNC命令对远程共享进行挂载
+```js
+/* 挂载共享 */
+_mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
+    const pwd = global.ipcMainProcess.userModel.get('last.pwd');
+    const { isThirdUser, nickname, isLocalUser, username } = global.ipcMainProcess.userModel.info;
+    const commandUseIPC = `net use \\\\${host}\\ipc$ "${pwd}" /user:"${username}"`;
+    const commandMount = `net use ${driver} \\\\${host}\\${path} "${pwd}" /user:"${username}"`;
+    const commandUmount = `net use ${driver} /del /y`;
 
-#### 远程共享目录挂载
+    return new Promise((resolve, reject) => {
+      // 获取系统已经挂载的磁盘和空闲的磁盘
+      this.getSystemDriveLetter()
+        .then((rsp) => {
+          if (rsp.code === 200) {
+            if (rsp.result.mounted.includes(driver.toLocaleUpperCase())) {
+              throw new Error(global.lang.node.driver_already_mount);
+            }
+          } else {
+            throw new Error(global.lang.node.get_system_mount_info_failed);
+          }
+        })
+        // 尝试UNC连接
+        .then(() => {
+          return this.sudo.exec(commandUseIPC);
+        })
+        // 执行挂载命令
+        .then(() => {
+          return this.sudo.exec(commandMount);
+        })
+        // 更新数据
+        .then(() => {
+          return this.update('mountPoint', { username, host, path }, {
+            username, host, path, driver, auto
+          });
+        }).then((rsp) => {
+          resolve({
+            code: 200,
+            result: {
+              username, host, driver
+            },
+          });
+        }).catch((err) => {
+          console.error(err, err.toString());
+          resolve({
+            code: 600,
+            result: global.lang.node.net_mount_failed_reason,
+          });
+        });
+    });
+  }
+```
 
 #### 文件上传管理
+
 
 ### 总结
 --------
