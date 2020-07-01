@@ -69,50 +69,160 @@ top: 1
 ### 实现难点
 -----------
 
-#### 公共部分
+#### 多语言功能实现
 
-1. 多语言功能实现
-2. 窗口大小动态记忆的实现
-3. 托盘功能的实现
-4. windows安装包打包配置
+总体逻辑是通过配置文件或参数声明引入某个语言目录下的所有语言配置文件即可，注意每次更改语言后将lang配置写入文件，下次启动应用时读取文件配置然后调用下面声明的方法加载语言文件即可。
 
-#### 远程共享目录挂载
+![lang](../img/article/electron-lang.png)
 
-1. 通用的命令执行函数(属于Sudo类的一个方法)
+```js
+const fs = require('fs');
+const path = require('path');
+const { app } = require('electron');
+
+/**
+ * global.lang -- 内存里保存的所有语言数据
+ * global.LANG -- 语言数据标识(en_us, zh_cn, zh_tw)
+ * session.lang -- 在session里保存一份语言数据标识，防止用户cookie丢失时语言设置失效(session 持久化)
+ * cookie.lang -- 保存在客户端的语言数据标识，session.lang和cookie.lang保持同步
+ */
+const lang = (function lang() {
+  const defaultLang = 'zh_CN';
+
+  /* ------------------- 获取统一的语言环境标识 ------------------- */
+  const getLANG = (acceptLang) => {
+    // 英语
+    if (['en-US', 'en', 'en-us', 'en_us', 'en_US'].indexOf(acceptLang) !== -1) {
+      return 'en_us';
+    }
+    // 中文简体
+    if (['zh-CN', 'zh', 'zh-cn', 'zh_cn', 'zh_CN'].indexOf(acceptLang) !== -1) {
+      return 'zh_cn';
+    } if (['zh-TW', 'zh-tw', 'zh_tw', 'zh_TW'].indexOf(acceptLang) !== -1) {
+      return 'zh_tw';
+    // 默认中文简体
+    }
+    return 'zh_cn';
+  };
+
+  /* ------------------- 加载语言文件 ------------------- */
+  const setLang = (langEnv) => {
+    global.lang = global.lang ? global.lang : {};
+    global.LANG = langEnv;
+
+    // 读取文件夹的语言配置文件写入全局配置
+    fs.readdir(path.join(app.getAppPath(), 'app/lang', langEnv), (err, files) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      files.forEach((file) => {
+        global.lang[path.basename(file)] = require(path.join(app.getAppPath(), 'app/lang', langEnv, file));
+      });
+    });
+  };
+
+  return (acceptLang) => {
+    const _lang = getLANG(acceptLang || defaultLang);
+    if (global.LANG && global.LANG == _lang) {
+      return;
+    }
+    // 设置目前的语言环境
+    setLang(_lang);
+  };
+}());
+
+module.exports = lang;
+
+```
+
+#### 窗口大小动态记忆的实现
+
+#### 托盘功能的实现
+
+#### Node执行操作系统命令
+
+1. 通用的系统命令执行函数(日志输出阻塞版本)  
+使用Node.js的`child_process.exec`函数衍生 shell，然后在 shell 中执行 command，会在命令执行完成之后将所有信息输出到控制台。
+
 ```js
   const child = require('child_process');
-  const iconvLite = require('iconv-lite');
   /**
-   * [exec 执行一个命令]
+   * [exec 执行一个命令，阻塞输出信息到控制台]
    * @param  { [String] }  command    [命令]
    * @param  { [Array | String] }   params  [参数数组]
    * @param  { [Object] }  options [exec可定制的参数]
    * @return { Promise }           [返回Promise对象]
    */
-  async exec(_command, _params=[], _options={}) {
-    const self = this;
+exports.exec = (_command, _params=[], _options={}) => {
+  const params = Array.isArray(_params) ? _params.join(' ') : _params;
+  const options = (typeof (_options) === 'object') ? _options : {};
+  const command = `${_command} ${params}`;
+  
+  console.log(params, options, command);
+
+  return new Promise((resolve, reject) => {
+    child.exec(command, options, (_err, _stdout, _stderr) => {
+      if (_err) {
+        exports.console_log(_err, 'red');
+        resolve({code: 1, result: _err});
+      } else if (_stderr && _stderr.toString()) {
+        exports.console_log(_stderr, 'red');
+        resolve({code: 1, result: _stderr});
+      } else {
+        console.log(_stdout);
+        resolve({code: 0, result: _stdout});
+      }
+    });
+  });
+}
+```
+
+2. 通用的系统命令执行函数(日志同步输出版本)  
+使用Node.js的`child_process.exec`函数衍生 shell，然后在 shell 中执行 command，所有控制台日志会同步输出。
+
+```js
+  const child = require('child_process');
+  /**
+   * [execRealtime 执行一个命令，实时输出信息到控制台]
+   * @param  { [String] }  command    [命令]
+   * @param  { [Array | String] }   params  [参数数组]
+   * @param  { [Object] }  options [exec可定制的参数]
+   * @return { Promise }           [返回Promise对象]
+   */
+  exports.execRealtime = (_command, _params=[], _options={}) => {
     const params = Array.isArray(_params) ? _params.join(' ') : _params;
     const options = (typeof (_options) === 'object') ? _options : {};
     const command = `${_command} ${params}`;
+    let data = '', error = '';
     
     console.log(params, options, command);
+  
+    return new Promise((resolve, reject) => {
+      const result = child.exec(command, options);
+      
+      result.stdout.on('data', (data) => {
+        exports.console_log(data, 'white');
+        data += `${data}`;
+      });
 
-    return new Promise(async (resolve, reject) => {
-      child.exec(command, {...options, encoding: 'buffer'}, (_err, _stdout, _stderr) => {
-        if (_err) {
-          reject(_err);
-        } else if (_stderr && _stderr.toString()) {
-          reject(iconvLite.decode(_stderr,'cp936'));
-        } else {
-          resolve(iconvLite.decode(_stdout,'cp936'));
-        }
+      result.stderr.on('data', (data) => {
+        exports.console_log(data, 'red');
+        error += `${data}`;
+      });
+
+      result.on('close', (code) => {
+        resolve({code, result: data, error});
       });
     });
   }
-
 ```
 
-2. 获取空闲盘符和已经挂载盘符
+
+#### 远程共享目录挂载
+
+
+1. 获取空闲盘符和已经挂载盘符
 ```js
 /**
     * getSystemDriveLetter [获取系统已经挂载的磁盘]
@@ -209,6 +319,7 @@ _mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
 
 #### 文件上传管理
 
+#### windows安装包自动化打包配置
 
 ### 总结
 --------
