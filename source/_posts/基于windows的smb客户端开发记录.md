@@ -18,6 +18,8 @@ top: 1
 ---------------
 最近拿到一个客户需求，需要利用现有部分后台接口和原生smb协议来实现一个windows平台的smb客户端，主要功能需要包含：存储集群节点管理、集群用户登录、远程共享目录挂载、共享目录浏览、目录权限设置、文件上传管理，其中目录权限设置和目录浏览接口已经被提供，其余几个功能的electron代码和web端代码需要由我负责。考虑整个项目由前端同事来实现且数据存储量较小、数据关系不复杂，所以技术选型方面使用了支持跨平台的Electron框架和易用的的本地json数据库[lowdb](https://github.com/typicode/lowdb)。
 
+项目精简版[DEMO]展示(https://github.com/NoJsJa/electron-react-template)
+
 ### 功能需求
 ---------------
 
@@ -136,9 +138,63 @@ module.exports = lang;
 
 ```
 
-#### 窗口大小动态记忆的实现
-
 #### 托盘功能的实现
+
+使用Electron的Tray创建托盘菜单，Menu.buildFromTemplate方法创建菜单子项以及对应的事件回调函数。
+
+```js
+contextMenu() {
+    global.appTray = new Tray(path.join(app.getAppPath(), os.type() === 'Windows_NT' ? `resources/icon_${this.envConf.work_env}.ico` : 'resources/mac_tray.png'));
+    const menu = Menu.buildFromTemplate( [
+      {
+          label: global.lang.public.quit,
+          type: 'normal',
+          click: () => {
+            this.sendToWeb('upload', {action: 'getUploadingTask'});
+            ipcMainProcess.ipc.once('upload-getUploadingTask', (event, rsp) => {
+              if (rsp.code === 200) {
+
+                  global.ipcMainWindow.sendToWeb('shell', { action: 'upload-clear' });
+                  .then(() => {
+                    global.appTray.destroy();
+                    app.quit();
+                  }).catch(() => {
+                    global.ipcMainProcess.notifySend({
+                      body: global.lang.public['data_write_failed_before_quit']
+                    });
+                  });
+                };
+                
+                if (rsp.result !== 0) {
+                  const buttonId = dialog.showMessageBoxSync(this.windowoptions, {
+                    defaultId: 0,
+                    buttons: ['No', 'Yes'],
+                    type: 'info',
+                    title: global.lang.public.tips,
+                    message: global.lang.upload.app_quit_tips
+                  });
+                  if (buttonId === 1) quitApp();
+                } else {
+                  quitApp();
+                }
+                
+              } else {
+                global.ipcMainProcess.notifySend({
+                  body: rsp.result
+                });
+              }
+            });
+          }
+        }
+    ]);
+
+    global.appTray.on('click', ()=>{    
+      this.window.show();
+    });
+    global.appTray.setToolTip('RninoDisk');
+    global.appTray.setContextMenu(menu);
+  }
+```
 
 #### Node执行操作系统命令
 
@@ -147,7 +203,7 @@ module.exports = lang;
 
 ```js
   const child = require('child_process');
-  /**
+/**
    * [exec 执行一个命令，阻塞输出信息到控制台]
    * @param  { [String] }  command    [命令]
    * @param  { [Array | String] }   params  [参数数组]
@@ -155,8 +211,8 @@ module.exports = lang;
    * @return { Promise }           [返回Promise对象]
    */
 exports.exec = (_command, _params=[], _options={}) => {
-  const params = Array.isArray(_params) ? _params.join(' ') : _params;
-  const options = (typeof (_options) === 'object') ? _options : {};
+  const params = Array.isArray(_params) ? _params.join(' ') : '';
+  const options = (String(_params) === '[object Object]') ? _params : (_options);
   const command = `${_command} ${params}`;
   
   console.log(params, options, command);
@@ -191,8 +247,8 @@ exports.exec = (_command, _params=[], _options={}) => {
    * @return { Promise }           [返回Promise对象]
    */
   exports.execRealtime = (_command, _params=[], _options={}) => {
-    const params = Array.isArray(_params) ? _params.join(' ') : _params;
-    const options = (typeof (_options) === 'object') ? _options : {};
+    const params = Array.isArray(_params) ? _params.join(' ') : '';
+    const options = (String(_params) === '[object Object]') ? _params : (_options);
     const command = `${_command} ${params}`;
     let data = '', error = '';
     
@@ -216,11 +272,10 @@ exports.exec = (_command, _params=[], _options={}) => {
       });
     });
   }
+
 ```
 
-
 #### 远程共享目录挂载
-
 
 1. 获取空闲盘符和已经挂载盘符
 ```js
@@ -230,14 +285,7 @@ exports.exec = (_command, _params=[], _options={}) => {
     */
   getSystemDriveLetter() {
     return new Promise((resolve) => {
-      // cp.output.stdout.on('data', (d) => {
-      //   console.log('out', d.toString());
-      // })
-      // cp.output.stderr.on('data', () => {
-      //   console.log('err', d.toString());
-      // });
       this.sudo.exec('fsutil fsinfo drives', [], { encoding: 'buffer' }).then((stdout) => {
-        // const driverstr = (iconvLite.decode(stdout,'cp936')); 
         const driverstr = stdout;
         const driverstrArr = driverstr.split(' ').filter(s => s !== os.EOL).map(s => s.replace('\\', ''));
         const allDrivers = [
@@ -318,6 +366,20 @@ _mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
 ```
 
 #### 文件上传管理
+
+前端界面沿用之前的对象存储文件上传管理逻辑[基于s3对象存储多文件分片上传的Javascript实现(一)](https://nojsjaosc.gitee.io/blogs/2020/03/07/%E5%9F%BA%E4%BA%8Es3%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E5%A4%9A%E6%96%87%E4%BB%B6%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E7%9A%84Javascript%E5%AE%9E%E7%8E%B0-%E4%B8%80/)，不同的地方是加入了`历史任务`功能用于持久化文件上传任务记录功能，失败的任务能在历史任务中重新启动。由于smb简单文件上传协议不支持文件分片管理功能，所以前端界面的上传进度获取和上传速度计算均是基于 Node.js 的 FS API实现，整体流程是：使用Windows UNC命令连接后端共享，然后可以像访问本地文件系统一样访问远程一个共享路径，比如`\\[host]\[sharename]\file1`，这样子文件上传就变成本地目录文件的复制、删除、重命名了。
+
+整个上传流程完全模拟了aws对象存储的逻辑：
+
+1. 页面调用init请求附带上选中的文件信息初始化一个文件上传任务
+2. Node.js拿到init请求附带的文件信息后，将所有信息存入临时存放在内存中的文件上传列表，并尝试打开待上传文件的文件描述符用于即将开始的文件切片分段上传工作
+3. 页面拿到init请求成功的回调后，存储返回的上传任务ID，并将该文件加入文件待上传队列，在合适的时机开始上传，开始上传的时候向Node.js端发送upload请求，同时请求附带上任务ID和当前的分片索引值(表示需要上传第几个文件分片)
+4. Node.js拿到upload请求后根据携带的任务ID读取内存中的上传任务信息，然后使用第二步打开的文件描述符和分片索引对本地磁盘中的目标文件进行分片切割，最后使用FS API将分片递增写入目标位置
+5. upload请求成功后页面判断是否已经上传完所有分片，如果完成则向Node.js发送complete请求，同时携带上任务ID
+6. Node.js根据任务ID获取文件信息，关闭文件描述符，更新文件上传状态
+7. 界面上传任务列表清空后，向后端发送sync请求，用于把当前任务同步到历史任务中，表明当前所有任务已经完成
+8. Node.js拿到sync请求后，把内存中存储的所有文件上传信息写入磁盘，同时释放内存占用
+
 
 #### windows安装包自动化打包配置
 
