@@ -117,18 +117,19 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
         speed: '0 MB/S',
         id: encodeURIComponent(new Date() + file.name + file.type + file.size),
       };
-      this.taskType.uninitial.push(file);
-      this.taskType.series.push(file);
       const obj = observable(fileObj);
+      this.taskType.uninitial.push(obj);
+      this.taskType.series.push(obj);
       if (!this.fileStorage.get(region)) {
         this.fileStorage.set(region, [obj]);
       } else {
         this.fileStorage.get(region).push(obj);
       }
-      this.fileStorageMap.set(file, obj);
+      // this.fileStorageMap.set(file, obj);
     });
     this.loading = false;
   }
+}
 ```
 
 3. startTasks  
@@ -140,6 +141,7 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
    */
   startTasks = (region) => {
     // 根据空闲任务类型和空闲任务并发限制开启空闲任务
+    // let storageObject;
     this.refreshTasks(region);
     if (this.isUploadListEmpty(region)) return;
 
@@ -147,8 +149,7 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
     const taskSeries = [];
     for (let i = 0; i < (maxLength) && this.taskType.series[i]; i += 1) {
       // const file = this.taskType.series.shift();
-      const file = this.taskType.series[i];
-      const storageObject = this.fileStorageMap.get(file);
+      const storageObject = this.taskType.series[i];
       if (storageObject.state === 'uploading') continue; // 上传中
       if (storageObject.state === 'pause') continue;
       taskSeries.push(storageObject);
@@ -156,42 +157,26 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
 
     let index;
     taskSeries.forEach((storageObject) => {
-      index = this.taskType.series.indexOf(storageObject.file);
+      index = this.taskType.series.indexOf(storageObject);
       index !== -1 && this.taskType.series.splice(index, 1);
-      if (this.taskType.uninitial.includes(storageObject.file)) {
-        this.initRequest(
-          storageObject.file,
-          {
-            bucket: region,
-            object: storageObject.name,
-            prefix: storageObject.prefix,
-          }
-        ).then(({ err, init }) => {
+      if (this.taskType.uninitial.includes(storageObject)) {
+        this.initRequest(storageObject).then(({ err, init }) => {
           if (!err && init) {
-            this.upload(storageObject.file, {
-              bucket: region,
-              object: storageObject.name,
-              prefix: storageObject.prefix,
-              uploadId: storageObject.uploadId,
-            });
+            this.upload(storageObject);
           }
         });
       } else {
-        this.upload(storageObject.file, {
-          bucket: region,
-          object: storageObject.name,
-          prefix: storageObject.prefix,
-          uploadId: storageObject.uploadId,
-        });
+        this.upload(storageObject);
       }
     });
   }
+
 ```
 
 4. refreshTasks  
 根据当前设置的并行上传任务数目和正在上传的任务数目及时从文件预备上传队列提取文件放入上传可调用文件队列。
 ```js
-/* 刷线任务列表 */
+/* 刷新任务列表 */
   @action
   refreshTasks = (region) => {
     // 统计空闲任务
@@ -203,9 +188,8 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
         && (storageObject[i].state === 'pending'
         || storageObject[i].state === 'uninitial')
       ) {
-        const { file } = storageObject[i];
-        if (!this.taskType.series.includes(file)) {
-          this.taskType.series.push(file);
+        if (!this.taskType.series.includes(storageObject[i])) {
+          this.taskType.series.push(storageObject[i]);
         }
       }
     }
@@ -224,38 +208,43 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
    * @param  {[String]}   _params.uploadId [upload id]
    */
   @action
-  upload = (file, _params) => {
-    const storageObject = this.fileStorageMap.get(file);
+  upload = (storageObject) => {
+    let params = {
+      bucket: storageObject.region,
+      object: storageObject.name,
+      prefix: storageObject.prefix,
+      uploadId: storageObject.uploadId,
+    };
     let single = false; // 不分片
     /* 异常状态退出 */
     if (!this.isValidUploadingTask(storageObject)) return;
 
     if (storageObject.state === 'pending') {
-      this.taskType.pending.splice(this.taskType.pending.indexOf(file), 1);
-      this.taskType.uploading.push(file);
+      this.taskType.pending.splice(this.taskType.pending.indexOf(storageObject), 1);
+      this.taskType.uploading.push(storageObject);
       storageObject.state = 'uploading';
     }
 
-
     const num = storageObject.index;
 
-    if (num === 0 && file.size <= storageObject.blockSize) {
+    if (num === 0 && storageObject.size <= storageObject.blockSize) {
       // 不用分片的情况
       single = true;
     } else if (num === storageObject.total) {
       // 所有分片都已经发出
       return;
     }
-    const nextSize = Math.min((num + 1) * storageObject.blockSize, file.size);
-    const fileData = file.slice(num * storageObject.blockSize, nextSize);
-    const params = Object.assign(_params, {
+    const nextSize = Math.min((num + 1) * storageObject.blockSize, storageObject.size);
+    const fileData = storageObject.file.slice(num * storageObject.blockSize, nextSize);
+    params = Object.assign(params, {
       partNumber: num + 1,
     });
     storageObject.activePoint = new Date();
+
     this.uploadRequest({ params, data: fileData, single }).then((rsp) => {
       if (rsp.code !== 200) {
         openNotification('error', null, (rsp.result.data ? rsp.result.data.Code : this.lang.lang.uploadError));
-        this.markError(file);
+        this.markError(storageObject);
         this.startTasks(params.bucket);
         return;
       }
@@ -269,7 +258,7 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
       if (completed) {
         (single ?
           () => {
-            this.complete(file, params.bucket);
+            this.complete(storageObject, params.bucket);
           } :
           (partEtags) => {
             this.completeRequest({
@@ -278,19 +267,13 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
               object: params.object,
               prefix: params.prefix,
               partEtags,
-            }, file);
+            }, storageObject);
           })(etags);
       } else {
-        this.upload(file, {
-          bucket: params.bucket,
-          object: params.object,
-          uploadId: params.uploadId,
-          partNumber: params.partNumber,
-          prefix: params.prefix,
-        });
+        this.upload(storageObject);
       }
     }).catch((error) => {
-      this.markError(file);
+      this.markError(storageObject);
       this.startTasks(params.bucket);
       console.log(`${params.bucket}_${params.object} upload error: ${error}`);
     });
@@ -344,16 +327,16 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
    * @param {[String]} bucket [桶名]
    */
   @action
-  complete = (file, bucket) => {
-    const index = this.taskType.uploading.indexOf(file);
+  complete = (storageObject) => {
+    const index = this.taskType.uploading.indexOf(storageObject);
     this.taskType.uploading.splice(index, 1);
-    this.taskType.break.push(file);
-    const storageObject = this.fileStorageMap.get(file);
+    this.taskType.break.push(storageObject);
     storageObject.completionTime = (new Date().toTimeString()).split(' ')[0];
     storageObject.state = 'break';
+    storageObject.speed = '';
     storageObject.index = storageObject.total;
 
-    this.startTasks(bucket);
+    this.startTasks(storageObject.region);
   };
 
 ```
