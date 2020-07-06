@@ -1,17 +1,5 @@
 # hexo-theme-snail
-[View Live Super Snail Blog →](https://www.dusign.net)
-
-**Light theme preview**
-
-![hexo-theme-snail](snail-light.png)
-
-**Dark theme preview**
-
-![hexo-theme-snail](snail-dark.png)
-
-**Star theme preview**
-
-![hexo-theme-snail](snail-star.png)
+[View Live Super Snail Blog →](https://nojsjaosc.gitee.io/blogs/)
 
 Hexo-theme-snail is a succinct hexo theme. It has two colors, light and star, that can be set according to your own preferences in the settings, and also has the functions of sharing and commenting. More features are under development.
 
@@ -322,7 +310,3 @@ v1.0
 - add star theme
 - add line theme (background effect)
 - add mouse-click effect
-
-## License
-Apache License 2.0 Copyright(c) 2018-2020 [dusign](https://github.com/dusign)   
-[hexo-theme-snail](https://github.com/dusign/hexo-theme-snail) is derived from [hexo-theme-beantech](https://github.com/YenYuHsuan/hexo-theme-beantech) ，thanks [YenYuHsuan](https://github.com/YenYuHsuan).
