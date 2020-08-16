@@ -179,7 +179,7 @@ deploy:
   message: update
 
 ## share
-share: true
+share: false
 
 # Comment
 ## This comment system is gitment

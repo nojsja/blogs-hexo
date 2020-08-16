@@ -16,7 +16,7 @@ top: 1
 
 ### 前言
 ---------------
-最近拿到一个客户需求，需要利用现有部分后台接口和原生smb协议来实现一个windows平台的smb客户端，主要功能需要包含：存储集群节点管理、集群用户登录、远程共享目录挂载、共享目录浏览、目录权限设置、文件上传管理，其中目录权限设置和目录浏览接口已经被提供，其余几个功能的electron代码和web端代码需要由我负责。考虑整个项目由前端同事来实现且数据存储量较小、数据关系不复杂，所以技术选型方面使用了支持跨平台的Electron框架和易用的的本地json数据库[lowdb](https://github.com/typicode/lowdb)。
+最近拿到客户需求，需要利用现有存储产品部分后台接口和原生smb协议来实现一个windows平台的smb客户端，主要功能需要包含：存储集群节点管理、集群用户登录、远程共享目录挂载、共享目录浏览、目录权限设置、文件上传管理，其中目录权限设置和目录浏览接口已经被提供，其余几个功能的electron代码和web端代码需要由我负责。考虑整个项目由前端同事来实现且数据存储量较小、数据关系不复杂，所以技术选型方面使用了支持跨平台的Electron框架和易用的的本地json数据库[lowdb](https://github.com/typicode/lowdb)。
 
 项目精简版[DEMO]展示(https://github.com/NoJsJa/electron-react-template)
 
@@ -59,7 +59,7 @@ top: 1
 #### 文件上传管理
 
 1. 文件上传管理能够查看当前任务列表的任务详情，包含上传速度、上传时间、完成时间、文件大小、文件名称，勾选进行中的任务后能够进行暂停、重传、删除、续传等操作。
-2. 在任务列表的所有文件都被上传后会进行一次历史任务。
+2. 在任务列表的所有文件都被上传后会进行一次历史任务同步，把内存中的任务列表状态写入文件中。
 3. 任务历史记录中可以进行删除任务记录、恢复上传错误的历史任务(重传)等操作。
 4. 切换不同节点重新登录用户上传任务不受影响，在当前节点重新登录用户上传任务会被强制终止，退出客户端后上传任务会被强制终止，各个用户的上传任务列表均不相同互不干扰，所有被强制终止的任务都能从历史任务列表中中恢复。
 
@@ -367,18 +367,23 @@ _mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
 
 前端界面沿用之前的AWS对象存储文件上传管理逻辑[基于s3对象存储多文件分片上传的Javascript实现(一)](https://nojsjaosc.gitee.io/blogs/2020/03/07/%E5%9F%BA%E4%BA%8Es3%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E5%A4%9A%E6%96%87%E4%BB%B6%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E7%9A%84Javascript%E5%AE%9E%E7%8E%B0-%E4%B8%80/)，不同的地方是加入了`历史任务`功能用于持久化文件上传任务记录功能，失败的任务能在历史任务中重新启动。由于smb简单文件上传协议不支持文件分片管理功能，所以前端界面的上传进度获取和上传速度计算均是基于 Node.js 的 FS API实现，整体流程是：使用Windows UNC命令连接后端共享，然后可以像访问本地文件系统一样访问远程一个共享路径，比如`\\[host]\[sharename]\file1`，这样子文件上传就变成本地目录文件的复制、删除、重命名了。
 
+下图为前端界面的上传逻辑示意图：
+![upload](/blogs/img/article/shards_upload.jpg)
+
 ##### 上传流程描述
 
-1） 页面调用init请求附带上选中的文件信息初始化文件上传任务  
-2） Node.js拿到init请求附带的文件信息后，将所有信息存入临时存放在内存中的文件上传列表中，并尝试打开待上传文件的文件描述符用于即将开始的文件切片分段上传工作  
-3） 页面拿到init请求成功的回调后，存储返回的上传任务ID，并将该文件加入文件待上传队列，在合适的时机开始上传，开始上传的时候向Node.js端发送upload请求，同时请求附带上任务ID和当前的分片索引值(表示需要上传第几个文件分片)  
-4） Node.js拿到upload请求后根据携带的任务ID读取内存中的上传任务信息，然后使用第二步打开的文件描述符和分片索引对本地磁盘中的目标文件进行分片切割，最后使用FS API将分片递增写入目标位置  
-5） upload请求成功后页面判断是否已经上传完所有分片，如果完成则向Node.js发送complete请求，同时携带上任务ID  
-6） Node.js根据任务ID获取文件信息，关闭文件描述符，更新文件上传状态  
-7） 界面上传任务列表清空后，向后端发送sync请求，用于把当前任务同步到历史任务中，表明当前所有任务已经完成  
-8） Node.js拿到sync请求后，把内存中存储的所有文件上传列表信息写入磁盘，同时释放内存占用，完成一次列表任务上传。  
+1) 页面上使用`<Input />`组件拿到FileList对象(Electron环境下拿到的File对象会额外附加一个`path`属性指明文件位于系统的绝对路径)  
+2) 缓存拿到的FileList，等待点击上传按钮后开始读取FileList列表并生成自定义的File文件对象数组用于存储上传任务列表信息  
+3）页面调用init请求附带上选中的文件信息初始化文件上传任务  
+4）Node.js拿到init请求附带的文件信息后，将所有信息存入临时存放在内存中的文件上传列表中，并尝试打开待上传文件的文件描述符用于即将开始的文件切片分段上传工作  
+5）页面拿到init请求成功的回调后，存储返回的上传任务ID，并将该文件加入文件待上传队列，在合适的时机开始上传，开始上传的时候向Node.js端发送upload请求，同时请求附带上任务ID和当前的分片索引值(表示需要上传第几个文件分片)  
+6）Node.js拿到upload请求后根据携带的任务ID读取内存中的上传任务信息，然后使用第二步打开的文件描述符和分片索引对本地磁盘中的目标文件进行分片切割，最后使用FS API将分片递增写入目标位置  
+7）upload请求成功后页面判断是否已经上传完所有分片，如果完成则向Node.js发送complete请求，同时携带上任务ID  
+8）Node.js根据任务ID获取文件信息，关闭文件描述符，更新文件上传状态  
+9）界面上传任务列表清空后，向后端发送sync请求，用于把当前任务同步到历史任务中，表明当前所有任务已经完成  
+10）Node.js拿到sync请求后，把内存中存储的所有文件上传列表信息写入磁盘，同时释放内存占用，完成一次列表任务上传  
 
-##### Node.js端的部分关键处理代码
+##### Node.js(Electron)端的部分关键代码
 
 1. 初始化一个上传任务
 ```js
@@ -417,14 +422,12 @@ _mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
         })
         .then((rsp) => {
           if (rsp.code === 200) {
-            size = rsp.result.size;
-
             // 临时存储文件上传信息在内存中
             return this._setUploadRecordsInMemory({
               username,
               host,
               filename: path.join(prefix, file.name),
-              size,
+              size: file.size,
               fragsize,
               sharename,
               abspath,
@@ -571,7 +574,7 @@ _mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
     })
   }
 ```
-4. 其它-文件分片读取管理工厂
+4. 文件分片读取管理工厂
 文件初始化的时候调用`open`方法临时存储文件描述符和文件绝对路径的映射关系；文件上传的时候调用`read`方法根据文件读取位置、读取容量大小进行分片切割；文件上传完成的时候关闭文件描述符；
 
 ```js
@@ -585,42 +588,36 @@ exports.readFileBlock = () => {
 
   return {
     /* 打开文件描述符 */
-    open: (path, minSize=1024*2) => {
+    open: (path, size, minSize=1024*2) => {
       return new Promise((resolve) => {
         try {
-          fs.stat(path, (err, { size }) => {
-            if (err) throw new Error(err.toString());
-            // 小文件不打开文件描述符，直接读取写入
-            if (size <= minSize) {
-              smallFileMap[path] = true;
-              console.log('min', size);
-              return resolve({
+          // 小文件不打开文件描述符，直接读取写入
+          if (size <= minSize) {
+            smallFileMap[path] = true;
+            return resolve({
+              code: 200,
+              result: {
+                fd: null
+              }
+            });
+          }
+          // 打开文件描述符，建议绝对路径和fd的映射关系
+          fs.open(path, 'r', (err, fd) => {
+            if (err) {
+              console.trace(err);
+              resolve({
+                code: 601,
+                result: err.toString()
+              });
+            } else {
+              fdStore[path] = fd;
+              resolve({
                 code: 200,
                 result: {
-                  fd: null,
-                  size,
+                  fd: fdStore[path]
                 }
               });
             }
-            // 打开文件描述符，建议绝对路径和fd的映射关系
-            fs.open(path, 'r', (err, fd) => {
-              if (err) {
-                console.trace(err);
-                resolve({
-                  code: 601,
-                  result: err.toString()
-                });
-              } else {
-                fdStore[path] = fd;
-                resolve({
-                  code: 200,
-                  result: {
-                    fd: fdStore[path],
-                    size: size,
-                  }
-                });
-              }
-            });
           });
         } catch (err) {
           console.trace(err);
@@ -670,7 +667,7 @@ exports.readFileBlock = () => {
         }
       });
     },
-    
+
     /* 关闭文件描述符 */
     close: (path) => {
       return new Promise((resolve) => {
@@ -706,7 +703,31 @@ exports.readFileBlock = () => {
 
 #### windows安装包自动化打包配置
 
-windows安装包使用electron nsis配置，注意使用`.ico`格式的应用图标以免打包失败，package.json中的`build.files`字段声明了需要打包的所有文件，`build.win`是windows平台的打包配置，`build.nsis`是nsis打包的详细配置，运行`npm run build-win`即可开始win平台的Electron App打包，由于整个打包流程包含web打包和electron打包，使用Node.js编写了通用打包脚本[项目build.js](https://github.com/NoJsJa/electron-react-template/blob/master/build.js)、[Electron build.js](https://github.com/NoJsJa/electron-react-template/blob/master/server/build.js)对整个流程进行了整合，`项目build.js`兼顾web打包以及调用`Electron build.js`负责Electron App打包，使用`node build.js --help`查看所有打包命令帮助信息。
+windows安装包使用electron nsis配置，注意使用`.ico`格式的应用图标以免打包失败，package.json中的`build.files`字段声明了需要打包的所有文件，`build.win`是windows平台的打包配置，`build.nsis`是nsis打包的详细配置，运行`npm run build-win`即可开始win平台的Electron App打包，由于整个打包流程包含web打包和electron打包，使用Node.js编写了通用打包脚本[项目build.js](https://github.com/NoJsJa/electron-react-template/blob/master/build.js)、[electron build.js](https://github.com/NoJsJa/electron-react-template/blob/master/server/build.js)对整个流程进行了整合，`项目build.js`兼顾web打包以及调用`electron build.js`负责Electron App打包，使用`node build.js --help`查看所有打包命令帮助信息。
+
+__node build.js - -help__
+
+```bash
+description: build command for RhinoDisk.
+    command: node build.js [action] [config]
+    |
+    |
+    |______ param: [--help | -h ] => show usage info.
+    |______ param: [build-win   ] [--edit | --office] => build package for windows, the default conf file is ./server/config.json.
+    |______ param: [build-linux ] [--edit | --office] => build package for linux, the default conf file is ./server/config.json
+    |______ param: [build-mac   ] [--edit | --office] => build package for mac, the default conf file is ./server/config.json
+    |______ param: [build-all   ] [--edit | --office] => build package for all platform, the default conf file is ./server/config.json
+    |______ param: [clean-build ] => clean build directory after build
+    |
+    |______ example1: node build.js build-win
+    |______ example2: node build.js build-linux
+    |______ example3: node build.js build-mac
+    |______ example4: node build.js build-all
+    |______ example5: node build.js build-win --edit
+    |______ example6: node build.js build-win --office
+    |______ example7: node build.js --help
+    |______ example8: node build.js clean-build
+```
 
 __package.json：__
 ```js
@@ -777,3 +798,6 @@ __package.json：__
 
 ### 总结
 --------
+
+第一次把Electron技术应用到实际项目中，踩了挺多坑：render进程和主进程通信的问题、跨平台兼容的问题、多平台打包的问题、窗口管理的问题... 总之获得了很多经验，也整理出了一些通用解决方法。  
+Electron现在应用的项目还是挺多的，是前端同学跨足桌面软件开发领域的又一里程碑，不过需要转换一下思维模式，单纯写前端代码多是处理一些简单的界面逻辑和少量的数据，涉及到文件、系统操作、进程线程、原生交互方面的知识比较少，可以多了解一下计算机操作系统方面的知识、掌握代码设计模式和一些基本的算法优化方面的知识能让你更加胜任Electron桌面软件开发任务！
