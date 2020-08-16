@@ -1,5 +1,5 @@
 ---
-title: "基于Electron的windows平台smb客户端开发记录"
+title: "基于Electron的smb客户端开发记录"
 catalog: true
 toc_nav_num: true
 date: 2020-07-17 15:59:00
@@ -8,7 +8,7 @@ header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - SMB
 categories:
-- client
+- electron
 updateDate: 2020-07-3 15:59:00
 top: 1
 ---
