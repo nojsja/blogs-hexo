@@ -11,7 +11,7 @@ tags:
 categories:
 - Javascript
 updateDate: 2018-10-31 01:15:00
-top: 1
+top:
 ---
 
 ![life is strange](/blogs/img/article/lifeIsStrange.jpg)

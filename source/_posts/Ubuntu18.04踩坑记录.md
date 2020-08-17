@@ -11,7 +11,7 @@ tags:
 categories:
 - Linux
 updateDate: 2018-04-04 16:30:35
-top: 2
+top:
 ---
 
 ![welcome / home](/blogs/img/article/Ubuntu18.04-1.jpg)
