@@ -1,0 +1,111 @@
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+        o = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+      anchors.options = {
+        visible: 'hover',
+        placement: 'left',
+        icon: 'ℬ'
+      };
+      anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+  })
+</script>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+
+<style  type="text/css">
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+      .anchorjs-link{
+          position: absolute;
+          left: -0.75em;
+          font-size: 1.1em;
+          margin-top : -0.1em;
+      }
+  }
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+      .anchorjs-link{
+          position: absolute;
+          left: -0.75em;
+          font-size: 1.1em;
+          margin-top : -0.1em;
+      }
+  }
+
+  .toc-fixed {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+  }
+
+  .toc-normal {
+      width: inherit;
+      line-height: 1em;
+      font-size: 0.9em;
+      float: left;
+      overflow: auto;
+  }
+
+  ::-webkit-scrollbar { width: 8px; } /* Track */ 
+  ::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.3);
+      -webkit-border-radius: 5px; border-radius: 5px;
+  } 
+  /* Handle */ 
+  ::-webkit-scrollbar-thumb {
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      background: rgba(228, 229, 231, 0.6);
+      -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+  }
+  ::-webkit-scrollbar-thumb:window-inactive {
+      background: rgba(228, 229, 231, 0.2);
+  } 
+</style>
+
+<!-- 文章导航条fixed自动定位 -->
+<script type="text/javascript">
+
+  var $toc = $('.toc-article');
+  var $$toc = document.querySelector('.toc-article');
+  var $$tocBar = document.querySelector('#sidebar');
+  var left = $$tocBar.getBoundingClientRect().left;
+  $toc.css('left', left).css('height', window.innerHeight);
+
+  function onResize () {
+    var left = $$tocBar.getBoundingClientRect().left;
+    $toc.css('left', left).css('height', window.innerHeight);
+    scrollCheck();
+  }
+  
+  function scrollCheck() {
+      var rectbase = $$tocBar.getBoundingClientRect();
+      if (rectbase.top <= 0) {
+          (!$toc.hasClass('toc-fixed')) && $toc.addClass('toc-fixed');
+          $toc.hasClass('toc-normal') && $toc.removeClass('toc-normal');
+      } else {
+          $toc.hasClass('toc-fixed') && $toc.removeClass('toc-fixed');
+          (!$toc.hasClass('toc-normal')) && $toc.addClass('toc-normal');
+          ($$toc.scrollTop > 0) && ($$toc.scrollTop = 0);
+      }
+  }
+  
+  if ($$toc.getBoundingClientRect().left !== 0) {
+      $(document).on('scroll', scrollCheck);
+      window.onresize = onResize;
+      scrollCheck();
+  }
+</script>

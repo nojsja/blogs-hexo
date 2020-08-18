@@ -183,19 +183,18 @@ share: false
 
 # Comment
 ## This comment system is gitment
-## gitment url: https://github.com/imsun/gitment
 comment:
-  gitment:
-    enable: false
-    owner:
-    repo:
-    client_id:
-    client_secret:
-  livere:
-    enable: false
-  disqus:
-    enable: false
-    username:
+  valine:
+    enable: true
+    appId: "GkBuqoGrrflHlKeeUT6egSHQ-9Nh9j0Va"
+    appKey: "XJVaEhLbr7dcGs7fas0Livs1"
+    notify: false
+    verify: false
+    visitor: true
+    avatar: 'mm' # Gravatar style : mm/identicon/monsterid/wavatar/retro/hide
+    pageSize: 10
+    placeholder: 'just go go' # Comment Box placeholder
+    background:
 
 ## music
 ### netease; qqkg;
