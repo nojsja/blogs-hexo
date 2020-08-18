@@ -14,7 +14,6 @@ categories:
 - Mobx
 - Electron
 updateDate: 2019-10-14 16:18:46
-top:
 ---
 
 ![Hello World](/blogs/img/article/Fly.jpg)
