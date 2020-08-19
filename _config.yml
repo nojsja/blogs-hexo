@@ -200,7 +200,7 @@ comment:
 ### netease; qqkg;
 ### if your `library` is `qqkg`, please set `music` as the song url
 music:
-  enable: false
+  enable: true
   library: netease
   music: https://kg.qq.com/node/play?s=7deFpz7Z26Jmv7di&g_f=share_html
 
@@ -240,7 +240,7 @@ mouse_control: false
 
 # Visitor statistics
 visitor:
-  enable: false
+  enable: true
   type:
 
 # Chinese Blog
