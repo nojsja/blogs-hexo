@@ -46,6 +46,7 @@ __________
 * Grub2 主题安装
 * Ubuntu18.04 解决下载额外数据文件失败：ttf-mscorefonts-installer
 * Ubuntu18.04 WPS 提示字体缺失的解决方法
+* Ubuntu20.04 使用deepin-screenshot截图后无法粘贴到输入框
 * Ubuntu18.04 更新Gnome版本
 * Win10 + Ubuntu18.04 双系统时间显示不对
 * Ubuntu18.04 安装系统时说明(双硬盘)
@@ -567,6 +568,13 @@ $: sudo mkfontscale
 $: sudo mkfontdir
 # 更新字体缓存
 $: sudo fc-cache
+```
+
+#### Ubuntu20.04 使用deepin-screenshot截图后无法粘贴到输入框
+------------------------------------------------------
+安装`xfce4-clipman`，每次使用深度截图时保证它开启
+```sh
+$: sudo apt install xfce4-clipman
 ```
 
 #### Ubuntu18.04 更新Gnome版本
