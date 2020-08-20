@@ -6,9 +6,8 @@ date: 2020-03-26 16:18:00
 subtitle: "fileupload node fs"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- FileUpload
-- Node
-- FS
+- upload
+- node
 updateDate: 2020-03-26 16:18:00
 categories:
 - Javascript

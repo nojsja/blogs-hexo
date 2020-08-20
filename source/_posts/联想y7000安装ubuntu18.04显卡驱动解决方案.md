@@ -6,8 +6,7 @@ date: 2019-09-29 10:49:00
 subtitle: "y7000 ubuntu18.04"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Linux
-- Ubuntu18.04
+- ubuntu18.04
 categories:
 - Linux
 updateDate: 2019-09-29 10:49:00

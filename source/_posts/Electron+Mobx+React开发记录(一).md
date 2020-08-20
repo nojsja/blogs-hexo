@@ -6,10 +6,10 @@ date:   2019-10-14 16:18:46
 subtitle: "Electron Mobx React"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- ES6
-- React
-- Mobx
-- Electron
+- es6
+- react
+- mobx
+- electron
 categories:
 - Mobx
 - Electron

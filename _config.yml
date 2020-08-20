@@ -173,8 +173,8 @@ path: baidusitemap.xml
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  # repository: https://github.com/NoJsJa/blogs
-  repository: https://gitee.com/nojsjaOSC/blogs
+  repository: https://github.com/NoJsJa/blogs
+  # repository: https://gitee.com/nojsjaOSC/blogs
   branch: master
   message: update
 

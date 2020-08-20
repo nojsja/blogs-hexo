@@ -6,8 +6,8 @@ date: 2018-10-31 01:15:00
 subtitle: "es6 promise"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Promise
-- ES6
+- promise
+- es6
 categories:
 - Javascript
 updateDate: 2018-10-31 01:15:00

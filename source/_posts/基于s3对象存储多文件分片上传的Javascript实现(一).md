@@ -6,9 +6,9 @@ date: 2020-03-07 16:18:00
 subtitle: "aws s3 javascript"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- FileUpload
-- AWS
-- S3
+- upload
+- aws
+- s3
 categories:
 - Javascript
 updateDate: 2020-03-07 16:18:00

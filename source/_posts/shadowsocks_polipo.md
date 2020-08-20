@@ -6,8 +6,8 @@ date:   2018-04-04 16:30:35
 subtitle: "shadowsocks polipo"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Shadowsocks
-- Proxy
+- shadowsocks
+- proxy
 categories:
 - Linux
 updateDate: 2018-04-04 16:30:35

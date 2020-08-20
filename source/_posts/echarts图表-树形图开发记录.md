@@ -6,8 +6,8 @@ date:   2020-03-22 18:24:00
 subtitle: "Echarts Tree"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Echarts
-- React
+- echarts
+- react
 categories:
 - Echarts
 updateDate: 2020-03-22 18:24:00

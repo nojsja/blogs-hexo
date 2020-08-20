@@ -6,8 +6,7 @@ date:  2018-11-06 19:16:00
 subtitle: "animation javascript"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Javascript
-- ES5
+- javascript
 categories:
 - Javascript
 updateDate: 2018-11-06 19:16:00

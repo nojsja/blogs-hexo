@@ -3,12 +3,12 @@ title: "基于Electron的smb客户端开发记录"
 catalog: true
 toc_nav_num: true
 date: 2020-07-17 15:59:00
-subtitle: "smb samba client windows"
+subtitle: "smb samba client"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- SMB
+- smb
 categories:
-- electron
+- Electron
 updateDate: 2020-07-3 15:59:00
 top: 1
 ---

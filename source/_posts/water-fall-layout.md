@@ -6,8 +6,7 @@ date:   2018-04-01 16:01:26
 subtitle: "javascript waterFall"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Javascript
-- WaterFall
+- javascript
 categories:
 - Javascript
 updateDate: 2018-04-01 16:01:26

@@ -6,8 +6,8 @@ date:   2018-04-04 16:30:35
 subtitle: "sass css"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
-- Sass
-- Css
+- sass
+- css
 categories:
 - Sass
 updateDate: 2018-04-04 16:30:35
