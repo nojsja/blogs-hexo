@@ -178,6 +178,8 @@ deploy:
   repository: https://github.com/NoJsJa/blogs
   # repository: https://gitee.com/nojsjaOSC/blogs
   branch: master
+  ignore_hidden:
+    public: false
   message: update
 
 ## share
