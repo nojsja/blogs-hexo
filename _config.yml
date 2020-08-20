@@ -104,6 +104,8 @@ category_dir: categories
 photography_dir: photography
 code_dir: downloads/code
 i18n_dir: :lang
+include:
+- ".github/**/*"
 skip_render:
 
 # Writing
