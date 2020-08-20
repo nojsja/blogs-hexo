@@ -147,6 +147,7 @@ theme: snail
 ```
 
 ### Deployment
+1. config
 ```yml
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -157,6 +158,9 @@ deploy:
       coding: coding.repository.address
   branch: master
 ```
+2. auto deploy
+- [auto deploy reference page](https://github.com/yanglbme/gitee-pages-action/)
+- config file - source/.github/workflows
 
 ### Share
 ```yml

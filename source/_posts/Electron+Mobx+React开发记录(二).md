@@ -2,17 +2,17 @@
 title: "Electron+Mobx+React开发记录(二)"
 catalog: true
 toc_nav_num: true
-date:   2018-10-26 19:43:00
+date:   2018-10-26 20:43:00
 subtitle: "Electron Mobx React"
 header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - es6
 - react
-- bobx
+- mobx
 - electron
 categories:
 - Electron
-updateDate: 2018-10-26 19:43:00
+updateDate: 2018-10-26 20:43:00
 ---
 
 ![Hello World](/blogs/img/article/Fly.jpg)
