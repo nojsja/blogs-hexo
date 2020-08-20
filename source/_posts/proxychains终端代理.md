@@ -49,3 +49,35 @@ ProxyList format
 proxychains wget http://xxx.com/xxx.zip
 proxychains git clone https://xxxxxxxxx.git
 ```
+npm设置http代理：
+```bash
+# 假设本地代理端口为8002
+npm config set proxy http://127.0.0.1:1081
+npm config set https-proxy http://127.0.0.1:1081
+
+# 有用户密码的代理
+npm config set proxy http://username:password@127.0.0.1:1081
+npm confit set https-proxy http://username:password@127.0.0.1:1081
+```
+npm设置socks5代理：
+```bash
+# 假设本地socks5代理端口为1081
+# 首先安装转换工具
+npm install -g http-proxy-to-socks
+# 然后使用这个工具监听8002端口,支持http代理，然后所有8002的http代理数据都将转换成socks的代理数据发送到1081上
+hpts -s 127.0.0.1:1081 -p 8002
+# 最后设置npm代理为8080
+npm config set proxy http://127.0.0.1:8002
+npm config set https-proxy http://127.0.0.1:8002
+```
+
+查看删除代理
+```bash
+npm config get
+  or
+npm config list
+
+npm config delete proxy
+  and
+npm config delete https-proxy
+```
