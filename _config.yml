@@ -45,7 +45,7 @@ ga_domain: yoursite
 
 # Sidebar settings
 sidebar: true                      # whether or not using Sidebar.
-sidebar-about-description: "Stay hungry,Stay foolish"
+sidebar-about-description: "Stay hungry, Stay foolish"
 sidebar-avatar: img/avatar/nojsja.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
 widgets:
 # - search

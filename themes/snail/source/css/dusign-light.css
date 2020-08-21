@@ -23,11 +23,12 @@
   text-decoration: none;
 }
 .sidebar-container a {
+  transition: all .2s;
   color: #8a8a8a !important;
 }
 .sidebar-container a:hover,
 .sidebar-container a:active {
-  color: #578ef4 !important;
+  color: #ff59ac !important;
 }
 .sidebar-container .tags a {
   border-color: #bfbfbf !important;
@@ -35,7 +36,8 @@
 }
 .sidebar-container .tags a:hover,
 .sidebar-container .tags a:active {
-  border-color: #8a8a8a !important;
+  border-color: #ff59ac !important;
+  color: #ff59ac !important;
 }
 
 .sidebar-container .short-about img {
@@ -47,6 +49,8 @@
 .sidebar-container .short-about p {
   margin-top: 0px;
   margin-bottom: 20px;
+  font-weight:600;
+  font-style: italic;
 }
 .sidebar-container .short-about .list-inline > li {
   padding-left: 0px;
@@ -83,7 +87,7 @@ a {
 }
 a:hover,
 a:focus {
-  color: #578ef4;
+  color: #ff59ac;
 }
 a img:hover,
 a img:focus {
@@ -155,12 +159,9 @@ pre code {
   word-wrap: normal;
 }
 .post-container a {
-  color: #337ab7;
+  color: #ff59ac;
 }
-.post-container a:hover,
-.post-container a:focus {
-  color: #578ef4;
-}
+
 .post-container h1,
 .post-container h2,
 .post-container h3,
@@ -221,14 +222,58 @@ pre code {
   margin-top: 20px;
 }
 .post-container .tags a {
-  color: gray;
+  /* color: gray;
   border-color: gray;
+  border-radius: 10%; */
+  display: inline-block;
+  position: relative;
+  padding: 0px 10px;
+  background: #e7e7e7;
+  color: #ff59ac;
+  line-height: 1.5;
+  margin-left: 1em;
+  border-radius: 0;
+  transition: all .2s;
+  font-weight: 600;
 }
-.post-container .tags a:hover,
+
+.post-container .tags a:hover {
+  background: #e7e7e7;
+  color: #ff59ac;
+}
+
+.post-container .tags a::before {
+  position: absolute;
+  content: " ";
+  border: transparent 0.75em solid;
+  border-right-color: transparent;
+  border-right-color: #e7e7e7;
+  top: 0;
+  left: -1.5em;
+  height: 0em;
+  width: 0em;
+}
+
+.post-container .tags a:hover::before {
+  border-right-color:#e7e7e7;
+}
+
+.post-container .tags a::after {
+  position: absolute;
+  content: " ";
+  background: white;
+  width: 0.5em;
+  height: 0.5em;
+  top: 0.5em;
+  left: -0.125em;
+  border-radius: 0.25em;
+}
+
+/* .post-container .tags a:hover,
 .post-container .tags a:active {
-  color: #578ef4;
-  border-color: #578ef4;
-}
+  color: #ff59ac;
+  border-color: #ff59ac;
+} */
 
 @media only screen and (max-width: 767px) {
   .navbar-default .navbar-collapse {
@@ -363,21 +408,21 @@ pre code {
     border-bottom: 1px solid #f2f2f2;
     -webkit-transition: -webkit-transform 0.3s;
     -moz-transition: -moz-transform 0.3s;
-    transition: transform 0.3s;
+    transition: all 0.3s;
   }
   .navbar-custom.is-fixed .navbar-brand {
     color: #404040;
   }
   .navbar-custom.is-fixed .navbar-brand:hover,
   .navbar-custom.is-fixed .navbar-brand:focus {
-    color: #578ef4;
+    color: #ff59ac;
   }
   .navbar-custom.is-fixed .nav li a {
     color: #404040;
   }
   .navbar-custom.is-fixed .nav li a:hover,
   .navbar-custom.is-fixed .nav li a:focus {
-    color: #578ef4;
+    color: #ff59ac;
   }
   .navbar-custom.is-visible {
     /* if the user changes the scrolling direction, we show the header */
@@ -493,18 +538,30 @@ pre code {
 }
 .post-preview > a {
   color: #404040;
+  transition: all .3s;
 }
 .post-preview > a:hover,
 .post-preview > a:focus {
   text-decoration: none;
-  color: #578ef4;
+  /* color: #ff59ac; */
 }
 .post-preview > a > .post-title {
   font-size: 21px;
   line-height: 1.3;
   margin-top: 30px;
   margin-bottom: 8px;
+  border-bottom: solid 1px transparent;
 }
+.post-preview > a > .post-title:hover,
+.post-preview > a > .post-title:focus {
+  /* color: #404040; */
+  text-decoration: underline;
+  text-decoration-color: #ff59ac;
+  /* border-bottom: solid 1px #ff59ac; */
+}
+
+
+
 .post-preview > a > .post-subtitle {
   font-size: 15px;
   line-height: 1.3;
@@ -525,7 +582,7 @@ pre code {
 }
 .post-preview > .post-meta > a:hover,
 .post-preview > .post-meta > a:focus {
-  color: #578ef4;
+  color: #ff59ac;
   text-decoration: underline;
 }
 @media only screen and (min-width: 768px) {
@@ -545,6 +602,8 @@ pre code {
   font-size: 13px;
   font-style: normal;
   color: #a3a3a3;
+  font-weight: 500;
+  transition: all .3s;
 }
 .post-content-preview:hover {
   color: #8a8a8a;
@@ -587,7 +646,7 @@ footer .copyright a {
 }
 footer .copyright a:hover,
 footer .copyright a:focus {
-  color: #578ef4;
+  color: #ff59ac;
 }
 .floating-label-form-group {
   font-size: 14px;
@@ -634,7 +693,7 @@ footer .copyright a:focus {
   opacity: 1;
 }
 .floating-label-form-group-with-focus label {
-  color: #578ef4;
+  color: #ff59ac;
 }
 form .row:first-child .floating-label-form-group {
   border-top: 1px solid #eeeeee;
@@ -656,8 +715,8 @@ form .row:first-child .floating-label-form-group {
 }
 .btn-default:hover,
 .btn-default:focus {
-  background-color: #578ef4;
-  border: 1px solid #578ef4;
+  background-color: #ff59ac;
+  border: 1px solid #ff59ac;
   color: white;
 }
 .pager {
@@ -690,8 +749,8 @@ form .row:first-child .floating-label-form-group {
 .pager li > a:hover,
 .pager li > a:focus {
   color: white;
-  background-color: #578ef4;
-  border: 1px solid #578ef4;
+  background-color: #ff59ac;
+  border: 1px solid #ff59ac;
 }
 .pager .disabled > a,
 .pager .disabled > a:hover,
@@ -704,12 +763,12 @@ form .row:first-child .floating-label-form-group {
 ::-moz-selection {
   color: white;
   text-shadow: none;
-  background: #578ef4;
+  background: #ff59ac;
 }
 ::selection {
   color: white;
   text-shadow: none;
-  background: #578ef4;
+  background: #ff59ac;
 }
 img::selection {
   color: white;
@@ -720,7 +779,7 @@ img::-moz-selection {
   background: transparent;
 }
 body {
-  webkit-tap-highlight-color: #578ef4;
+  webkit-tap-highlight-color: #ff59ac;
 }
 .tags {
   margin-bottom: -5px;
@@ -777,7 +836,7 @@ body {
 #tag_clouds .tag:hover,
 #tag_clouds a:active,
 #tag_clouds .tag:active {
-  background-color: #578ef4 !important;
+  background-color: #ff59ac !important;
 }
 @media only screen and (min-width: 768px) {
   #tag_clouds {
@@ -796,7 +855,7 @@ body {
   margin-top: 0px;
 }
 .listing-seperator {
-  color: #578ef4;
+  color: #ff59ac;
   font-size: 21px !important;
 }
 .listing-seperator::before {
