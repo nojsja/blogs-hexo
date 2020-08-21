@@ -159,7 +159,7 @@ pre code {
   word-wrap: normal;
 }
 .post-container a {
-  color: #ff59ac;
+  color: black;
 }
 
 .post-container h1,
@@ -221,6 +221,13 @@ pre code {
   line-height: 2;
   margin-top: 20px;
 }
+
+.post-container .one-tag-list a:hover,
+.post-container .one-tag-list a:focus {
+   text-decoration: underline;
+   text-decoration-color: #ff59ac;
+}
+
 .post-container .tags a {
   /* color: gray;
   border-color: gray;

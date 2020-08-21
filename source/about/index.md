@@ -14,9 +14,9 @@ comments: false
 
 ### 关于我
 
->一个Coder，喜欢敲代码，喜欢研究技术的，表面上不苟言笑的.
->一个Photograher，喜欢拍照，静物摄影和人像摄影.
->一个Gamer，Xbox One X 我的爱.
+>Coder: 喜欢敲代码，喜欢研究技术的，表面上不苟言笑的.
+>Photograher: 喜欢拍照，静物摄影和人像摄影.
+>Gamer: Xbox One X 我的爱.
 
 ### 兴趣方向
 
