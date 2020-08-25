@@ -409,7 +409,7 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
 ```js
 
 /**
-  * templateStrTranform [模板字符串转换]
+  * templateStrTranform [模板字符串转换，s3接口中可能存在一些动态url参数，比如bucket名和object名，此方法动态替换相关的字符串]
   * params1: {bucket: testBucket, uid: testUid, bucketId: testID}
   * params2: /admin/bucket?format=json&bucket={bucket}&uid={uid}&bucket-id={bucketId}
   * return: /admin/bucket?format=json&bucket=testBucket&uid=testUid&bucket-id=testID
@@ -428,15 +428,6 @@ exports.templateStrTransform = (varObj, templateStr) => {
   }
   return templateStr;
 };
-
-
-/**
-  * templateStrTranform [模板字符串转换，s3接口中可能存在一些动态url参数，比如bucket名和object名，此方法动态替换相关的字符串]
-  * @author nojsja
-  * @param  {[Object]} varObj [替换变量对象]
-  * @param {[String]} templateStr [模板字符串]
-  * @return {[String]} result [模板字符串]
-  */
 
  /**
   * api对象实例：
