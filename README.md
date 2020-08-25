@@ -1,5 +1,5 @@
 # hexo-theme-snail
-[View Live Super Snail Blog →](https://nojsjaosc.gitee.io/blogs/)
+[View Live Super Snail Blog →](https://nojsja.gitee.io/blogs/)
 
 Hexo-theme-snail is a succinct hexo theme. It has two colors, light and star, that can be set according to your own preferences in the settings, and also has the functions of sharing and commenting. More features are under development.
 

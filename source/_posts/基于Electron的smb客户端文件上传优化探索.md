@@ -20,7 +20,7 @@ top: 2
 
 ![RhinoDisk](/blogs/img/article/smb_upload_now.jpg)
 
-上一篇文章[《基于Electron的smb客户端开发记录》](https://nojsjaosc.gitee.io/blogs/2020/07/17/%E5%9F%BA%E4%BA%8EElectron%E7%9A%84smb%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/)，大致描述了整个SMB客户端开发的核心功能、实现难点、项目打包这些内容，这篇文章呢单独把其中的`文件分片上传模块`拿出来进行分享，提及一些与Electron主进程、渲染进程和文件上传优化相关的功能点。  
+上一篇文章[《基于Electron的smb客户端开发记录》](https://nojsja.gitee.io/blogs/2020/07/17/%E5%9F%BA%E4%BA%8EElectron%E7%9A%84smb%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/)，大致描述了整个SMB客户端开发的核心功能、实现难点、项目打包这些内容，这篇文章呢单独把其中的`文件分片上传模块`拿出来进行分享，提及一些与Electron主进程、渲染进程和文件上传优化相关的功能点。  
 
 项目精简版[DEMO](https://github.com/NoJsJa/electron-react-template)
 

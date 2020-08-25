@@ -365,7 +365,7 @@ _mountSystemDriver_Windows_NT({ host, driver, path, auto = false }) {
 
 #### 文件上传管理
 
-前端界面沿用之前的AWS对象存储文件上传管理逻辑[基于s3对象存储多文件分片上传的Javascript实现(一)](https://nojsjaosc.gitee.io/blogs/2020/03/07/%E5%9F%BA%E4%BA%8Es3%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E5%A4%9A%E6%96%87%E4%BB%B6%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E7%9A%84Javascript%E5%AE%9E%E7%8E%B0-%E4%B8%80/)，不同的地方是加入了`历史任务`功能用于持久化文件上传任务记录功能，失败的任务能在历史任务中重新启动。由于smb简单文件上传协议不支持文件分片管理功能，所以前端界面的上传进度获取和上传速度计算均是基于 Node.js 的 FS API实现，整体流程是：使用Windows UNC命令连接后端共享，然后可以像访问本地文件系统一样访问远程一个共享路径，比如`\\[host]\[sharename]\file1`，这样子文件上传就变成本地目录文件的复制、删除、重命名了。
+前端界面沿用之前的AWS对象存储文件上传管理逻辑[基于s3对象存储多文件分片上传的Javascript实现(一)](https://nojsja.gitee.io/blogs/2020/03/07/%E5%9F%BA%E4%BA%8Es3%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E5%A4%9A%E6%96%87%E4%BB%B6%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E7%9A%84Javascript%E5%AE%9E%E7%8E%B0-%E4%B8%80/)，不同的地方是加入了`历史任务`功能用于持久化文件上传任务记录功能，失败的任务能在历史任务中重新启动。由于smb简单文件上传协议不支持文件分片管理功能，所以前端界面的上传进度获取和上传速度计算均是基于 Node.js 的 FS API实现，整体流程是：使用Windows UNC命令连接后端共享，然后可以像访问本地文件系统一样访问远程一个共享路径，比如`\\[host]\[sharename]\file1`，这样子文件上传就变成本地目录文件的复制、删除、重命名了。
 
 下图为前端界面的上传逻辑示意图：
 ![upload](/blogs/img/article/shards_upload.jpg)
