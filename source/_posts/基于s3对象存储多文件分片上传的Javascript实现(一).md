@@ -181,15 +181,19 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
     // 统计空闲任务
     const storageObject = this.fileStorage.get(region);
     if (!storageObject) return;
+
+    if (this.taskType.series.length >= this.multiTaskCount) return;
+
     for (let i = 0; i < storageObject.length; i += 1) {
+      if (this.taskType.series.length === this.multiTaskCount) break;
       if (
         storageObject[i].index !== storageObject[i].total
-        && (storageObject[i].state === 'pending'
-        || storageObject[i].state === 'uninitial')
+        &&
+        (storageObject[i].state === 'pending' || storageObject[i].state === 'uninitial')
+        &&
+        !this.taskType.series.includes(storageObject[i])
       ) {
-        if (!this.taskType.series.includes(storageObject[i])) {
-          this.taskType.series.push(storageObject[i]);
-        }
+        this.taskType.series.push(storageObject[i]);
       }
     }
   }
@@ -398,4 +402,210 @@ _完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/
       }
     }
   }
+```
+
+2. 在Node.js中间件使用ak/sk预签名算法调用 s3 restful 原生接口  
+之前预研的时候尝试根据aws s3-version4签名文档里面请求预签名算法在使用Node.js中间件进行实现，结果很容易出现签名的signature不一致报错的情况，所以最后在Node.js中间件采用了一个npm库[aws4](https://github.com/mhart/aws4)，用里面的签名方法对前端传过来的`ak/sk`进行url预签名，这里给出中间件`Request`方法的编写逻辑：
+```js
+
+/**
+  * templateStrTranform [模板字符串转换]
+  * params1: {bucket: testBucket, uid: testUid, bucketId: testID}
+  * params2: /admin/bucket?format=json&bucket={bucket}&uid={uid}&bucket-id={bucketId}
+  * return: /admin/bucket?format=json&bucket=testBucket&uid=testUid&bucket-id=testID
+  * 
+  * @author nojsja
+  * @param  {[Object]} varObj [替换变量对象]
+  * @param {[String]} templateStr [模板字符串]
+  * @return {[String]} result [模板字符串]
+  */
+exports.templateStrTransform = (varObj, templateStr) => {
+  if (typeof varObj !== 'object' || !templateStr) return templateStr;
+  for (const attr in varObj) {
+    if (varObj.hasOwnProperty(attr) && (!Number(attr) && Number(attr) !== 0 )) {
+      templateStr = templateStr.replace(new RegExp(`{${attr}}`, 'g'), varObj[attr]);
+    }
+  }
+  return templateStr;
+};
+
+
+/**
+  * templateStrTranform [模板字符串转换，s3接口中可能存在一些动态url参数，比如bucket名和object名，此方法动态替换相关的字符串]
+  * @author nojsja
+  * @param  {[Object]} varObj [替换变量对象]
+  * @param {[String]} templateStr [模板字符串]
+  * @return {[String]} result [模板字符串]
+  */
+
+ /**
+  * api对象实例：
+    listFragmentUpload: {
+      url: '/{bucket}/{object}?uploadId={uploadId}', // 包含动态模板字符串
+      method: 'get',
+      port: '7480',
+      type: 'xml', // 表明需要将接口返回数据进行xml -> json转换
+      reqType: 'xml', // 表明提交参数是xml格式，需要进行 json -> xml转换
+    }
+  *
+ */
+commonApiConfig = (headers, api, data) => {
+  if (isEnvDev && !isEnvMock) {
+    return {
+      url: `http://10.0.9.149:${api.port}${templateStrTransform(data, api.url)}`,
+      data: paramsObjectParse(data, api.url),
+      host: `http://10.0.9.149:${api.port}`,
+      hostname: `http://10.0.9.149`,
+      ip: '10.0.9.149',
+    };
+  } else if(isEnvDev && isEnvMock) {
+    return {
+      url: `http://10.0.7.15/mock/63${templateStrTransform(data, api.url)}`,
+      data: paramsObjectParse(data, api.url),
+      host: `http://10.0.9.154:${api.port}`,
+      hostname: `http://10.0.9.154`,
+      ip: '10.0.9.154',
+    };
+  } else {
+    return {
+      url: `http://127.0.0.1:${api.port}${templateStrTransform(data, api.url)}`,
+      data: paramsObjectParse(data, api.url),
+      host: `http://127.0.0.1:${api.port}`,
+      hostname: `http://127.0.0.1`,
+      ip: `127.0.0.1`,
+    };
+  }
+
+}
+
+/**
+  * aws4RequestSign [调用asw4的sign方法签名一个url]
+  * @param  {[Object]} req [Express.js框架路由函数的req对象]
+  * @param  {[String]} path [调用的s3服务的接口url]
+  * @param  {[Object]} api [自定义的api对象]
+  * @param  {[Buffer|String]} data [请求body携带的参数]
+  */
+
+/**
+ * Tips: 这里aws4.sign方法依赖node process 中的ak/sk env设置
+ *  但是也可以使用sign方法的第二个options参数直接传入ak/sk进行显式调用，具体请查看此框架的npm文档
+*/
+aws4RequestSign = (req, path, api, data) => {
+  const aws4 = require('aws4');
+  var opts = {
+    host: `${(commonApiConfig(req.headers, api, data)).host}`,
+    path,
+    url: (commonApiConfig(req.headers, api, data)).hostname,
+    signQuery: true,
+    service: process.env.AWS_SERVICE,
+    region: process.env.AWS_REGION,
+    method: api.method.toUpperCase(),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+    body: req.body,
+    data: '',
+  }
+  // assumes AWS credentials are available in process.env
+  aws4.sign(opts)
+
+  return opts;
+}
+
+/**
+  * commonRequestAuth [签名并调用一个url]
+  * @param  {[Object]} req [Express.js框架路由函数的req对象]
+  * @param  {[String]} path [调用的s3服务的接口url]
+  * @param  {[Object]} api [自定义的api对象]
+  * @param  {[Buffer|String]} data [请求body携带的参数]
+  */
+const commonRequestAuth = (params, api, req, data) => {
+  const iAxios = axios.create();
+  iAxios.defaults.timeout = params['$no_timeout$'] ? 0 : 30e3;
+  // 使用params对象转换存在动态变量的url  
+  const parsedUrl = templateStrTransform(params, api.url);
+  // aws env set
+  awsEnvRegistry({
+    key: req.cookies.access_key,
+    secret: req.cookies.secret_key,
+  });
+  // 签署请求头
+  const postData = jsonToXml(data, api.reqType);
+  const awsOpts = exports.aws4RequestSign(req, parsedUrl, api, params);
+
+  return new Promise((resolve, reject) => {
+    iAxios.request({
+      baseURL: awsOpts.host,
+      url: awsOpts.path,
+      method: awsOpts.method,
+      headers: getContentType(awsOpts.headers, api.reqType, postData, params._headers),
+      data: postData,
+      responseType: api.resType,
+    }).then((response) => {
+
+      // 设置header返回
+      if (api.type === 'header') return resolve({
+        result: response.headers,
+        code: 200,
+      });
+      
+      // 转换xml
+      if (api.type === 'xml') {
+        try {
+          xmlToJson(response.data, api.type, (data) => {
+            resolve({
+              result: data,
+              code: 200,
+              // data: jsonArrayToString(data),
+              headers: response.headers,
+            });
+          });
+        } catch (error) {
+          resolve({
+            code: 500,
+            result: global.lang.xml_parse_error,
+          });
+        }
+      }
+
+      resolve({
+        result: response.data,
+        code: 200,
+      });
+    }).catch((error) => {
+      console.log(error.response.data);
+      xmlToJson(error.response.data, 'xml', (data) => {
+        resolve({
+          code: 600,
+          result: { headers: error.config, data: data.Error ? data.Error : error.response.data}
+        })
+      })
+    });
+  });
+};
+```
+
+3. 在web端使用ak/sk预签名算法调用 s3 restful 原生接口  
+如果项目需要从web端直连后端s3服务调用接口的话，上面的签名方法就不能用了，其实很多时候直连可以带来更好的性能，比如文件上传/下载等等，不用在中间件做文件转存，其他的接口调用直连的话也不用中间层做request转发了。这里推荐一个能够进行s3请求预签名的axios插件[aws4-axios](https://github.com/jamesmbourne/aws4-axios)，用法如下：
+```js
+import axios from "axios";
+import { aws4Interceptor } from "aws4-axios";
+
+const client = axios.create();
+
+const interceptor = aws4Interceptor({
+  region: "eu-west-2",
+  service: "execute-api"
+}, {
+  accessKeyId: '',
+  secretAccessKey: ''
+});
+
+client.interceptors.request.use(interceptor);
+
+// Requests made using Axios will now be signed
+client.get("https://example.com/foo").then(res => {
+  // ...
+});
+
 ```
