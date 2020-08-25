@@ -31,7 +31,7 @@ signature-img: img/signature/BeanTechSign-white.png
 
 # SNS settings
 github_username:    NoJsJa
-gitee_username:     nojsjaOSC
+gitee_username:     nojsja
 
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
