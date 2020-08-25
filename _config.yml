@@ -176,7 +176,7 @@ path: baidusitemap.xml
 deploy:
   type: git
   repository: https://github.com/NoJsJa/blogs
-  # repository: https://gitee.com/nojsjaOSC/blogs
+  # repository: https://gitee.com/nojsja/blogs
   branch: master
   ignore_hidden:
     public: false
