@@ -177,6 +177,7 @@ deploy:
   type: git
   repository: https://github.com/NoJsJa/blogs
   # repository: https://gitee.com/nojsja/blogs
+  # repository: https://e.coding.net/nojsja/blogs/blogs.git
   branch: master
   ignore_hidden:
     public: false
