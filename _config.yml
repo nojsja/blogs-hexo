@@ -191,8 +191,10 @@ share: false
 comment:
   valine:
     enable: true
-    appId: "GkBuqoGrrflHlKeeUT6egSHQ-9Nh9j0Va"
-    appKey: "XJVaEhLbr7dcGs7fas0Livs1"
+    # appId: "GkBuqoGrrflHlKeeUT6egSHQ-9Nh9j0Va"
+    # appKey: "XJVaEhLbr7dcGs7fas0Livs1"
+    appId: "wUKKBx8BRzGaNfhgdg2UKtub-MdYXbMMI"
+    appKey: "MAwYM4KlW5YJ3q06qwnUScBr"
     notify: false
     verify: false
     visitor: true

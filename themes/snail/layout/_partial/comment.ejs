@@ -4,8 +4,8 @@
   <script>
       new Valine({
           el: '#vcomments',
-          appId: "GkBuqoGrrflHlKeeUT6egSHQ-9Nh9j0Va",
-          appKey: 'XJVaEhLbr7dcGs7fas0Livs1',
+          appId: "<%= config.comment.valine.appId %>",
+          appKey: "<%= config.comment.valine.appKey %>",
           visitor: true
       })
   </script>
