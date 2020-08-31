@@ -162,6 +162,10 @@ pre code {
   color: black;
 }
 
+.post-container > p > a {
+  color: #ff59ac;
+}
+
 .post-container h1,
 .post-container h2,
 .post-container h3,
