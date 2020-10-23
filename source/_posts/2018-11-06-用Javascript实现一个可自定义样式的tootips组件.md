@@ -21,7 +21,7 @@ updateDate: 2018-11-06 19:16:00
 #### 预览图
 ----------------
 
-[=> 源代码](https://github.com/NoJsJa/javascript-learning/tree/master/normal/js-tooltips)
+[=> 源代码](https://github.com/NoJsJa/javascript-learning/tree/master/code-challenge/es5-component/js-tooltips)
 
 ![animation.gif](tootips.gif)
 
