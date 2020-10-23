@@ -61,7 +61,12 @@ $: sudo ln -s  /usr/lib/i386-linux-gnu/deepin-wine5/wine* /usr/bin/ -f
 
 #### 建立32位的wine环境
 
-* 创建WINEPREFIX，并安装winetricks图形工具安装`msls31 msxml6 riched20 riched30 ole32`等dll依赖，`msxml6`下载失败时亦可手动安装：
+* 创建WINEPREFIX
+```bash
+$: WINEARCH=win32 WINEPREFIX=~/.wine wine wineboot
+```
+
+* 安装winetricks图形工具安装`msls31 msxml6 riched20 riched30 ole32`等dll依赖，`msxml6`下载失败时亦可手动安装：
 ```bash
 $: wget -P /tmp https://download.microsoft.com/download/e/a/f/eafb8ee7-667d-4e30-bb39-4694b5b3006f/msxml6_x86.msi
 $: wine msiexec /i /tmp/msxml6_x86.msi
