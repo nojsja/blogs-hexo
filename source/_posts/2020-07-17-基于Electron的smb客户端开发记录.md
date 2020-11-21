@@ -18,7 +18,7 @@ top:
 ---------------
 最近拿到客户需求，需要利用现有存储产品部分后台接口和原生smb协议来实现一个windows平台的smb客户端，主要功能需要包含：存储集群节点管理、集群用户登录、远程共享目录挂载、共享目录浏览、目录权限设置、文件上传管理，其中目录权限设置和目录浏览接口已经被提供，其余几个功能的electron代码和web端代码需要由我负责。考虑整个项目由前端同事来实现且数据存储量较小、数据关系不复杂，所以技术选型方面使用了支持跨平台的Electron框架和易用的的本地json数据库[lowdb](https://github.com/typicode/lowdb)。
 
-项目精简版[DEMO]展示(https://github.com/NoJsJa/electron-react-template)
+项目精简版[DEMO]展示(https://github.com/nojsja/electron-react-template)
 
 ### 功能需求
 ---------------
@@ -703,7 +703,7 @@ exports.readFileBlock = () => {
 
 #### windows安装包自动化打包配置
 
-windows安装包使用electron nsis配置，注意使用`.ico`格式的应用图标以免打包失败，package.json中的`build.files`字段声明了需要打包的所有文件，`build.win`是windows平台的打包配置，`build.nsis`是nsis打包的详细配置，运行`npm run build-win`即可开始win平台的Electron App打包，由于整个打包流程包含web打包和electron打包，使用Node.js编写了通用打包脚本[项目build.js](https://github.com/NoJsJa/electron-react-template/blob/master/build.js)、[electron build.js](https://github.com/NoJsJa/electron-react-template/blob/master/server/build.js)对整个流程进行了整合，`项目build.js`兼顾web打包以及调用`electron build.js`负责Electron App打包，使用`node build.js --help`查看所有打包命令帮助信息。
+windows安装包使用electron nsis配置，注意使用`.ico`格式的应用图标以免打包失败，package.json中的`build.files`字段声明了需要打包的所有文件，`build.win`是windows平台的打包配置，`build.nsis`是nsis打包的详细配置，运行`npm run build-win`即可开始win平台的Electron App打包，由于整个打包流程包含web打包和electron打包，使用Node.js编写了通用打包脚本[项目build.js](https://github.com/nojsja/electron-react-template/blob/master/build.js)、[electron build.js](https://github.com/nojsja/electron-react-template/blob/master/server/build.js)对整个流程进行了整合，`项目build.js`兼顾web打包以及调用`electron build.js`负责Electron App打包，使用`node build.js --help`查看所有打包命令帮助信息。
 
 __node build.js - -help__
 

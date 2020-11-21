@@ -24,7 +24,7 @@ updateDate: 2018-11-05 01:10:00
 ----------------
 > Gif预览图录制时帧数较低，实际浏览器上运行时会更流畅 ~  
 
-[=> 源代码](https://github.com/NoJsJa/javascript-learning/tree/master/js-animation)
+[=> 源代码](https://github.com/nojsja/javascript-learning/tree/master/js-animation)
 
 ![animation.gif](animation.gif)
 

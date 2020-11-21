@@ -28,7 +28,7 @@ updateDate: 2019-10-14 16:18:46
 
 ### 前言
 -----------
-最近桌面系统从Ubuntu18.04切换到了Manjaro Linux 17，之前听说Manjaro的软件丰富，仓库更新及时，很多常用软件都能一键安装(比如QQ，微信)，同时也支持主流的Linux桌面环境：Gnome、KDE、Cinnamon、Mate、Deepin等等，安装了Gnome版本的Manjaro之后发现果然还不错。系统安装好后配置比较繁琐，就想给Manjaro写一个GUI客户端工具用于安装常用软件和作为简单的系统管理工具 - [electronux](https://github.com/NoJsJa/electronux.git)
+最近桌面系统从Ubuntu18.04切换到了Manjaro Linux 17，之前听说Manjaro的软件丰富，仓库更新及时，很多常用软件都能一键安装(比如QQ，微信)，同时也支持主流的Linux桌面环境：Gnome、KDE、Cinnamon、Mate、Deepin等等，安装了Gnome版本的Manjaro之后发现果然还不错。系统安装好后配置比较繁琐，就想给Manjaro写一个GUI客户端工具用于安装常用软件和作为简单的系统管理工具 - [electronux](https://github.com/nojsja/electronux.git)
 作为一名正直的前端开发人员，理所应当地就准备使用Electron + Node.js + React + Mobx + Webpack + Shell 来进行开发啦 ~ 目前仍然在开发中，这篇文章用于记录自己的环境搭建过程、一些对Electron+React开发的理解以及谈谈自己遇到的一些Linux桌面软件开发时遇到的问题和解决办法。
 
 ![clean_detail.png](mobx1.png)
@@ -97,7 +97,7 @@ electronux
   "description": "linux manager-software powered by electron & react & Mobx ",
   "version": "1.0.0",
   "author": {
-    "name": "NoJsJa",
+    "name": "nojsja",
     "email": "yangwei020154@gmail.com"
   },
   "scripts": {

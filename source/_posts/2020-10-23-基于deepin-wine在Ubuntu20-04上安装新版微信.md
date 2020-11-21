@@ -95,7 +95,7 @@ LC_ALL=zh_CN.UTF-8 wine /home/nojsja/.wine/drive_c/Program\ Files/Tencent/WeChat
 
 * 同文件夹放入`wechat.png`作为图标
 
-* 使用[makeIconLink](https://github.com/NoJsJa/maintenance/blob/master/code/shell/desktop/application/makeIconLink)脚本创建启动图标，使用帮助`bash makeIconLink --help`，相关命令如下：
+* 使用[makeIconLink](https://github.com/nojsja/maintenance/blob/master/code/shell/desktop/application/makeIconLink)脚本创建启动图标，使用帮助`bash makeIconLink --help`，相关命令如下：
 ```bash
 $: sudo makeIconLink --directory /home/nojsja/software/wechat --icon wechat.png --target wechat
 ```

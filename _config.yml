@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: NojsJa
+title: nojsja
 subtitle: 个人博客
 author: nojsja
 language: zh-CN
@@ -19,7 +19,7 @@ permalink_defaults:
 #Custom Setting Start
 
 # Site settings
-SEOTitle: NoJsJa | Blog
+SEOTitle: nojsja | Blog
 email: e-mail_address
 description: ""
 keyword: ""
@@ -30,7 +30,7 @@ signature: false #show signature
 signature-img: img/signature/BeanTechSign-white.png 
 
 # SNS settings
-github_username:    NoJsJa
+github_username:    nojsja
 gitee_username:     nojsja
 
 # Build settings
@@ -79,7 +79,7 @@ featured-condition-size: 0              # A tag will be featured if the size of 
 ## Friends
 friends: [
     {
-        title: "简书 NoJsJa",
+        title: "简书 nojsja",
         href: "https://www.jianshu.com/u/d5c8b784c1d0"
     },
     {
@@ -175,7 +175,7 @@ path: baidusitemap.xml
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/NoJsJa/blogs
+  repository: https://github.com/nojsja/blogs
   # repository: https://gitee.com/nojsja/blogs
   # repository: https://e.coding.net/nojsja/blogs/blogs.git
   branch: master
@@ -214,7 +214,7 @@ music:
 # Tip
 tip:
   enable: true
-  copyright: Copyright © NoJsJa 2020
+  copyright: Copyright © nojsja 2020
   content: false
 
 # Background effects

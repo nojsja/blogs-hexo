@@ -39,7 +39,7 @@ Amazon S3 提供了一个简单 Web 服务接口，可用于随时在 Web 上的
 
 ### 前端多文件分片上传的原理和实现
 
-_完整Github[源码](https://github.com/NoJsJa/javascript-learning/tree/master/file-slice-upload)_
+_完整Github[源码](https://github.com/nojsja/javascript-learning/tree/master/file-slice-upload)_
 
 > 使用了React16/Webpack4/Mobx状态管理库
 

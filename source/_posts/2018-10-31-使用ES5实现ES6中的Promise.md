@@ -15,7 +15,7 @@ updateDate: 2018-10-31 01:15:00
 
 ![life is strange](lifeIsStrange.jpg)
 
-[源代码 => github / nojsja / promise-self](https://github.com/NoJsJa/promise-nojsja)
+[源代码 => github / nojsja / promise-self](https://github.com/nojsja/promise-nojsja)
 
 ### 目录
 

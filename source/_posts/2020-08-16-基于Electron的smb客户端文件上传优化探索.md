@@ -22,7 +22,7 @@ top: 2
 
 上一篇文章[《基于Electron的smb客户端开发记录》](https://nojsja.gitee.io/blogs/2020/07/17/%E5%9F%BA%E4%BA%8EElectron%E7%9A%84smb%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/)，大致描述了整个SMB客户端开发的核心功能、实现难点、项目打包这些内容，这篇文章呢单独把其中的`文件分片上传模块`拿出来进行分享，提及一些与Electron主进程、渲染进程和文件上传优化相关的功能点。  
 
-项目精简版[DEMO](https://github.com/NoJsJa/electron-react-template)
+项目精简版[DEMO](https://github.com/nojsja/electron-react-template)
 
 ### Electron进程架构
 -------------------
@@ -425,7 +425,7 @@ module.exports = ChildProcessPool;
 ![upload_memory.jpg](inspect.jpg)
 
 5. 另外创建进程池时传入的`path`参数即为以下脚本代码的绝对路径，这段文件上传逻辑被单独分离到子进程中处理，其中CPU耗时的操作为`uploadStore`函数块处理的部分，主要是维护整个文件上传列表，对上传任务列表进行增删查改操作；另外的频繁利用io读写文件的逻辑被封装到`fileBlock`函数块，不过都是异步IO读写，应该对性能影响不大，具体可以查看一下源码进行详细了解：
-[源码](https://github.com/NoJsJa/electron-react-template/blob/master/server/app/services/child/upload.js)
+[源码](https://github.com/nojsja/electron-react-template/blob/master/server/app/services/child/upload.js)
 ```js
   const fs = require('fs');
   const fsPromise = fs.promises;

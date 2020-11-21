@@ -27,7 +27,7 @@ updateDate: 2019-10-26 20:43:00
 
 ### 前言
 -------------
-[前一篇文章](www.jianshu.com/p/53d74df07e4c)主要记录了开发环境的搭建和一些开发时遇到的问题，这篇文章主要说说自己在coding work之后进行应用打包时遇到的问题(webpack打包和electron打包)，[项目地址](https://github.com/NoJsJa/electronux)。
+[前一篇文章](www.jianshu.com/p/53d74df07e4c)主要记录了开发环境的搭建和一些开发时遇到的问题，这篇文章主要说说自己在coding work之后进行应用打包时遇到的问题(webpack打包和electron打包)，[项目地址](https://github.com/nojsja/electronux)。
 
 ### webpack4图片打包的问题
 ------------------------------------------
