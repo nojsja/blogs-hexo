@@ -1,7 +1,6 @@
 {
   "name": "hexo-site",
   "version": "0.0.0",
-  "private": true,
   "scripts": {
     "generate": "hexo c && hexo g",
     "start": "npm run generate && hexo s",
