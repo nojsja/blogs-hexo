@@ -2,9 +2,10 @@
   "name": "hexo-site",
   "version": "0.0.0",
   "scripts": {
+    "clean": "hexo clean",
     "generate": "hexo c && hexo g",
     "start": "npm run generate && hexo s",
-    "deploy": "npm run generate && hexo d"
+    "deploy": "npm run clean && npm run generate && hexo d"
   },
   "hexo": {
     "version": "4.2.1"
@@ -22,10 +23,14 @@
     "hexo-generator-sitemap": "^1.2.0",
     "hexo-generator-tag": "^1.0.0",
     "hexo-renderer-ejs": "^1.0.0",
-    "hexo-renderer-kramed": "^0.1.4",
+    "hexo-renderer-markdown-it": "git+https://github.com/hexojs/hexo-renderer-markdown-it.git",
     "hexo-renderer-mathjax": "^0.6.0",
     "hexo-renderer-stylus": "^1.1.0",
     "hexo-server": "^1.0.0",
-    "hexo-wordcount": "^6.0.1"
+    "hexo-wordcount": "^6.0.1",
+    "markdown-it-abbr": "^1.0.4",
+    "markdown-it-emoji": "^2.0.0",
+    "markdown-it-mark": "^3.0.0",
+    "markdown-it-task-lists": "^2.1.1"
   }
 }

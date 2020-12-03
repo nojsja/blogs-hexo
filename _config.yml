@@ -158,6 +158,17 @@ markdown:
     linkify: true
     typographer: true
     quotes: '“”‘’'
+
+  plugins:
+    - markdown-it-abbr
+    - markdown-it-mark
+    - markdown-it-container
+    - markdown-it-emoji
+    - name: markdown-it-task-lists
+      options:
+        enabled: true
+        label: true
+        labelAfter: false
   
 # Extensions
 ## Plugins: https://hexo.io/plugins/
