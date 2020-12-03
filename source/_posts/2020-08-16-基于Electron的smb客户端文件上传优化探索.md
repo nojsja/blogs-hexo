@@ -22,7 +22,18 @@ top: 2
 
 上一篇文章[《基于Electron的smb客户端开发记录》](https://nojsja.gitee.io/blogs/2020/07/17/%E5%9F%BA%E4%BA%8EElectron%E7%9A%84smb%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/)，大致描述了整个SMB客户端开发的核心功能、实现难点、项目打包这些内容，这篇文章呢单独把其中的`文件分片上传模块`拿出来进行分享，提及一些与Electron主进程、渲染进程和文件上传优化相关的功能点。  
 
-项目精简版[DEMO](https://github.com/nojsja/electron-react-template)
+### Demo运行
+-----------------
+项目精简版 [DEMO地址](https://github.com/nojsja/javascript-learning/tree/master/file-slice-upload)
+>demo运行时需要分别开启两个开发环境view -> service，然后才能预览界面，由于没有后端，文件默认上传(复制)到electron数据目录(在Ubuntu上是`~/.config/FileSliceUpload/runtime/upload`)
+```bash
+# 进入view目录
+$: npm install
+$: npm start
+# 进入service目录
+$: npm install
+$: npm start
+```
 
 ### Electron进程架构
 -------------------
@@ -280,139 +291,176 @@ exports.readFileBlock = () => {
 
 #### 第三次尝试解决问题：编写Node.js进程池分离上传任务管理逻辑
 
-这次是大改(苦笑脸~)，抱着学习的态度实现了Electron多进程池，主要逻辑是使用Node.js的`child_process`模块(具体使用请看[文档](http://nodejs.cn/api/child_process.html))创建指定数量的多个子进程，外部通过进程池获取一个可用的进程，在进程中执行需要的代码逻辑，而在进程池内部其实就是按照顺序依次将已经创建的多个子进程中的某一个返回给外部调用即可，从而避免了其中某个进程被过度使用，所有进程负载均匀分配。
+这次是大改😕，简单实现了进程池[链接：ChildProcessPool.class.js](https://github.com/nojsja/javascript-learning/blob/master/file-slice-upload/service/app/services/child/libs/ChildProcessPool.class.js)，主要逻辑是使用Node.js的`child_process`模块(具体使用请看[文档](http://nodejs.cn/api/child_process.html))创建指定数量的多个子进程，外部通过进程池获取一个可用的进程，在进程中执行需要的代码逻辑，而在进程池内部其实就是按照顺序依次将已经创建的多个子进程中的某一个返回给外部调用即可，从而避免了其中某个进程被过度使用。
 
+另外被作为子进程执行文件载入的js文件中可以使用我封装的[链接：ProcessHost.class.js](https://github.com/nojsja/javascript-learning/blob/master/file-slice-upload/service/app/services/child/libs/ProcessHost.class.js)，我把它称为`进程事务管理中心`，主要功能是使用api - `ProcessHost.registry(taskName, func)`来注册多种任务，然后在主进程中可以直接使用进程池获取某个进程后向某个任务发送请求并取得`Promise`对象以拿到进程返回的数据，从而避免在我们的子进程执行文件中过度关注进程之间数据的通信，比如平常的话需要使用`process.send`向一个进程发送消息并使用`process.on('message', processor)`在另一个进程中处理消息。需要注意的是如果注册的`task`任务是异步的则需要返回一个Promise对象而不是直接`return`数据。
+
+使用方法如下，具体使用请查看完整demo：
+
+* main.js (in main process)
 ```js
-const electron = require('electron');
-const { app, BrowserWindow, Menu, Tray, dialog } = require('electron');
-const { fork } = require('child_process');
-const path = require('path');
-const url = require('url');
-const os = require('os');
-const { EventEmitter } = require('events');
-const { getRandomString } = require(path.join(app.getAppPath(), 'app/utils/utils'));
+const ChildProcessPool = require('path/to/ChildProcessPool.class');
 
-/**
-  * ChildProcessPool [进程池]
-  * @author nojsja
-  * @param  {[String]} path [用于创建进程的可执行文件]
-  * @param  {[Number]} max [可创建的进程数量最大值]
-  * @param  {[String]} cwd [进程执行的起始目录]
-  * @param  {[Object]} env [环境变量配置]
-  */
-class ChildProcessPool {
-  constructor({ path, max=6, cwd, env })
-  {
-    this.cwd = cwd || undefined;
-    this.env = env || undefined;
-    this.inspectStartIndex = 5858;
-    this.callbacks = {};
-    this.pidMap = new Map();
-    this.collaborationMap = new Map();
-    this.event = new EventEmitter();
-    this.forked = [];
-    this.forkedPath = path;
-    this.forkIndex = 0;
-    this.forkMaxIndex = max;
-    // 子进程回调事件
-    this.event.on('fork-callback', (data) => {
-      if (this.collaborationMap.get(data.id) !== undefined) {
-        this.dataRespondAll(data)
-      } else {
-        this.dataRespond(data);
-      }
+global.ipcUploadProcess = new ChildProcessPool({
+  path: path.join(app.getAppPath(), 'app/services/child/upload.js'),
+  max: 3, // process instance
+  env: { lang: global.lang, NODE_ENV: nodeEnv }
+});
+
+```
+
+* service.js (in main processs)
+```js
+ /**
+    * init [初始化上传]
+    * @param  {[String]} host [主机名]
+    * @param  {[String]} username [用户名]
+    * @param  {[Object]} file [文件描述对象]
+    * @param  {[String]} abspath [绝对路径]
+    * @param  {[String]} sharename [共享名]
+    * @param  {[String]} fragsize [分片大小]
+    */
+  init({ username, host, file, abspath, sharename, fragsize, prefix = '' }) {
+    const date = Date.now();
+    const uploadId = getStringMd5(date + file.name + file.type + file.size);
+    let size = 0;
+
+    return new Promise((resolve) => {
+        this.getUploadPrepath
+        .then((pre) => {
+          /* 看这里看这里！look here! */
+          return global.ipcUploadProcess.send(
+            /* 进程事务名 */
+            'init-works',
+            /* 携带的参数 */
+            {
+              username, host, sharename, pre, prefix, size: file.size, name: file.name, abspath, fragsize, record: 
+              {
+                host, // 主机
+                filename: path.join(prefix, file.name), // 文件名
+                size, // 文件大小
+                fragsize, // 分片大小
+                abspath, // 绝对路径
+                startime: getTime(new Date().getTime()), // 上传日期
+                endtime: '', // 上传日期
+                uploadId, // 任务id
+                index: 0,
+                total: Math.ceil(size / fragsize),
+                status: 'uploading' // 上传状态
+              }
+            },
+            /* 指定一个进程调用id */
+            uploadId
+          )
+        })
+      .then((rsp) => {
+        resolve({
+          code: rsp.error ? 600 : 200,
+          result: rsp.result,
+        });
+      }).catch(err => {
+        resolve({
+          code: 600,
+          result: err.toString()
+        });
+      });
+    });
+  }
+```
+
+* child.js (in child process)
+```js
+const { remote } = require('electron');
+const fs = require('fs');
+  const fsPromise = fs.promises;
+  const path = require('path');
+
+  const utils = require('./child.utils');
+  const { readFileBlock, uploadRecordStore, unlink } = utils;
+  const ProcessHost = require('./libs/ProcessHost.class');
+
+  const fileBlock = readFileBlock();
+  const uploadStore = uploadRecordStore();
+
+  global.lang = process.env.lang;
+
+  /* *************** registry all task *************** */
+
+  ProcessHost
+    .registry('init-works', (params) => {
+      return initWorks(params);
+    })
+    .registry('upload-works', (params) => {
+      return uploadWorks(params);
+    })
+    .registry('close', (params) => {
+      return close(params);
+    })
+    .registry('record-set', (params) => {
+      uploadStore.set(params);
+      return { result: null };
+    })
+    .registry('record-get', (params) => {
+      return uploadStore.get(params);
+    })
+    .registry('record-get-all', (params) => {
+      return (uploadStore.getAll(params));
+    })
+    .registry('record-update', (params) => {
+      uploadStore.update(params);
+      return ({result: null});
+    })
+    .registry('record-remove', (params) => {
+      uploadStore.remove(params);
+      return { result: null };
+    })
+    .registry('record-reset', (params) => {
+      uploadStore.reset(params);
+      return { result: null };
+    })
+    .registry('unlink', (params) => {
+      return unlink(params);
+    });
+
+
+  /* *************** upload logic *************** */
+
+  /* 上传初始化工作 */
+  function initWorks({username, host, sharename, pre, prefix, name, abspath, size, fragsize, record }) {
+    const remotePath = path.join(pre, prefix, name);
+    return new Promise((resolve, reject) => {
+      new Promise((reso) => fsPromise.unlink(remotePath).then(reso).catch(reso))
+      .then(() => {
+        const dirs = utils.getFileDirs([path.join(prefix, name)]);
+        return utils.mkdirs(pre, dirs);
+      })
+      .then(() => fileBlock.open(abspath, size))
+      .then((rsp) => {
+        if (rsp.code === 200) {
+          const newRecord = {
+            ...record,
+            size, // 文件大小
+            remotePath,
+            username,
+            host,
+            sharename,
+            startime: utils.getTime(new Date().getTime()), // 上传日期
+            total: Math.ceil(size / fragsize),
+          };
+          uploadStore.set(newRecord);
+          return newRecord;
+        } else {
+          throw new Error(rsp.result);
+        }
+     })
+     .then(resolve)
+     .catch(error => {
+      reject(error.toString());
+     });
     })
   }
-  
-  /* 子进程数据回调 */
-  dataRespond = (data) => {
-    if (data.id && this.callbacks[data.id]) {
-      this.callbacks[data.id](data.result);
-      delete this.callbacks[data.id];
-    };
-  }
 
-  /* 所有子进程协同数据回调 */
-  dataRespondAll = (data) => {
-    let resultAll = this.collaborationMap.get(data.id);
-    if (!data.id) return;
-    if (resultAll !== undefined) {
-      this.collaborationMap.set(data.id, [...resultAll, data.result]);
-    } else {
-      this.collaborationMap.set(data.id, [data.result]);
-    }
-    resultAll = this.collaborationMap.get(data.id);
-    if (resultAll.length === this.forked.length) {
-      this.callbacks[data.id](resultAll);
-      delete this.callbacks[data.id];
-      this.collaborationMap.delete(data.id);
-    }
-  }
-
-  /* 从子进程池中获取一个进程 */
-  getForkedFromPool(id="default") {
-    let forked;
-    if (!this.pidMap.get(id)) {
-      if (this.forked.length < this.forkMaxIndex) {
-        this.inspectStartIndex ++;
-        forked = fork(
-          this.forkedPath,
-          // 开发环境下启动inspect进程远程调试端口
-          this.env.NODE_ENV === "development" ? [`--inspect=${this.inspectStartIndex}`] : [],
-          {
-            cwd: this.cwd,
-            env: this.env,
-          }
-        );
-        this.forked.push(forked);
-        this.forkIndex += 1;
-        forked.on('message', (data) => {
-          this.event.emit('fork-callback', data);
-        });
-        this.pidMap.set(id, forked.pid);
-      } else {
-        this.forkIndex = this.forkIndex % this.forkMaxIndex;
-        forked = this.forked[this.forkIndex];
-        this.pidMap.set(id, forked.pid);
-        this.forkIndex += 1;
-      }
-    } else {
-      forked = this.forked.filter(f => f.pid === this.pidMap.get(id))[0];
-      if (!forked) throw new Error(`Get forked process from pool failed! the process pid: ${this.pidMap.get(id)}.`);
-    }
-
-    return forked;
-  }
-
-  /* 向子进程发送请求 */
-  send(params, givenId) {
-    const id = givenId || getRandomString();
-    const forked = this.getForkedFromPool(id);
-    return new Promise(resolve => {
-      this.callbacks[id] = resolve;
-      forked.send({...params, id});
-    });
-  }
-
-  /* 向所有进程发送请求 */
-  sendToAll(params) {
-    const id = getRandomString(); 
-    return new Promise(resolve => {
-      this.callbacks[id] = resolve;
-      this.collaborationMap.set(id, []);
-      if (this.forked.length) {
-        this.forked.forEach((forked) => {
-          forked.send({...params, id});
-        })
-      } else {
-        this.getForkedFromPool().send({...params, id});
-      }
-    });
-  }
-}
-
-module.exports = ChildProcessPool;
-
+  ...
 ```
 
 1. 其中`send`和`sendToAll`方法，前者是向某个进程发送请求信号，如果请求参数指定了id则表明需要明确使用之前与此id建立过映射的某个进程，并期望拿到此进程的回应结果；后者是向所有进程池中的进程发送信号，并期望拿到所有进程返回的结果。
