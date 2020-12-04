@@ -14,6 +14,7 @@ updateDate: 2020-08-16 22:30:00
 top: 2
 ---
 
+> 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...
 
 ### I 前言
 ---------------
@@ -52,7 +53,7 @@ Electron 运行 package.json 的 main 脚本的进程被称为主进程。在主
 #### 主进程和渲染进程之间的通信
 >1/2-自带方法，3-外部扩展方法
 
-1. 使用remote远程调用
+__1. 使用remote远程调用__
 
 remote模块为渲染进程和主进程通信提供了一种简单方法，使用remote模块, 你可以调用main进程对象的方法, 而不必显式发送进程间消息。示例如下，代码通过remote远程调用主进程的BrowserWindows创建了一个渲染进程，并加载了一个网页地址：  
 ```js
@@ -63,7 +64,7 @@ win.loadURL('https://github.com')
 ```
 注意：remote底层是基于ipc的同步进程通信(同步=阻塞页面)，都知道Node.js的最大特性就是异步调用，非阻塞IO，因此remote调用不适用于主进程和渲染进程频繁通信以及耗时请求的情况，否则会引起严重的程序性能问题。
 
-2. 使用ipc信号通信  
+__2. 使用ipc信号通信__
 
 基于事件触发的ipc双向信号通信，渲染进程中的ipcRenderer可以监听一个事件通道，也能向主进程或其它渲染进程直接发送消息(需要知道其它渲染进程的webContentsId)，同理主进程中的ipcMain也能监听某个事件通道和向任意一个渲染进程发送消息。
 ```js
@@ -84,7 +85,7 @@ ipcRenderer.sendTo(webContentsId, channel, ...args); // 向某个渲染进程发
 ipcRenderer.sendToHost(channel, ...args) // 向host页面的webview发送消息 - 异步触发
 ```
 
-3. 使用`electron-re`进行多向通信
+__3. 使用`electron-re`进行多向通信__
 
 [electron-re](https://github.com/nojsja/electron-re) 是之前开发的一个处理electron进程间通信的工具，已经发布为npm组件。主要功能是在Electron已有的`Main Process`主进程 和 `Renderer Process`渲染进程概念的基础上独立出一个单独的==service==逻辑。service即不需要显示界面的后台进程，它不参与UI交互，单独为主进程或其它渲染进程提供服务，它的底层实现为一个允许`node注入`和`remote调用`的渲染窗口进程。
 
@@ -419,30 +420,39 @@ class ChildProcessPool {
   /* Get a process instance from the pool */
   getForkedFromPool(id="default") {
     let forked;
+
     if (!this.pidMap.get(id)) {
+      // create new process
       if (this.forked.length < this.forkMaxIndex) {
         this.inspectStartIndex ++;
         forked = fork(
           this.forkedPath,
           this.env.NODE_ENV === "development" ? [`--inspect=${this.inspectStartIndex}`] : [],
-          { cwd: this.cwd, env: { ...this.env, id } }
+          {
+            cwd: this.cwd,
+            env: { ...this.env, id },
+          }
         );
         this.forked.push(forked);
-        this.forkIndex += 1;
         forked.on('message', (data) => {
           const id = data.id;
           delete data.id;
           delete data.action;
           this.onMessage({ data, id });
         });
-        this.pidMap.set(id, forked.pid);
       } else {
         this.forkIndex = this.forkIndex % this.forkMaxIndex;
         forked = this.forked[this.forkIndex];
-        this.forkIndex += 1;
-        this.pidMap.set(id, forked.pid);
       }
+
+      if(id !== 'default')
+        this.pidMap.set(id, forked.pid);
+      if(this.pidMap.values.length === 1000)
+        console.warn('ChildProcessPool: The count of pidMap is over than 1000, suggest to use unique id!');
+
+      this.forkIndex += 1;
     } else {
+      // use existing processes
       forked = this.forked.filter(f => f.pid === this.pidMap.get(id))[0];
       if (!forked) throw new Error(`Get forked process from pool failed! the process pid: ${this.pidMap.get(id)}.`);
     }
@@ -459,8 +469,10 @@ class ChildProcessPool {
 
   /* Send request to a process */
   send(taskName, params, givenId="default") {
-    const id = givenId || getRandomString();
-    const forked = this.getForkedFromPool(id);
+    if (givenId === 'default') throw new Error('ChildProcessPool: Prohibit the use of this id value: [default] !')
+
+    const id = getRandomString();
+    const forked = this.getForkedFromPool(givenId);
     return new Promise(resolve => {
       this.callbacks[id] = resolve;
       forked.send({action: taskName, params, id });
