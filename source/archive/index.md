@@ -1,6 +1,6 @@
 ---
 layout: "archive"
-title: "Archives"
+title: "时间轴"
 header-img: "img/header_img/archive-bg.jpg"
 comments: false
 date: 2017-03-20 20:49:56

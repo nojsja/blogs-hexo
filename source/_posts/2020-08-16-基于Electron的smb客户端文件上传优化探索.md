@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date: 2020-08-16 22:30:00
 subtitle: "smb samba client upload"
-header-img: "article_header.png"
+header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - upload
 - smb

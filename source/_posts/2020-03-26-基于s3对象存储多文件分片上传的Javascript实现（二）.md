@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date: 2020-03-26 16:18:00
 subtitle: "fileupload node fs"
-header-img: "article_header.png"
+header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - upload
 - node

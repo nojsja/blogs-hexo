@@ -1,12 +1,21 @@
 User-agent: *
 Allow: /
-Allow: /home/
-Allow: /archives/
+Allow: /blogs/
+Allow: /blogs/archive/
+Allow: /blogs/tags/
+Allow: /blogs/photography/
+Allow: /blogs/categories/
+Allow: /archive/
 Allow: /tags/
+Allow: /photography/
+Allow: /categories/
 
 Disallow: /js/
 Disallow: /css/
 Disallow: /fonts/
+Disallow: /blogs/js/
+Disallow: /blogs/css/
+Disallow: /blogs/fonts/
 
 Sitemap: https://www.dusign.net/sitemap.xml
 Sitemap: https://www.dusign.net/baidusitemap.xml

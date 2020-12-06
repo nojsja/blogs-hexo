@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date:  2018-11-06 19:16:00
 subtitle: "animation javascript"
-header-img: "article_header.png"
+header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - javascript
 categories:

@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date: 2020-07-17 15:59:00
 subtitle: "smb samba client"
-header-img: "article_header.png"
+header-img: "/blogs/img/article_header/article_header.png"
 tags:
 - smb
 categories:

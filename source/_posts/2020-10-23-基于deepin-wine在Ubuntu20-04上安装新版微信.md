@@ -1,7 +1,7 @@
 ---
 title: 基于deepin-wine在Ubuntu20.04上安装新版微信
 catalog: true
-header-img: "article_header.png"
+header-img: "/blogs/img/article_header/article_header.png"
 top: false
 toc_nav_num: true
 updateDate: 2020-10-23 14:49:56
