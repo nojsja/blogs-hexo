@@ -31,7 +31,8 @@ signature-img: img/signature/BeanTechSign-white.png
 
 # SNS settings
 github_username:    nojsja
-gitee_username:     nojsja
+jianshu_username:   d5c8b784c1d0
+segmentfault_username:   nojsja
 
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
@@ -79,12 +80,20 @@ featured-condition-size: 0              # A tag will be featured if the size of 
 ## Friends
 friends: [
     {
-        title: "简书 nojsja",
-        href: "https://www.jianshu.com/u/d5c8b784c1d0"
+        title: "Leancloud",
+        href: "https://www.leancloud.cn/"
     },
     {
-        title: "Cnode",
-        href: "https://cnodejs.org/"
+        title: "Valine",
+        href: "https://valine.js.org/"
+    },
+    {
+        title: "GnomeLook",
+        href: "https://www.gnome-look.org/browse/cat/"
+    },
+    {
+        title: "Npm",
+        href: "https://www.npmjs.com/settings/nojsja/packages"
     },
 ]
 

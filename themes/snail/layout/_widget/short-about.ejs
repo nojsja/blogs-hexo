@@ -1,6 +1,6 @@
 <!-- Short About -->
 <section class="visible-md visible-lg">
-    <h5><a href="<%= config.root %>about/">ABOUT ME</a></h5>
+    <h5><a href="<%= config.root %>about/">关于我</a></h5>
     <div class="short-about">
 
         <% if(config['sidebar-avatar']) { %>
@@ -25,34 +25,23 @@
                 </li>
             <% } %>
 
-            <% if (config.gitee_username) { %>
+            <% if (config.jianshu_username) { %>
                 <li>
-                    <a target="_blank"  href="https://gitee.com/<%= config.gitee_username %>">
+                    <a target="_blank" href="https://www.jianshu.com/u/<%= config.jianshu_username %>">
                         <span class="fa-stack fa-lg">
                             <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-github-alt fa-stack-1x fa-inverse"></i>
+                            <i class="fa fa-stack-1x fa-inverse">简</i>
                         </span>
                     </a>
                 </li>
             <% } %>
 
-            <% if (config.twitter_username) { %>
+            <% if (config.segmentfault_username) { %>
                 <li>
-                    <a target="_blank" href="https://twitter.com/<%= config.twitter_username %>">
+                    <a target="_blank" href="https://segmentfault.com/u/<%= config.jianshu_username %>">
                         <span class="fa-stack fa-lg">
                             <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </a>
-                </li>
-            <% } %>
-
-            <% if (config.facebook_username) { %>
-                <li>
-                    <a target="_blank" href="https://www.facebook.com/<%= config.facebook_username %>">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            <i class="fa fa-stack-1x fa-inverse">栈</i>
                         </span>
                     </a>
                 </li>
@@ -64,28 +53,6 @@
                         <span class="fa-stack fa-lg">
                             <i class="fa fa-circle fa-stack-2x"></i>
                             <i class="fa  fa-stack-1x fa-inverse">知</i>
-                        </span>
-                    </a>
-                </li>
-            <% } %>
-
-            <% if (config.weibo_username) { %>
-                <li>
-                    <a target="_blank" href="http://weibo.com/<%= config.weibo_username %>">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </a>
-                </li>
-            <% } %>
-
-            <% if (config.linkedin_username) { %>
-                <li>
-                    <a target="_blank"  href="https://www.linkedin.com/in/<%= config.linkedin_username %>">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
                         </span>
                     </a>
                 </li>
