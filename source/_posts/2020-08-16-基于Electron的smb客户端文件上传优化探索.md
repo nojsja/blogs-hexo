@@ -34,6 +34,12 @@ $: npm start
 # 进入service目录
 $: npm install
 $: npm start
+# 一键打包脚本 - 查看帮助
+$: node build.js --help
+# 应用打包 - 为linux/mac/win平台打包
+$: node build.js build-linux
+$: node build.js build-mac
+$: node build.js build-win
 ```
 
 ### III Electron进程架构
@@ -66,7 +72,8 @@ win.loadURL('https://github.com')
 
 __2. 使用ipc信号通信__
 
-基于事件触发的ipc双向信号通信，渲染进程中的ipcRenderer可以监听一个事件通道，也能向主进程或其它渲染进程直接发送消息(需要知道其它渲染进程的webContentsId)，同理主进程中的ipcMain也能监听某个事件通道和向任意一个渲染进程发送消息。
+基于事件触发的ipc双向信号通信，渲染进程中的ipcRenderer可以监听一个事件通道，也能向主进程或其它渲染进程直接发送消息(需要知道其它渲染进程的webContentsId)，同理主进程中的ipcMain也能监听某个事件通道和向任意一个渲染进程发送消息。  
+Electron进程之间通信最常用的一系列方法，但是在向其它子进程发送消息之前需要知道目标进程的`webContentsId`或者能够直接拿到目标进程的实例，使用方式不太灵活。
 ```js
 /* 主进程 */
 ipcMain.on(channel, listener) // 监听信道 - 异步触发
@@ -85,11 +92,11 @@ ipcRenderer.sendTo(webContentsId, channel, ...args); // 向某个渲染进程发
 ipcRenderer.sendToHost(channel, ...args) // 向host页面的webview发送消息 - 异步触发
 ```
 
-__3. 使用`electron-re`进行多向通信__
+__3. 使用==electron-re==进行多向通信__
 
-[electron-re](https://github.com/nojsja/electron-re) 是之前开发的一个处理electron进程间通信的工具，已经发布为npm组件。主要功能是在Electron已有的`Main Process`主进程 和 `Renderer Process`渲染进程概念的基础上独立出一个单独的==service==逻辑。service即不需要显示界面的后台进程，它不参与UI交互，单独为主进程或其它渲染进程提供服务，它的底层实现为一个允许`node注入`和`remote调用`的渲染窗口进程。
+[electron-re](https://github.com/nojsja/electron-re) 是之前开发的一个处理electron进程间通信的工具，基于自带的ipc信号通信进行了封装，已经发布为npm组件。主要功能是在Electron已有的`Main Process`主进程 和 `Renderer Process`渲染进程概念的基础上独立出一个单独的==Service==逻辑。Service即不需要显示界面的后台进程，它不参与UI交互，单独为主进程或其它渲染进程提供服务，它的底层实现为一个允许`node注入`和`remote调用`的渲染窗口进程。
 
-比如在你看过一些Electron`最佳实践`中，耗费cpu的操作是不建议被放到主进程中处理的，这时候我们就可以将这部分耗费cpu的操作编写成一个单独的js文件，然后使用service构造函数以这个js文件的地址`path`为参数构造一个service实例，并通过`electron-re`提供的`MessageChannel`通信工具在主进程、渲染进程、service进程之间任意发送消息，可以参考以下示例代码：
+比如在你看过一些Electron`最佳实践`中，耗费cpu的操作是不建议被放到主进程中处理的，这时候就可以将这部分耗费cpu的操作编写成一个单独的js文件，然后使用Service构造函数以这个js文件的地址`path`为参数构造一个Service实例，并通过`electron-re`提供的`MessageChannel`通信工具在主进程、渲染进程、service进程之间任意发送消息，可以参考以下示例代码：
 * 1）main process
 ```js
 const {
@@ -112,7 +119,7 @@ app.whenReady().then(async () => {
     // send data to a service - like the build-in ipcMain.send
     MessageChannel.send('app', 'channel1', { value: 'test1' });
     // send data to a service and return a Promise - extension method
-    MessageChannel.invoke('app', 'channel2', { value: 'test1' }).then((response) => {
+    MessageChannel.invoke('app', 'channel2', { value: 'test2' }).then((response) => {
       console.log(response);
     });
     // listen a channel, same as ipcMain.on
@@ -176,11 +183,11 @@ MessageChannel.invoke('main', 'channel4', { value: 'channel4' });
 const { ipcRenderer } = require('electron');
 const { MessageChannel } = require('electron-re');
 // send data to a service
-MessageChannel.send('app', ....);
-MessageChannel.invoke('app2', ....);
+MessageChannel.send('app', ...);
+MessageChannel.invoke('app2', ...);
 // send data to main process
-MessageChannel.send('main', ....);
-MessageChannel.invoke('main', ....);
+MessageChannel.send('main', ...);
+MessageChannel.invoke('main', ...);
 ```
 
 ### IV 文件上传架构
@@ -365,7 +372,7 @@ exports.readFileBlock = () => {
 ### V 基于Electron的文件上传卡顿优化踩坑
 ----------------------
 
-优化是一件头大的事儿，因为你需要先通过很多测试手法找到现有代码的性能瓶颈，然后编写优化解决方案。我觉得找到性能瓶颈这一点就特别难，因为是自己写的代码所以容易陷入一些先入为主的刻板思考模式。不过最最主要的一点还是你如果自己都弄不清楚你使用的技术栈的话，那就无从谈起优化，所以前面有很大篇幅分析了Electron进程方面的知识以及梳理了整个上传流程。
+优化是一件头大的事儿，因为你需要先通过很多测试手法找到现有代码的性能瓶颈，然后编写优化解决方案。我觉得找到性能瓶颈这一点就比较难，因为是自己写的代码所以容易陷入一些先入为主的刻板思考模式。不过最最主要的一点还是你如果自己都弄不清楚你使用的技术栈的话，那就无从谈起优化，所以前面有很大篇幅分析了Electron进程方面的知识以及梳理了整个上传流程。
 
 #### 使用Electron自带的Devtools进行性能分析
 
@@ -491,7 +498,7 @@ class ChildProcessPool {
 - 3）`getForkedFromPool`方法是从进程池中拿到一个进程，如果进程池还没有一个子进程或是已经创建的子进程数量小于设置的可创建子进程数最大值，那么会优先新创建一个子进程放入进程池，然后返回这个子进程以供调用(==进程池内部方法，调用者无需关注==)。
 
 - 4）`getForkedFromPool`方法中值得注意的是这行代码：```this.env.NODE_ENV === "development" ? [`--inspect=${this.inspectStartIndex}`] : []```，使用Node.js运行js脚本时加上`- -inspect=端口号` 参数可以开启所运行进程的远程调试端口，多进程程序状态追踪往往比较困难，所以采取这种方式后可以使用浏览器Devtools单独调试每个进程(具体可以在浏览器输入地址：`chrome://inspect/#devices`然后打开调试配置项，配置我们这边指定的调试端口号，最后点击蓝字`Open dedicated DevTools for Node`就能打开一个调试窗口，可以对代码进程断点调试、单步调试、步进步出、运行变量查看等操作，十分便利！)。
-![upload_memory.jpg](inspect.jpg)
+![inject.jpg](inspect.jpg)
 
 
 __2. 分离子进程通信逻辑和业务逻辑__  
