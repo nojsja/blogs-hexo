@@ -26,24 +26,10 @@
     <%- css('css/bootstrap.min.css') %>
 
     <!-- Custom CSS --> 
-    <% if(config['color_theme'] == 'star'){ %>
-        <!-- background effects start -->
-        <%- css('css/dusign-dark.css')%>
-        <%- css('css/dusign-common-dark.css') %>
-        <%- css('css/font-awesome.star.css')%>
-        <%- css('css/toc')%>
-    <% }else if(config['color_theme'] == 'dark'){ %>
-        <%- css('css/dusign-dark.css')%>
-        <%- css('css/dusign-common-dark.css') %>
-        <%- css('css/font-awesome.css')%>
-        <%- css('css/toc')%>
-    <% }else{ %>
-        <%- css('css/dusign-light.css')%>
-        <%- css('css/dusign-common-light.css') %>
-        <%- css('css/font-awesome.css')%>
-        <%- css('css/toc')%>
-        <!-- background effects end -->
-    <% } %>
+    <%- css('css/dusign-light.css')%>
+    <%- css('css/dusign-common-light.css') %>
+    <%- css('css/font-awesome.css')%>
+    <%- css('css/toc')%>
     
     <!-- Pygments Highlight CSS -->
     <%- css('css/highlight') %>

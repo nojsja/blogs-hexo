@@ -117,20 +117,6 @@
 </script>
 
 
-<!-- jquery.tagcloud.js -->
-<script>
-    // only load tagcloud.js in tag.html
-    if($('#tag_cloud').length !== 0){
-        async("<%= config.url%><%= config.root%>js/jquery.tagcloud.js",function(){
-            $.fn.tagcloud.defaults = {
-                //size: {start: 1, end: 1, unit: 'em'},
-                color: {start: '#bbbbee', end: '#578ef4'},
-            };
-            $('#tag_cloud a').tagcloud();
-        })
-    }
-</script>
-
 <!--fastClick.js -->
 <script>
     async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){

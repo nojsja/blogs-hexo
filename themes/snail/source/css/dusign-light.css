@@ -1017,3 +1017,56 @@ body {
 .page-fullscreen footer .copyright a:hover {
   color: #ddd;
 }
+
+/* -------------- anchor.ejs -------------- */
+
+/* place left on bigger screen */
+@media all and (min-width: 800px) {
+  .anchorjs-link{
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top : -0.1em;
+  }
+}
+/* place left on bigger screen */
+@media all and (min-width: 800px) {
+  .anchorjs-link{
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top : -0.1em;
+  }
+}
+
+.toc-fixed {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.toc-normal {
+  width: inherit;
+  line-height: 1em;
+  font-size: 0.9em;
+  float: left;
+  overflow: auto;
+}
+
+::-webkit-scrollbar { width: 8px; } /* Track */ 
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.3);
+  -webkit-border-radius: 5px; border-radius: 5px;
+} 
+/* Handle */ 
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background: rgba(228, 229, 231, 0.6);
+  -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(228, 229, 231, 0.2);
+} 
