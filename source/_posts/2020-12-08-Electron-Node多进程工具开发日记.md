@@ -69,6 +69,8 @@ $: yarn add electron-re
 
 ![RhinoDisk](smb_upload_now.jpg)
 
+下面来讲讲主角=> __electron-re__
+
 ### II. electron-re 可以用来做什么？
 --------------
 
@@ -429,7 +431,14 @@ const { ProcessHost } = require('electron-re');
 ProcessHost
   .registry('test1', (params) => {
     return params;
+  })
+  .registry('test2', (params) => {
+    return fetch(url);
   });
+
+ProcessHost
+  .unregistry('test1')
+  .unregistry('test2');
 ```
 
 #### 进程池和子进程事务中心的配合使用
@@ -555,7 +564,7 @@ __2.child.js (in child process)中使用事务管理中心处理消息__
 ### V. Next To Do
 ----------------------
 
-- [x] BrowserService支持代码更新后自动重启
+- [x] 让Service支持代码更新后自动重启
 - [ ] 添加ChildProcessPool子进程调度逻辑
 - [ ] 优化ChildProcessPool多进程console输出
 - [ ] 增强ChildProcessPool进程池功能
@@ -564,8 +573,8 @@ __2.child.js (in child process)中使用事务管理中心处理消息__
 ### VI. 一些实际使用示例
 ----------------------
 
-1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BroserService` and `MessageChannel`。
+1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BrowserService` and `MessageChannel`。
 
 3. [file-slice-upload](https://github.com/nojsja/javascript-learning/tree/master/file-slice-upload) - 一个关于多文件分片并行上传的demo，使用了 `ChildProcessPool` and `ProcessHost`，基于 Electron@9.3.5。
 
-3. 也能查看 `test` 目录下的测试样例文件，包含了完整的细节使用。
+3. 查看 `test` 目录下的测试样例文件，包含了完整的细节使用。
