@@ -21,31 +21,31 @@ updateDate: 2020-12-08 16:34:01
 ------------
 ```sh
 ├── Contents (you are here!)
-|
+│
 ├── electron-re 可以用来做什么？
 │   ├── 1)用于Electron应用
-|   └── 2)用于Electron/Nodejs应用
-|
+│   └── 2)用于Electron/Nodejs应用
+│
 ├── 说明1：Service/MessageChannel
 │   ├── Service的创建
 │   ├── Service的自动刷新
 │   ├── MessageChannel的引入
 │   ├── MessageChannel提供的方法
 │   └── 对比MessageChannel和原生ipc通信的使用
-|       ├── 1)使用remote远程调用(原生)
-|       ├── 2)使用ipc信号通信(原生)
-|       └── 3)使用MessageChannel进行多向通信(扩展)
-|
+│       ├── 1)使用remote远程调用(原生)
+│       ├── 2)使用ipc信号通信(原生)
+│       └── 3)使用MessageChannel进行多向通信(扩展)
+│
 ├── 说明2：ChildProcessPool/ProcessHost
 │   ├── 进程池的创建
 │   ├── 进程池的实例方法
 │   ├── 子进程事务中心
 │   └── 进程池和子进程事务中心的配合使用
-|       ├── 1)主进程中使用进程池向子进程发送请求
-|       └── 2)子进程中用事务中心处理消息
-|
+│       ├── 1)主进程中使用进程池向子进程发送请求
+│       └── 2)子进程中用事务中心处理消息
+│
 ├── Next To Do
-|
+│
 ├── 几个实际使用实例
 │   ├── 1)Service/MessageChannel示例
 │   ├── 2)ChildProcessPool/ProcessHost示例
@@ -347,7 +347,7 @@ MessageChannel.invoke('main', 'channel4', { value: 'test4' });
 #### 进程池的创建
 进程池基于nodejs的`child_process`模块，使用`fork`方式创建并管理多个独立的子进程。
 
-创建进程池时提供`最大子进程实例个数`、`子进程执行文件路径`等参数即可，进程会自动接管进程的创建和调用。外部可以通过进程池向某个子进程发送请求，而在进程池内部其实就是按照顺序依次将已经创建的多个子进程中的某一个返回给外部调用即可，从而避免了其中某个进程被过度使用。
+创建进程池时提供`最大子进程实例个数`、`子进程执行文件路径`等参数即可，进程池会自动接管进程的创建和调用。外部可以通过进程池向某个子进程发送请求，而在进程池内部其实就是按照顺序依次将已经创建的多个子进程中的某一个返回给外部调用即可，从而避免了其中某个进程被过度使用。
 
 子进程是通过懒加载方式创建的，也就是说如果只创建进程池而不对进程池发起请求调用的话，进程池将不会创建任何子进程实例。
 
@@ -361,7 +361,7 @@ MessageChannel.invoke('main', 'channel4', { value: 'test4' });
 ```js
 /* main.js */
 ...
-const ChildProcessPool = require('path/to/ChildProcessPool.class');
+const { ChildProcessPool } = require('electron-re');
 
 const processPool = new ChildProcessPool({
   path: path.join(app.getAppPath(), 'app/services/child/upload.js'),
