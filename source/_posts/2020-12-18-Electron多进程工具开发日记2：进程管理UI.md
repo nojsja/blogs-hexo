@@ -360,7 +360,7 @@ app.on('web-contents-created', (event, webContents) => {
 
 1.使用ProcessManager向UI渲染窗口发送日志数据
 
->1秒之内采集到的所有进程的console数据会被临时缓存到数组中，默认每秒钟向UI进程发送一次数据，然后清空临时数组。
+>每秒采集到的所有进程的console数据会被临时缓存到数组中，默认1秒钟向UI进程发送一次数据，然后清空临时数组。
 
 在这里需要注意的是ChildProcessPool中的子进程是通过Node.js的`child_process.fork()`方法创建的，此方法会衍生shell，且创建子进程时参数`stdio`会被指定为'pipe'，指明在子进程和父进程之间创建一个管道，从而让父进程中可以直接监听子进程对象上的 `stdout.on('data')`事件来拿到子进程的标准输出流。
 ```js
@@ -552,6 +552,9 @@ this.ctx.stroke(); // 开始绘制
 
 1. 生产环境下ChildProcessPool未按预期工作
 Electron生产环境下，如果app被安装到系统目录，那么ChildProcessPool不能按照预期工作，解决办法有：将app安装到用户目录或者把进程池用于创建子进程的脚本(通过`path`参数指定)单独放到Electron用户数据目录下(Ubuntu20.04上是`~/.config/[appname]`)。
+
+2. UI界面未监听主进程Console数据
+主进程暂未支持此功能，正在寻找解决方案。
 
 ### VI. Next To Do
 ----------------------
