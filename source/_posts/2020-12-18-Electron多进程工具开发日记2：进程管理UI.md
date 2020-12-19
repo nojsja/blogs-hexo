@@ -43,11 +43,11 @@ updateDate: 2020-12-18 17:36:40
 │   ├── 怎样在主进程和UI之间共享数据？
 │   └── 怎样在UI窗口中绘制折线图？
 │
-├── 存在的已知问题
+├── V. 存在的已知问题
 │
-├── Next To Do
+├── VI. Next To Do
 │
-├── 几个实际使用实例
+├── VII. 几个实际使用实例
 │   ├── 1)Service/MessageChannel示例
 │   ├── 2)ChildProcessPool/ProcessHost示例
 │   └── 3)test测试目录示例
@@ -60,6 +60,9 @@ updateDate: 2020-12-18 17:36:40
 最近在做一个多文件分片并行上传模块的时候(基于Electron和React)，遇到了一些性能问题，主要体现在：前端同时添加大量文件(1000-10000)并行上传时(文件同时上传数默认为6)，在不做懒加载优化的情况下，引起了整个应用窗口的卡顿。所以针对Electron/Nodejs多进程这方面做了一些学习，尝试使用多进程架构对上传流程进行优化。
 
 同时也编写了一个方便进行Electron/Node多进程管理和调用的工具[electron-re](https://github.com/nojsja/electron-re)，已经发布为npm组件，可以直接安装：
+
+[>> github地址](https://github.com/nojsja/electron-re)
+
 ```sh
 $: npm install electron-re --save
 # or
@@ -261,7 +264,7 @@ exports.MessageChannel.event.on('unregistry', ({pid}) => {
 });
 ```
 
-2.使用兼容多平台的`pidusage`库每秒采集一次进程的负载情况：
+2.使用兼容多平台的`pidusage`库每秒采集一次进程的负载数据：
 
 ```js
 /* --- src/libs/ProcessManager.class.js --- */
@@ -359,7 +362,7 @@ app.on('web-contents-created', (event, webContents) => {
 
 >1秒之内采集到的所有进程的console数据会被临时缓存到数组中，默认每秒钟向UI进程发送一次数据，然后清空临时数组。
 
-在这里需要注意的是ChildProcessPool中的子进程是通过Node.js的`child_process.fork()`方法创建的，此方法会衍生shell，且创建子进程时参数`stdio`需要指定为'pipe'，指明在子进程和父进程之间创建一个管道，父进程中则可以直接监听子进程对象上的 `stdout.on('data')`事件来拿到子进程的标准输出流。
+在这里需要注意的是ChildProcessPool中的子进程是通过Node.js的`child_process.fork()`方法创建的，此方法会衍生shell，且创建子进程时参数`stdio`会被指定为'pipe'，指明在子进程和父进程之间创建一个管道，从而让父进程中可以直接监听子进程对象上的 `stdout.on('data')`事件来拿到子进程的标准输出流。
 ```js
 /* --- src/libs/ProcessManager.class.js --- */
 
@@ -474,7 +477,7 @@ class ProcessManager {
 
 #### 怎样在UI窗口中绘制折线图
 
-1.注意使用React.PureComponent，会自动对属性更新进行浅比较，以减少不必要的渲染
+1.注意使用React.PureComponent，会自动在属性更新进行浅比较，以减少不必要的渲染
 
 ```js
 /* *************** ProcessTrends *************** */
@@ -544,7 +547,13 @@ this.ctx.stroke(); // 开始绘制
 
 绘制类的源代码可以查看这里[Drawer](https://github.com/nojsja/electron-re/blob/master/src/ui/app/views/processManager/ProcessDrawer.js)，大概原理是：设置Canvas画布宽度width和高度height铺满屏幕，设定横纵坐标轴到边缘的padding值为30，Canvas坐标原点[0,0]为绘制区域左上角顶点。这里以绘制折线图纵轴坐标为例，纵轴表示CPU占用0%-100%或内存占用0-1GB，我们可以将纵轴划分为100个基础单位，但是纵轴坐标点不用为100个，可以设置为10个方便查看，所以每个坐标点就可以表示为`[0, (height-padding) - ((height-(2*padding)) / index) * 100 ]`，index依次等于0,10,20,30...90，其中`(height-padding)`为最下面那个坐标点位置，`(height-(2*padding))`为整个纵轴的长度。
 
-### V. Next To Do
+### V. 存在的已知问题
+------------
+
+1. 生产环境下ChildProcessPool未按预期工作
+Electron生产环境下，如果app被安装到系统目录，那么ChildProcessPool不能按照预期工作，解决办法有：将app安装到用户目录或者把进程池用于创建子进程的脚本(通过`path`参数指定)单独放到Electron用户数据目录下(Ubuntu20.04上是`~/.config/[appname]`)。
+
+### VI. Next To Do
 ----------------------
 
 - [x] 让Service支持代码更新后自动重启
@@ -554,11 +563,11 @@ this.ctx.stroke(); // 开始绘制
 - [ ] 增强ChildProcessPool进程池功能
 - [ ] 增强ProcessHost事务中心功能
 
-### VI. 一些实际使用示例
+### VII. 一些实际使用示例
 ----------------------
 
-1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BrowserService` and `MessageChannel`。
+1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BrowserService/MessageChannel`，并且附带了`ChildProcessPool/ProcessHost`使用demo。
 
-3. [file-slice-upload](https://github.com/nojsja/javascript-learning/tree/master/file-slice-upload) - 一个关于多文件分片并行上传的demo，使用了 `ChildProcessPool` and `ProcessHost`，基于 Electron@9.3.5。
+3. [file-slice-upload](https://github.com/nojsja/javascript-learning/tree/master/file-slice-upload) - 一个关于多文件分片并行上传的demo，使用了 `ChildProcessPool` and `ProcessHost`，基于 Electron@9.3.5开发。
 
-3. 查看 `test` 目录下的测试样例文件，包含了完整的细节使用。
+3. 也查看 `test` 目录下的测试样例文件，包含了完整的细节使用。
