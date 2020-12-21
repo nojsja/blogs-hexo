@@ -13,44 +13,46 @@ categories:
 - Electron
 - Node
 updateDate: 2020-12-18 17:36:40
+top: 2
 ---
 
 > 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...
 
-> 在Ubuntu20.04上进行开发/测试，测试版本：Electron@8.2.0 / 9.3.5
+> 在Ubuntu20.04上进行开发/测试，可直接用于Electron项目，测试版本：Electron@8.2.0 / 9.3.5
 
 ### Contents
 ------------
 ```sh
 ├── Contents (you are here!)
 │
-├── I.前言
+├── I. 前言
+├── II. 架构图
 │
-├── II.electron-re 可以用来做什么？
+├── III.electron-re 可以用来做什么？
 │   ├── 1) 用于Electron应用
 │   └── 2) 用于Electron/Nodejs应用
 │
-├── III.UI功能介绍
+├── IV.UI功能介绍
 │   ├── 主界面
 │   ├── 功能1：Kill进程
 │   ├── 功能2：一键开启DevTools
 │   ├── 功能3：查看进程日志
 │   └── 功能4：查看进程CPU/Memory占用趋势
 │
-├── IV.使用&原理
+├── V. 使用&原理
 │   ├── 引入
 │   ├── 怎样捕获进程资源占用？
 │   ├── 怎样在主进程和UI之间共享数据？
 │   └── 怎样在UI窗口中绘制折线图？
 │
-├── V. 存在的已知问题
+├── VI. 存在的已知问题
 │
-├── VI. Next To Do
+├── VII. Next To Do
 │
-├── VII. 几个实际使用实例
-│   ├── 1)Service/MessageChannel示例
-│   ├── 2)ChildProcessPool/ProcessHost示例
-│   └── 3)test测试目录示例
+├── VIII. 几个实际使用示例
+│   ├── 1) Service/MessageChannel示例
+│   ├── 2) ChildProcessPool/ProcessHost示例
+│   └── 3) test测试目录示例
 ```
 
 
@@ -69,14 +71,19 @@ $: npm install electron-re --save
 $: yarn add electron-re
 ```
 
-前文[《Electron/Node多进程工具开发日记》](https://nojsja.gitee.io/blogs/2020/12/08/Electron-Node%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E6%97%A5%E8%AE%B0/)描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法，这篇文章不会对它的基础使用做过多说明。主要介绍新特性`多进程管理UI`的开发相关。UI界面基于`electron-re`已有的`BrowserService/MessageChannel`和`ChildProcessPool/ProcessHost`基础架构驱动，使用React17 / Babel7开发，主界面：
+前文[《Electron/Node多进程工具开发日记》](https://nojsja.gitee.io/blogs/2020/12/08/Electron-Node%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E6%97%A5%E8%AE%B0/)描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法，这篇文章不会对它的基础使用做过多说明，主要介绍新特性`多进程管理UI`的开发和使用相关。UI界面基于`electron-re`已有的`BrowserService/MessageChannel`和`ChildProcessPool/ProcessHost`基础架构驱动，使用React17 / Babel7开发，主界面：
 
 ![process-manager.main.png](./process-manager.main.png)
 
-### II. electron-re 可以用来做什么？
+### II. electron-re架构图
 --------------
 
-####  1. 用于Electron应用
+![archtecture](./electron-re.png)
+
+### III. electron-re 可以用来做什么？
+--------------
+
+#### 1. 用于Electron应用
 
 - `BrowserService`
 - `MessageChannel`
@@ -136,7 +143,7 @@ ProcessHost
   });
 ```
 
-### III. UI功能介绍
+### IV. UI功能介绍
 --------
 > II 描述了electron-re的主要功能，基于这些功能来实现多进程监控UI面板
 
@@ -176,7 +183,7 @@ ProcessHost
 
 ![trends2.gif](trends2.gif)
 
-### IV.使用&原理
+### V. 使用&原理
 -----------
 
 #### 引入
@@ -545,9 +552,9 @@ this.ctx.lineTo(Math.floor(x), Math.floor(y)); // 描述从上一个坐标点到
 this.ctx.stroke(); // 开始绘制
 ```
 
-绘制类的源代码可以查看这里[Drawer](https://github.com/nojsja/electron-re/blob/master/src/ui/app/views/processManager/ProcessDrawer.js)，大概原理是：设置Canvas画布宽度width和高度height铺满屏幕，设定横纵坐标轴到边缘的padding值为30，Canvas坐标原点[0,0]为绘制区域左上角顶点。这里以绘制折线图纵轴坐标为例，纵轴表示CPU占用0%-100%或内存占用0-1GB，我们可以将纵轴划分为100个基础单位，但是纵轴坐标点不用为100个，可以设置为10个方便查看，所以每个坐标点就可以表示为`[0, (height-padding) - ((height-(2*padding)) / index) * 100 ]`，index依次等于0,10,20,30...90，其中`(height-padding)`为最下面那个坐标点位置，`(height-(2*padding))`为整个纵轴的长度。
+绘制类的源代码可以查看这里[Drawer](https://github.com/nojsja/electron-re/blob/master/src/ui/app/views/processManager/ProcessDrawer.js)，大概原理是：设置Canvas画布宽度width和高度height铺满窗口，设定横纵坐标轴到边缘的padding值为30，Canvas坐标原点[0,0]为绘制区域左上角顶点。这里以绘制折线图纵轴坐标为例，纵轴表示CPU占用0%-100%或内存占用0-1GB，我们可以将纵轴划分为100个基础单位，但是纵轴坐标点不用为100个，可以设置为10个方便查看，所以每个坐标点就可以表示为`[0, (height-padding) - ((height-(2*padding)) / index) * 100 ]`，index依次等于0,10,20,30...90，其中`(height-padding)`为最下面那个坐标点位置，`(height-(2*padding))`为整个纵轴的长度。
 
-### V. 存在的已知问题
+### VI. 存在的已知问题
 ------------
 
 1. 生产环境下ChildProcessPool未按预期工作
@@ -556,7 +563,7 @@ Electron生产环境下，如果app被安装到系统目录，那么ChildProcess
 2. UI界面未监听主进程Console数据
 主进程暂未支持此功能，正在寻找解决方案。
 
-### VI. Next To Do
+### VII. Next To Do
 ----------------------
 
 - [x] 让Service支持代码更新后自动重启
@@ -566,7 +573,7 @@ Electron生产环境下，如果app被安装到系统目录，那么ChildProcess
 - [ ] 增强ChildProcessPool进程池功能
 - [ ] 增强ProcessHost事务中心功能
 
-### VII. 一些实际使用示例
+### VIII. 几个实际使用示例
 ----------------------
 
 1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BrowserService/MessageChannel`，并且附带了`ChildProcessPool/ProcessHost`使用demo。

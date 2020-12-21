@@ -13,6 +13,7 @@ categories:
 - Electron
 - Node
 updateDate: 2020-12-08 16:34:01
+top: 2
 ---
 
 > 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...
@@ -22,34 +23,37 @@ updateDate: 2020-12-08 16:34:01
 ```sh
 ├── Contents (you are here!)
 │
-├── electron-re 可以用来做什么？
-│   ├── 1)用于Electron应用
-│   └── 2)用于Electron/Nodejs应用
+├── I. 前言
+├── II. 架构图
 │
-├── 说明1：Service/MessageChannel
+├── III. electron-re 可以用来做什么？
+│   ├── 1) 用于Electron应用
+│   └── 2) 用于Electron/Nodejs应用
+│
+├── IV. 说明1：Service/MessageChannel
 │   ├── Service的创建
 │   ├── Service的自动刷新
 │   ├── MessageChannel的引入
 │   ├── MessageChannel提供的方法
 │   └── 对比MessageChannel和原生ipc通信的使用
-│       ├── 1)使用remote远程调用(原生)
-│       ├── 2)使用ipc信号通信(原生)
-│       └── 3)使用MessageChannel进行多向通信(扩展)
+│       ├── 1) 使用remote远程调用(原生)
+│       ├── 2) 使用ipc信号通信(原生)
+│       └── 3) 使用MessageChannel进行多向通信(扩展)
 │
-├── 说明2：ChildProcessPool/ProcessHost
+├── V. 说明2：ChildProcessPool/ProcessHost
 │   ├── 进程池的创建
 │   ├── 进程池的实例方法
 │   ├── 子进程事务中心
 │   └── 进程池和子进程事务中心的配合使用
-│       ├── 1)主进程中使用进程池向子进程发送请求
-│       └── 2)子进程中用事务中心处理消息
+│       ├── 1) 主进程中使用进程池向子进程发送请求
+│       └── 2) 子进程中用事务中心处理消息
 │
-├── Next To Do
+├── VI. Next To Do
 │
-├── 几个实际使用实例
-│   ├── 1)Service/MessageChannel示例
-│   ├── 2)ChildProcessPool/ProcessHost示例
-│   └── 3)test测试目录示例
+├── VII. 几个实际使用示例
+│   ├── 1) Service/MessageChannel示例
+│   ├── 2) ChildProcessPool/ProcessHost示例
+│   └── 3) test测试目录示例
 ```
 
 
@@ -59,6 +63,9 @@ updateDate: 2020-12-08 16:34:01
 最近在做一个多文件分片并行上传模块的时候(基于Electron和React)，遇到了一些性能问题，主要体现在：前端同时添加大量文件(1000-10000)并行上传时(文件同时上传数默认为6)，在不做懒加载优化的情况下，引起了整个应用窗口的卡顿。所以针对Electron/Nodejs多进程这方面做了一些学习，尝试使用多进程架构对上传流程进行优化。
 
 同时也编写了一个方便进行Electron/Node多进程管理和调用的工具[electron-re](https://github.com/nojsja/electron-re)，已经发布为npm组件，可以直接安装：
+
+[>> github地址](https://github.com/nojsja/electron-re)
+
 ```sh
 $: npm install electron-re --save
 # or
@@ -71,7 +78,12 @@ $: yarn add electron-re
 
 下面来讲讲主角=> __electron-re__
 
-### II. electron-re 可以用来做什么？
+### II. electron-re架构图
+--------------
+
+![archtecture](./electron-re.png)
+
+### III. electron-re 可以用来做什么？
 --------------
 
 ####  1. 用于Electron应用
@@ -132,7 +144,7 @@ ProcessHost
     });
 ```
 
-### III. Service/MessageChannel
+### IV. Service/MessageChannel
 ----------------------
 用于Electron应用中 - Service进程分离/进程间通信
 
@@ -340,7 +352,7 @@ MessageChannel.send('main', 'channel3', { value: 'test3' });
 MessageChannel.invoke('main', 'channel4', { value: 'test4' });
 ```
 
-### IV. ChildProcessPool/ProcessHost
+### V. ChildProcessPool/ProcessHost
 ----------------------
 用于Electron和Nodejs应用中 - Node.js进程池/子进程事务中心
 
@@ -561,16 +573,17 @@ __2.child.js (in child process)中使用事务管理中心处理消息__
   ...
 ```
 
-### V. Next To Do
+### VI. Next To Do
 ----------------------
 
 - [x] 让Service支持代码更新后自动重启
 - [ ] 添加ChildProcessPool子进程调度逻辑
 - [ ] 优化ChildProcessPool多进程console输出
+- [ ] 添加可视化进程管理界面
 - [ ] 增强ChildProcessPool进程池功能
 - [ ] 增强ProcessHost事务中心功能
 
-### VI. 一些实际使用示例
+### VII. 几个实际使用示例
 ----------------------
 
 1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BrowserService` and `MessageChannel`。
