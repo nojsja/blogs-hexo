@@ -585,6 +585,7 @@ pre code {
   color: #808080;
   font-size: 16px;
   font-style: italic;
+  padding-left: 1rem;
   margin-top: 0;
 }
 .post-preview > .post-meta > a {
@@ -606,14 +607,18 @@ pre code {
     font-size: 16px;
   }
   .post-preview .post-meta {
+    padding-left: 1rem;
     font-size: 18px;
   }
 }
 .post-content-preview {
   font-size: 13px;
   font-style: normal;
+  padding-left: 1rem;
   color: #a3a3a3;
   font-weight: 500;
+  word-wrap: break-word;
+  word-break: break-all;
   transition: all .3s;
 }
 .post-content-preview:hover {

@@ -24,9 +24,11 @@ comments: false
 
 ### 参与社区
 
- > 简书:https://www.jianshu.com/u/d5c8b784c1d0
+ > Github：https://github.com/nojsja
  >
- > Github:https://github.com/nojsja
+ > 简书：https://www.jianshu.com/u/d5c8b784c1d0
+ >
+ > 掘金：https://juejin.cn/user/3298190612015405/posts
 
 ### 联系我
 

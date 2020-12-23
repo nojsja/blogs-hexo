@@ -73,12 +73,12 @@ $: yarn add electron-re
 
 前文[《Electron/Node多进程工具开发日记》](https://nojsja.gitee.io/blogs/2020/12/08/Electron-Node%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E6%97%A5%E8%AE%B0/)描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法，这篇文章不会对它的基础使用做过多说明，主要介绍新特性`多进程管理UI`的开发和使用相关。UI界面基于`electron-re`已有的`BrowserService/MessageChannel`和`ChildProcessPool/ProcessHost`基础架构驱动，使用React17 / Babel7开发，主界面：
 
-![process-manager.main.png](./process-manager.main.png)
+![process-manager.main.png](http://nojsja.gitee.io/static-resources/images/electron-re/process-manager.main.png)
 
 ### II. electron-re架构图
 --------------
 
-![archtecture](./electron-re.png)
+![archtecture](http://nojsja.gitee.io/static-resources/images/electron-re/electron-re.png)
 
 ### III. electron-re 可以用来做什么？
 --------------
@@ -90,7 +90,7 @@ $: yarn add electron-re
 
 在Electron的一些“最佳实践”中，建议将占用cpu的代码放到渲染过程中而不是直接放在主过程中，这里先看下chromium的架构图：
 
-![chromium.jpg](chromium.jpg)
+![archtecture](http://nojsja.gitee.io/static-resources/images/electron-re/chromium.jpg)
 
 每个渲染进程都有一个全局对象RenderProcess，用来管理与父浏览器进程的通信，同时维护着一份全局状态。浏览器进程为每个渲染进程维护一个RenderProcessHost对象，用来管理浏览器状态和与渲染进程的通信。浏览器进程和渲染进程使用Chromium的IPC系统进行通信。在chromium中，页面渲染时，UI进程需要和main process不断的进行IPC同步，若此时main process忙，则UIprocess就会在IPC时阻塞。所以如果主进程持续进行消耗CPU时间的任务或阻塞同步IO的任务的话，就会在一定程度上阻塞，从而影响主进程和各个渲染进程之间的IPC通信，IPC通信有延迟或是受阻，渲染进程窗口就会卡顿掉帧，严重的话甚至会卡住不动。
 
@@ -152,7 +152,7 @@ ProcessHost
 
 预览图：
 
-![process-manager.main.png](./process-manager.main.png)
+![process-manager.main.png](http://nojsja.gitee.io/static-resources/images/electron-re/process-manager.main.png)
 
 主要功能如下：
 
@@ -167,21 +167,21 @@ ProcessHost
 
 #### 功能1：Kill进程
 
-![kill.gif](./kill.gif)
+![kill.gif](http://nojsja.gitee.io/static-resources/images/electron-re/kill.gif)
 
 #### 功能2：一键开启DevTools
 
-![devtools.gif](./devtools.gif)
+![devtools.gif](http://nojsja.gitee.io/static-resources/images/electron-re/devtools.gif)
 
 #### 功能3：查看进程日志
 
-![console.gif](console.gif)
+![console.gif](http://nojsja.gitee.io/static-resources/images/electron-re/console.gif)
 
 #### 功能3：查看进程CPU/Memory占用趋势
 
-![trends.gif](trends.gif)
+![trends.gif](http://nojsja.gitee.io/static-resources/images/electron-re/trends.gif)
 
-![trends2.gif](trends2.gif)
+![trends2.gif](http://nojsja.gitee.io/static-resources/images/electron-re/trends2.gif)
 
 ### V. 使用&原理
 -----------

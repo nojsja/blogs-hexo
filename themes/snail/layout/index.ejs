@@ -13,7 +13,7 @@ layout: page
                     &nbsp;&nbsp;&nbsp;&nbsp;<%- post.title || "Untitled" %>
                 </h2>
                 <h3 class="post-subtitle">
-                    <%- post.subtitle || "" %>
+                    >>&nbsp;<%- post.subtitle || "" %>
                 </h3>
                 <div class="post-content-preview">
                     <%- truncate(strip_html(post.content), {length: 200, omission: '...'}) %>...
@@ -54,7 +54,7 @@ layout: page
                     <%- post.title || "Untitled" %>
                 </h2>
                 <h3 class="post-subtitle">
-                    <%- post.subtitle || "" %>
+                    >>&nbsp;<%- post.subtitle || "" %>
                 </h3>
                 <div class="post-content-preview">
                     <%- truncate(strip_html(post.content), {length: 200, omission: '...'}) %>...
