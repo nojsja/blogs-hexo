@@ -26,7 +26,7 @@ categories:
 #### React15遗留问题
 
 ![StackReconciler](http://nojsja.gitee.io/static-resources/images/react/StackReconciler.jpg)
-  - 1）浏览器中，由于JS运算、页面布局和页面绘制都是运行在主线程当中，三者不能同时进行。  
+  - 1）浏览器的整体渲染是多线程的，包括GUI渲染线程、JS引擎线程、事件触发线程、定时触发器线程和异步http请求线程。页面绘制和JS运算是互斥的线程，两者不能同时进行。  
   - 2）React15使用JS的函数调用栈(Stack Reconciler)递归渲染界面，因此在处理DOM元素过多的复杂页面的频繁更新时，大量同步进行的任务(树diff和页面render)会导致界面更新阻塞、事件响应延迟、动画卡顿等，因此React团队在16版本重写了React Reconciler架构。
 
 #### React16问题解决
