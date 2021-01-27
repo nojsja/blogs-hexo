@@ -1,3 +1,12 @@
+.container {
+  position: relative;
+  z-index: 99;
+}
+
+nav.navbar {
+  z-index: 99;
+}
+
 @media (min-width: 1200px) {
   .post-container,
   .sidebar-container {
@@ -95,6 +104,9 @@ a img:focus {
 }
 article {
   overflow-x: hidden;
+  z-index: 99;
+  position: relative;
+
 }
 blockquote {
   color: #808080;
@@ -466,6 +478,8 @@ pre code {
 .intro-header .page-heading {
   padding: 85px 0 55px;
   color: white;
+  z-index: 99;
+  position: relative;
 }
 @media only screen and (min-width: 768px) {
   .intro-header .site-heading,
@@ -1076,6 +1090,10 @@ body {
   background: rgba(228, 229, 231, 0.2);
 } 
 
+/* -------------------------------------------------------
+  特殊效果
+------------------------------------------------------- */
+
 .filter-grid:before {
   background-image: url('/blogs/img/grid.png');
 }
@@ -1088,4 +1106,43 @@ body {
   right: 0;
   z-index: 3;
   background-attachment: fixed;
+}
+
+
+.center-text {
+  transition: color 1s;
+  transition: background 1s;
+}
+
+.center-text {
+  margin: auto;
+  font-family: Ubuntu,sans-serif;
+  font-size: 80px;
+}
+
+.glitch {
+  position: relative;
+  color: #fff;
+  mix-blend-mode: lighten;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.glitch:before {
+  left: -1px;
+  text-shadow: 1px 0 #ff3f1a;
+}
+
+.glitch:after {
+  left: 1px;
+  text-shadow: -1px 0 #00a7e0;
+}
+
+.glitch:after, .glitch:before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: rgba(0,0,0,0);
+  clip: rect(0,0,0,0);
 }

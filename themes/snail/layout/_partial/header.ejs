@@ -4,35 +4,35 @@
     header.intro-header{
         <% if(config['color_theme'] == 'star'){ %>
             <% if (is_home()) { %>
-                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config.root + config["header-img"] %>') 
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config["header-img"] %>') 
                 /*config*/
             <%} else if (is_post()){%>
                 background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= page["header-img"] %>')
                 /*post*/
             <%} else {%>
-                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config.root + page["header-img"] %>')
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= page["header-img"] %>')
                 /*page*/
             <%} %>
         <% }else if(config['color_theme'] == 'dark'){ %>
             <% if (is_home()) { %>
-                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config.root + config["header-img"] %>') 
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config["header-img"] %>') 
                 /*config*/
             <%} else if (is_post()){%>
                 background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= page["header-img"] %>')
                 /*post*/
             <%} else {%>
-                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config.root + page["header-img"] %>')
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= page["header-img"] %>')
                 /*page*/
             <%} %>
         <% }else{ %>
             <% if (is_home()) { %>
-                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= config.root + config["header-img"] %>') 
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= config["header-img"] %>') 
                 /*config*/
             <%} else if (is_post()){%>
                 background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= page["header-img"] %>')
                 /*post*/
             <%} else {%>
-                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= config.root + page["header-img"] %>')
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= page["header-img"] %>')
                 /*page*/
             <%} %>
         <% } %>
@@ -44,7 +44,7 @@
     <%}%>
 </style>
 
-<header class="intro-header filter-grid" >
+<header class="intro-header" >
     <!-- Signature -->
     <div id="signature">
         <div class="container">
@@ -88,7 +88,7 @@
                     </div>
                 <% } else { %>
                     <div class="site-heading">
-                        <h1><%= page.title || config.title %></h1>
+                        <h1 data-text="<%= page.title || config.title %>" class="center-text glitch"><%= page.title || config.title %></h1>
                         <!--<hr class="small">-->
                         <span id="subdusi" class="subheading"><%= page.description || config.subtitle || "" %></span>
                     </div>

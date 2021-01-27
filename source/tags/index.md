@@ -2,5 +2,5 @@
 layout: "tags"
 title: "标签"
 description: "One way to get the most out of life is to look upon it as an adventure."
-header-img: "img/header_img/tag-bg.jpg"
+header-img: "http://nojsja.gitee.io/static-resources/images/hexo/header_img/tag-bg.jpg"
 ---
