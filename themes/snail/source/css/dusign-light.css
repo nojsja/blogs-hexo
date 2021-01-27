@@ -1075,3 +1075,17 @@ body {
 ::-webkit-scrollbar-thumb:window-inactive {
   background: rgba(228, 229, 231, 0.2);
 } 
+
+.filter-grid:before {
+  background-image: url('/blogs/img/grid.png');
+}
+.filter-grid:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background-attachment: fixed;
+}

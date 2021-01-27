@@ -3,7 +3,7 @@ layout: "about"
 title: "关于"
 date: 2017-10-03 10:48:33
 description: "一定有什么事儿还没发生"
-header-img: "img/header_img/about.jpg"
+header-img: "http://nojsja.gitee.io/static-resources/images/hexo/header_img/about.jpg"
 aplayer: true
 comments: false
 ---
