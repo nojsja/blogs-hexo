@@ -193,7 +193,7 @@ function SimpleInput(props) {
   return <input onChange={props.onChange} value={props.attr} />;
 }
 ```
-- 5）优化的使用场景二：使用有key值的完全可控的组件  
+- 5）优化的使用场景二：使用有key值的非可控的组件  
 如果我们想让组件拥有自己的状态管理逻辑，但是在适当的条件下我们又可以控制组件以新的默认值重新初始化，这里有几种方法参考：
 ```js
 /* 
