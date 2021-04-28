@@ -49,7 +49,7 @@ sidebar: true                      # whether or not using Sidebar.
 sidebar-about-description: "Stay hungry, Stay foolish"
 sidebar-avatar: img/avatar/nojsja.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
 widgets:
-# - search
+- search
 - short-about
 - featured-tags
 # - visitor
@@ -60,7 +60,7 @@ widgets:
 
 ## Search
 search:
-  enable: false
+  enable: true
   path: search.xml
   field: post
   content: true
@@ -242,19 +242,6 @@ tip:
 ## ⚠️ The following special effects will take up a lot of cpu resorces, please open it carefully.
 bg_effects:
   enable: true
-  line:
-    enable: false
-    color: 129,200,61
-    pointColor: 129,200,61
-    opacity: 0.7
-    zIndex: -9
-    count: 99
-  mouse_click:
-    enable: false
-    content: '"🌱","just do it","🍀"'
-    color: '"rgb(121,93,179)"
-          ,"rgb(76,180,231)"
-          ,"rgb(184,90,154)"'
   wave:
     enable: true
 
