@@ -299,3 +299,5 @@ image_minifier:
   optimizationLevel: 2
   pngquant: false
   progressive: false
+
+favicon: /blogs/img/favicon.ico

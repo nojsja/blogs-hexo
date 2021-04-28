@@ -2,10 +2,12 @@
   "name": "hexo-site",
   "version": "0.0.0",
   "scripts": {
-    "clean": "hexo clean",
-    "generate": "hexo c && hexo g",
-    "start": "npm run generate && hexo s",
-    "deploy": "npm run clean && npm run generate && hexo d"
+    "prestart": "hexo c --config config.dev.yml; hexo g --config config.dev.yml",
+    "prestart:prod": "hexo c; hexo g",
+    "predeploy": "hexo c; hexo g",
+    "start": "hexo g --config config.dev.yml; hexo server --config config.dev.yml",
+    "start:prod": "hexo g --config config.dev.yml; hexo s",
+    "deploy": "hexo d"
   },
   "hexo": {
     "version": "4.2.1"
