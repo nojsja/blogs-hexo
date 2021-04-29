@@ -4,7 +4,7 @@ catalog: true
 comments: true
 indexing: true
 subtitle: "Learning react: The fiber arch and old/new lifecycle"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 top: false
 tocnum: true
 date: 2021-01-25 11:16:47

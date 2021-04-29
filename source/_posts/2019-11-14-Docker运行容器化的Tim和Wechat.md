@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date:  2019-11-14 19:16:00
 subtitle: "docker linux-qq/wechat"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 tags:
 - linux
 - docker

@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date: 2020-08-16 22:30:00
 subtitle: "smb samba client upload"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 tags:
 - upload
 - smb

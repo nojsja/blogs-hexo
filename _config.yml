@@ -21,9 +21,10 @@ permalink_defaults:
 # Site settings
 SEOTitle: nojsja | Blog
 email: e-mail_address
-description: ""
+description: "nojsja 个人博客"
 keyword: ""
-header-img: http://nojsja.gitee.io/static-resources/images/hexo/header_img/home.jpg
+header-img: http://nojsja.gitee.io/static-resources/images/hexo/header_img/home.jpg?v2
+article-header-img: https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 article-img: img/article_header/article_bg.jpg
 404-img: img/header_img/404.png
 signature: false #show signature
@@ -285,6 +286,6 @@ image_minifier:
   multipass: false
   optimizationLevel: 2
   pngquant: false
-  progressive: false
+  progressive: true
 
 favicon: /blogs/img/favicon.ico

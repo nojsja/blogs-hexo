@@ -5,22 +5,18 @@
 <%- partial('_partial/head') %>
 
 <!-- hack iOS CSS :active style -->
-<body ontouchstart="">
-
-    <!-- background effects end -->
+<body>
 
 	<%- partial('_partial/header',{cache: true}) %>
 	
     <%- partial('_partial/nav',{cache: true}) %>
 
-    <!-- Main Content -->
     <%- body %>
 
-    <!-- Footer -->
     <%- partial('_partial/footer') %>
 
-
 	<a id="rocket" href="#top" class=""></a>
+    
 	<script type="text/javascript" src="/blogs/js/totop.js" async=""></script>
 </body>
 

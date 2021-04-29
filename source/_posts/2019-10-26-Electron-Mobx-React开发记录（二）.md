@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date:   2019-10-26 20:43:00
 subtitle: "Electron Mobx React"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 tags:
 - es6
 - react

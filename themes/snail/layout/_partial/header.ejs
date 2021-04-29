@@ -1,7 +1,6 @@
-<!-- Modified by Yu-Hsuan Yen -->
 <!-- Post Header -->
 <style type="text/css">
-    header.intro-header{
+    header.intro-header {
         <% if(config['color_theme'] == 'star'){ %>
             <% if (is_home()) { %>
                 background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('<%= config["header-img"] %>') 
@@ -38,9 +37,9 @@
         <% } %>
     }
     <% if (config.signature) {%>
-    #signature{
-        background-image: url('<%= config.root + config["signature-img"] %>');
-    }
+        #signature {
+            background-image: url('<%= config.root + config["signature-img"] %>');
+        }
     <%}%>
 </style>
 

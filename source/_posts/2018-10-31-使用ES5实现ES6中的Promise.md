@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date: 2018-10-31 01:15:00
 subtitle: "es6 promise"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 tags:
 - promise
 - es6

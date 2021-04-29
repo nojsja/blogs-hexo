@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date: 2020-03-26 16:18:00
 subtitle: "fileupload node fs"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 tags:
 - upload
 - node

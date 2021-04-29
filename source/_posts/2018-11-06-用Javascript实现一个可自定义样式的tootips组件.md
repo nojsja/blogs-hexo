@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 date:  2018-11-06 19:16:00
 subtitle: "animation javascript"
-header-img: "/blogs/img/article_header/article_header.png"
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 tags:
 - javascript
 categories:
