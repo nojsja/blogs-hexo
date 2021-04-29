@@ -1,15 +1,17 @@
 ---
-title: "polipo服务配置shadowsocks终端代理"
+title: polipo服务配置shadowsocks终端代理
 catalog: true
 toc_nav_num: true
-date:   2019-10-01 16:30:35
-subtitle: "shadowsocks polipo"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: shadowsocks polipo
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- shadowsocks
-- proxy
+  - shadowsocks
+  - proxy
 categories:
-- Linux
+  - Linux
+abbrlink: c358676f
+date: 2019-10-01 16:30:35
 updateDate: 2018-10-01 16:30:35
 ---
 

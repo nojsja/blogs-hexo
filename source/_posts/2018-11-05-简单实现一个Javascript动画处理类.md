@@ -1,14 +1,16 @@
 ---
-title: "简单实现一个Javascript动画处理类"
+title: 简单实现一个Javascript动画处理类
 catalog: true
 toc_nav_num: true
-date: 2018-11-05 01:10:00
-subtitle: "animation javascript"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: animation javascript
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- animation
+  - animation
 categories:
-- Javascript
+  - Javascript
+abbrlink: 3fd62b7c
+date: 2018-11-05 01:10:00
 updateDate: 2018-11-05 01:10:00
 ---
 

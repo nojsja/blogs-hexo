@@ -3,15 +3,17 @@ title: 理解React：Fiber架构和新旧生命周期
 catalog: true
 comments: true
 indexing: true
-subtitle: "Learning react: The fiber arch and old/new lifecycle"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: 'Learning react: The fiber arch and old/new lifecycle'
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
-date: 2021-01-25 11:16:47
 tags:
-- react
+  - react
 categories:
-- React
+  - React
+abbrlink: a33739d5
+date: 2021-01-25 11:16:47
 ---
 
 ### ➣ React Fiber原理

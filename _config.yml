@@ -13,8 +13,11 @@ timezone:
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://nojsja.github.io/blogs       # Note: don't forget to modify the CNAME file to your url
 root: /blogs
-permalink: :year/:month/:day/:title/
+permalink: :year/:month/:day/:abbrlink.html/
 permalink_defaults:
+abbrlink:
+  alg: crc32  # 算法：crc16(default) and crc32
+  rep: hex    # 进制：dec(default) and hex
 
 #Custom Setting Start
 

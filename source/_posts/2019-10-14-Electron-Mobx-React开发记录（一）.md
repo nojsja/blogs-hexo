@@ -1,18 +1,20 @@
 ---
-title: "Electron+Mobx+React开发记录（一）"
+title: Electron+Mobx+React开发记录（一）
 catalog: true
 toc_nav_num: true
-date:   2019-10-14 16:18:46
-subtitle: "Electron Mobx React"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: Electron Mobx React
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- es6
-- react
-- mobx
-- electron
+  - es6
+  - react
+  - mobx
+  - electron
 categories:
-- Mobx
-- Electron
+  - Mobx
+  - Electron
+abbrlink: 5340937c
+date: 2019-10-14 16:18:46
 updateDate: 2019-10-14 16:18:46
 ---
 

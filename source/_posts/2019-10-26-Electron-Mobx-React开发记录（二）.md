@@ -1,17 +1,19 @@
 ---
-title: "Electron+Mobx+React开发记录（二）"
+title: Electron+Mobx+React开发记录（二）
 catalog: true
 toc_nav_num: true
-date:   2019-10-26 20:43:00
-subtitle: "Electron Mobx React"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: Electron Mobx React
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- es6
-- react
-- mobx
-- electron
+  - es6
+  - react
+  - mobx
+  - electron
 categories:
-- Electron
+  - Electron
+abbrlink: 63567fa4
+date: 2019-10-26 20:43:00
 updateDate: 2019-10-26 20:43:00
 ---
 
@@ -27,7 +29,7 @@ updateDate: 2019-10-26 20:43:00
 
 ### 前言
 -------------
-[前一篇文章](www.jianshu.com/p/53d74df07e4c)主要记录了开发环境的搭建和一些开发时遇到的问题，这篇文章主要说说自己在coding work之后进行应用打包时遇到的问题(webpack打包和electron打包)，[项目地址](https://github.com/nojsja/electronux)。
+[前一篇文章](/blogs/2019/10/14/5340937c.html/)主要记录了开发环境的搭建和一些开发时遇到的问题，这篇文章主要说说自己在coding work之后进行应用打包时遇到的问题(webpack打包和electron打包)，[项目地址](https://github.com/nojsja/electronux)。
 
 ### webpack4图片打包的问题
 ------------------------------------------

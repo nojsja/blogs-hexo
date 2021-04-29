@@ -1,15 +1,17 @@
 ---
-title: "使用ES5实现ES6中的Promise"
+title: 使用ES5实现ES6中的Promise
 catalog: true
 toc_nav_num: true
-date: 2018-10-31 01:15:00
-subtitle: "es6 promise"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: es6 promise
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- promise
-- es6
+  - promise
+  - es6
 categories:
-- Javascript
+  - Javascript
+abbrlink: 27676ad7
+date: 2018-10-31 01:15:00
 updateDate: 2018-10-31 01:15:00
 ---
 

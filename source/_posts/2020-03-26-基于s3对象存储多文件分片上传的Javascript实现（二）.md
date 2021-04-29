@@ -1,17 +1,19 @@
 ---
-title: "基于s3对象存储多文件分片上传的Javascript实现（二）"
+title: 基于s3对象存储多文件分片上传的Javascript实现（二）
 catalog: true
 toc_nav_num: true
-date: 2020-03-26 16:18:00
-subtitle: "fileupload node fs"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: fileupload node fs
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- upload
-- node
-updateDate: 2020-03-26 16:18:00
+  - upload
+  - node
 categories:
-- Javascript
-- Node
+  - Javascript
+  - Node
+abbrlink: '7507699'
+date: 2020-03-26 16:18:00
+updateDate: 2020-03-26 16:18:00
 ---
 
 ### 目录
@@ -36,7 +38,7 @@ categories:
 -------
 
 Amazon S3 提供了一个简单 Web 服务接口，可用于随时在 Web 上的任何位置存储和检索任何数量的数据。此服务让所有开发人员都能访问同一个具备高扩展性、可靠性、安全性和快速价廉的数据存储基础设施， Amazon 用它来运行其全球的网站网络。此服务旨在为开发人员带来最大化的规模效益。  
-前一篇文章[基于s3对象存储多文件分片上传的Javascript实现(一)](./基于s3对象存储多文件分片上传的Javascript实现(一).md)主要讲了前端Js多文件分片上传逻辑的实现，描述了浏览器端多文件分片异步上传状态管理方面的设计，这篇文章主要针对前端Coder文件操作的一些痛点，比如：前端分片是以怎样的数据形式发送到中间层的、中间层是怎样接收前端发送的分片数据的、文件下载时中间层怎样处理后端接口返回的大文件数据然后发送给前端、前端又是怎样拿到和下载中间层返回的文件数据的，主要包含这些方面。
+前一篇文章[基于s3对象存储多文件分片上传的Javascript实现(一)](/blogs/2020/03/07/37469a41.html/)主要讲了前端Js多文件分片上传逻辑的实现，描述了浏览器端多文件分片异步上传状态管理方面的设计，这篇文章主要针对前端Coder文件操作的一些痛点，比如：前端分片是以怎样的数据形式发送到中间层的、中间层是怎样接收前端发送的分片数据的、文件下载时中间层怎样处理后端接口返回的大文件数据然后发送给前端、前端又是怎样拿到和下载中间层返回的文件数据的，主要包含这些方面。
 
 ### 文件上传-Js向中间层Node发送分片数据
 ----------------------------------

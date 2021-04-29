@@ -1,13 +1,15 @@
 ---
 title: {{ title }}
+subtitle: {{ title }}
 catalog: true
 comments: true
 indexing: true
-date: {{ date }}
-subtitle: 
-header-img: ../../../../img/default.jpg
+header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
 top: false
 tocnum: true
-tags: 
-categories: 
+date: {{ date }}
+tags:
+- 标签1
+categories:
+- 目录2
 ---

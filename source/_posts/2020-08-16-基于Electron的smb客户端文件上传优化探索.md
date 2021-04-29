@@ -1,15 +1,17 @@
 ---
-title: "基于Electron的smb客户端文件上传优化探索"
+title: 基于Electron的smb客户端文件上传优化探索
 catalog: true
 toc_nav_num: true
-date: 2020-08-16 22:30:00
-subtitle: "smb samba client upload"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: smb samba client upload
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- upload
-- smb
+  - upload
+  - smb
 categories:
-- Electron
+  - Electron
+abbrlink: 1597e5d6
+date: 2020-08-16 22:30:00
 updateDate: 2020-08-16 22:30:00
 ---
 

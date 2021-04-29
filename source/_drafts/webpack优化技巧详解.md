@@ -1,23 +1,20 @@
 ---
 title: webpack优化技巧详解
+subtitle: The guide of frontend performance optimization
 catalog: true
 comments: true
 indexing: true
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
-date: 2021-02-12 11:22:25
-subtitle: The guide of frontend performance optimization
 tags:
-- javascript
-- webpack
-- http
-- performance
+  - webpack
+  - performance
 categories:
-- Javascript
-- Webpack
-- HTTP
-- Performance
+  - Webpack
+  - Performance
+date: 2021-04-29 16:54:50
 ---
 
 > 文章部分参考《深入浅出webpack》
@@ -505,6 +502,3 @@ module.exports = {
 #### 3.1 单次声明加载多张图片
 #### 3.2 使用工具分析构建结果
 #### 3.4 拆分webpack配置文件
-
-
-

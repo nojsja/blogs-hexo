@@ -1,14 +1,16 @@
 ---
-title: "用Javascript实现一个可自定义样式的tootips组件"
+title: 用Javascript实现一个可自定义样式的tootips组件
 catalog: true
 toc_nav_num: true
-date:  2018-11-06 19:16:00
-subtitle: "animation javascript"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: animation javascript
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- javascript
+  - javascript
 categories:
-- Javascript
+  - Javascript
+abbrlink: f7cb1494
+date: 2018-11-06 19:16:00
 updateDate: 2018-11-06 19:16:00
 ---
 

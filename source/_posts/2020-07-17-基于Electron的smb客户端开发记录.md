@@ -1,16 +1,18 @@
 ---
-title: "基于Electron的smb客户端开发记录"
+title: 基于Electron的smb客户端开发记录
 catalog: true
 toc_nav_num: true
-date: 2020-07-17 15:59:00
-subtitle: "smb samba client"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: smb samba client
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- smb
+  - smb
 categories:
-- Electron
+  - Electron
+abbrlink: c1579944
+date: 2020-07-17 15:59:00
 updateDate: 2020-07-17 15:59:00
-top: 
+top:
 ---
 
 

@@ -1,18 +1,20 @@
 ---
-title: "Docker运行容器化的Tim和Wechat"
+title: Docker运行容器化的Tim和Wechat
 catalog: true
 toc_nav_num: true
-date:  2019-11-14 19:16:00
-subtitle: "docker linux-qq/wechat"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: docker linux-qq/wechat
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- linux
-- docker
-- desktop
+  - linux
+  - docker
+  - desktop
 categories:
-- Linux
+  - Linux
+abbrlink: '85550904'
+date: 2019-11-14 19:16:00
 updateDate: 2019-11-14 19:16:00
-top: 
+top:
 ---
 
 ### Contents

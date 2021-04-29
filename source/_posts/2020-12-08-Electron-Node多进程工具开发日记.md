@@ -2,18 +2,20 @@
 title: Electron/Node多进程工具开发日记
 catalog: true
 toc_nav_num: true
-date: 2020-12-08 16:34:01
-subtitle: "electron/node multi-process tool development"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: electron/node multi-process tool development
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- electron
-- node
-- process
+  - electron
+  - node
+  - process
 categories:
-- Electron
-- Node
-updateDate: 2020-12-08 16:34:01
+  - Electron
+  - Node
 top: 2
+abbrlink: 6d582478
+date: 2020-12-08 16:34:01
+updateDate: 2020-12-08 16:34:01
 ---
 
 > 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...

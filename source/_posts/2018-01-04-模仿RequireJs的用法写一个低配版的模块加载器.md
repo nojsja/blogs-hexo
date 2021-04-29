@@ -3,15 +3,17 @@ title: 模仿RequireJs的用法写一个低配版的模块加载器
 catalog: true
 comments: true
 indexing: true
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
-date: 2018-01-04 15:25:39
 subtitle: RequireJs Implementation
-tags: 
-- devtools
+tags:
+  - devtools
 categories:
-- Javascript
+  - Javascript
+abbrlink: d2276f2f
+date: 2018-01-04 15:25:39
 ---
 
 #### Contents

@@ -1,16 +1,18 @@
 ---
-title: "基于s3对象存储多文件分片上传的Javascript实现（一）"
+title: 基于s3对象存储多文件分片上传的Javascript实现（一）
 catalog: true
 toc_nav_num: true
-date: 2020-03-07 16:18:00
-subtitle: "aws s3 javascript"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: aws s3 javascript
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- upload
-- aws
-- s3
+  - upload
+  - aws
+  - s3
 categories:
-- Javascript
+  - Javascript
+abbrlink: 37469a41
+date: 2020-03-07 16:18:00
 updateDate: 2020-03-07 16:18:00
 ---
 

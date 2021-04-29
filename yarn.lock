@@ -2261,6 +2261,14 @@ he@^1.2.0:
   resolved "https://registry.npm.taobao.org/he/download/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha1-hK5l+n6vsWX922FWauFLrwVmTw8=
 
+hexo-abbrlink@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.npm.taobao.org/hexo-abbrlink/download/hexo-abbrlink-2.2.1.tgz#03a3bbf73816ed19279e97452ce617c6caf98b5a"
+  integrity sha1-A6O79zgW7RknnpdFLOYXxsr5i1o=
+  dependencies:
+    hexo-front-matter "^1.0.0"
+    hexo-fs "^3.1.0"
+
 hexo-all-minifier@^0.5.3:
   version "0.5.7"
   resolved "https://registry.npm.taobao.org/hexo-all-minifier/download/hexo-all-minifier-0.5.7.tgz#8dd2564f9299e6a662f77a9771b404771202aba3"
@@ -2377,6 +2385,16 @@ hexo-fs@^2.0.0, hexo-fs@^2.0.1:
     chokidar "^3.0.0"
     escape-string-regexp "^2.0.0"
     graceful-fs "^4.1.11"
+
+hexo-fs@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.nlark.com/hexo-fs/download/hexo-fs-3.1.0.tgz#2052ff72c68cda2c577a87aa0ea7980ae503fa99"
+  integrity sha1-IFL/csaM2ixXeoeqDqeYCuUD+pk=
+  dependencies:
+    bluebird "^3.5.1"
+    chokidar "^3.0.0"
+    graceful-fs "^4.1.11"
+    hexo-util "^2.0.0"
 
 hexo-generator-archive@^1.0.0:
   version "1.0.0"
@@ -2554,7 +2572,7 @@ hexo-util@^1.0.0, hexo-util@^1.4.0, hexo-util@^1.9.1:
     strip-indent "^3.0.0"
     striptags "^3.1.1"
 
-hexo-util@^2.1.0:
+hexo-util@^2.0.0, hexo-util@^2.1.0:
   version "2.4.0"
   resolved "https://registry.nlark.com/hexo-util/download/hexo-util-2.4.0.tgz#f5c0099a0a1718b3ad27061e5e4d1fb9eb7f2b41"
   integrity sha1-9cAJmgoXGLOtJwYeXk0fuet/K0E=
@@ -2607,7 +2625,7 @@ hexo@^3.0.0:
     titlecase "^1.1.2"
     warehouse "^2.2.0"
 
-hexo@^4.0.0:
+hexo@^4.2.1:
   version "4.2.1"
   resolved "https://registry.nlark.com/hexo/download/hexo-4.2.1.tgz#2aa1d4428b0ade23bac34f546a387b36432dd81c"
   integrity sha1-KqHUQosK3iO6w09Uajh7NkMt2Bw=

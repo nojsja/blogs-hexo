@@ -2,18 +2,20 @@
 title: Electron多进程工具开发日记2：进程管理UI
 catalog: true
 toc_nav_num: true
-date: 2020-12-18 17:36:40
-subtitle: "electron/node multi-process tool development"
-header-img: "https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg"
+subtitle: electron/node multi-process tool development
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
-- electron
-- node
-- process
+  - electron
+  - node
+  - process
 categories:
-- Electron
-- Node
-updateDate: 2020-12-18 17:36:40
+  - Electron
+  - Node
 top: 2
+abbrlink: 927d467e
+date: 2020-12-18 17:36:40
+updateDate: 2020-12-18 17:36:40
 ---
 
 > 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...
@@ -71,7 +73,7 @@ $: npm install electron-re --save
 $: yarn add electron-re
 ```
 
-前文[《Electron/Node多进程工具开发日记》](https://nojsja.gitee.io/blogs/2020/12/08/Electron-Node%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%E6%97%A5%E8%AE%B0/)描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法，这篇文章不会对它的基础使用做过多说明，主要介绍新特性`多进程管理UI`的开发和使用相关。UI界面基于`electron-re`已有的`BrowserService/MessageChannel`和`ChildProcessPool/ProcessHost`基础架构驱动，使用React17 / Babel7开发，主界面：
+前文[《Electron/Node多进程工具开发日记》](/blogs/2020/12/08/6d582478.html/)描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法，这篇文章不会对它的基础使用做过多说明，主要介绍新特性`多进程管理UI`的开发和使用相关。UI界面基于`electron-re`已有的`BrowserService/MessageChannel`和`ChildProcessPool/ProcessHost`基础架构驱动，使用React17 / Babel7开发，主界面：
 
 ![process-manager.main.png](http://nojsja.gitee.io/static-resources/images/electron-re/process-manager.main.png)
 
