@@ -972,6 +972,7 @@ pre code {
 .intro-header .post-heading .meta {
   font-family: 'Lora', 'Times New Roman', serif;
   /* font-style: italic; */
+  text-align: center;
   font-weight: 300;
   font-size: 1.5rem;
 }

@@ -9,10 +9,15 @@ if (IntersectionObserver) {
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
-        var img = entry.target;
-        img.src = img.getAttribute('data-src');
-        img.setAttribute('data-loaded', true);
-        observer.unobserve(img);
+        var img = new Image();
+        img.src = entry.target.getAttribute('data-src');
+        entry.target.src = entry.target.getAttribute('data-loading');
+        img.onload = function() {
+          entry.target.src = img.src;
+          entry.target.setAttribute('data-loaded', true);
+          img.onload = undefined;
+        };
+        observer.unobserve(entry.target);
       }
     });
   });
