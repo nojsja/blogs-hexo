@@ -12,7 +12,7 @@ function lazyProcessor(content, replacement) {
             return str;
         }
 
-        return `<img ${p1} src=${emptyStr} lazyload data-loading=${replacement} data-src=${p2} ${p3}>`;
+        return `<img ${p1} src="${emptyStr}" lazyload data-loading="${replacement}" data-src="${p2}" ${p3}>`;
     });  
 }
 

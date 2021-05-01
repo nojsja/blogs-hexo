@@ -1,6 +1,6 @@
 {
   "name": "hexo-img-lazyload",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "description": "image lazyload plugin for hexo",
   "keywords": ["hexo", "image lazyload", "hexo-image-lazyload"],
