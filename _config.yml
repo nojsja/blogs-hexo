@@ -289,6 +289,11 @@ image_minifier:
   multipass: false
   optimizationLevel: 2
   pngquant: false
-  progressive: true
+  progressive: false
+
+image_lazy:
+  enable: true
+  type: post
+  replacement: "/blogs/img/loading.gif"
 
 favicon: /blogs/img/favicon.ico

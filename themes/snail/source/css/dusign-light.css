@@ -98,6 +98,9 @@
 	overflow-y:scroll;
 	height:auto;
 	max-height:655px;
+
+  -webkit-box-shadow: 0 0 5px #d3d3d3;
+  box-shadow: 0 0 5px #d3d3d3;
 }
 #local-search-result::-webkit-scrollbar{
 	display:none;
@@ -968,13 +971,29 @@ pre code {
 }
 .intro-header .post-heading .meta {
   font-family: 'Lora', 'Times New Roman', serif;
-  font-style: italic;
+  /* font-style: italic; */
   font-weight: 300;
-  font-size: 18px;
+  font-size: 1.5rem;
 }
 .intro-header .post-heading .meta a {
   color: white;
 }
+
+.intro-header .post-heading .meta .post-description {
+  margin-right: 1rem;
+}
+
+.intro-header .post-heading .meta .post-meta-item-text {
+  font-style: normal;
+}
+
+.intro-header .post-heading .meta .leancloud-visitors-count {
+  margin-right: 1rem;
+  font-style: normal !important;
+  text-decoration:underline;
+  
+}
+
 @media only screen and (min-width: 768px) {
   .intro-header .post-heading h1 {
     font-size: 55px;
@@ -1180,7 +1199,7 @@ form .row:first-child .floating-label-form-group {
   color: white;
 }
 .pager {
-  margin: 20px 0 0 !important;
+  margin: 20px 0 20px !important;
   padding: 0px !important;
 }
 .pager li > a,

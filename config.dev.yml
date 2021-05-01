@@ -291,4 +291,9 @@ image_minifier:
   pngquant: false
   progressive: false
 
+image_lazy:
+  enable: true
+  type: post
+  replacement: "/blogs/img/loading.gif"
+
 favicon: /blogs/img/favicon.ico

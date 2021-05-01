@@ -59,8 +59,14 @@
                         <h1><%= page.title %></h1>
                         <h2 class="subheading"><%= page.subtitle || "" %></h2>
                         <span class="meta">
-                            Posted by <%- page.author || config.author %> on
-                            <%= page.date.format(config.date_format) %>
+                            <span class="post-description">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                                <%- page.author || config.author %>
+                            </span>
+                            <span class="post-description">
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                <%= page.date.format(config.date_format) %>
+                            </span>
                         </span>
 
                         <% if(config['visitor']['enable']) { %>
