@@ -4,6 +4,10 @@
   "main": "index.js",
   "description": "image lazyload plugin for hexo",
   "keywords": ["hexo", "image lazyload", "hexo-image-lazyload"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NoJsJa/blogs-hexo.git"
+  },
   "peerDependencies": {
     "hexo": "^5.0.0"
   }
