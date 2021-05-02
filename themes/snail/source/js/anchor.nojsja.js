@@ -10,7 +10,7 @@
     scrollCheck();
   }
   
-  function scrollCheck() {
+  var scrollCheck = fnThrottle(function() {
       var rectbase = $$tocBar.getBoundingClientRect();
       if (rectbase.top <= 0) {
         $toc.css('left', left);
@@ -22,7 +22,7 @@
         (!$toc.hasClass('toc-normal')) && $toc.addClass('toc-normal');
         ($$toc.scrollTop > 0) && ($$toc.scrollTop = 0);
       }
-  }
+  }, 200);
 
   $(function() {
     left = $$tocBar.getBoundingClientRect().left;

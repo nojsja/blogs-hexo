@@ -142,76 +142,79 @@
 <!-- Main Script -->
 <script>
 
-    var musicPlayer = document.querySelector('#aplayer');
-    var apobserver;
-
-    /* load player */
-    var apcallback = function () {
-        if (apobserver) apobserver.disconnect();
-        musicPlayer.className = "";
-        musicPlayer.innerHTML = "";
-        var ap = new APlayer({
-            container: document.getElementById('aplayer'),
-            theme: '#e9e9e9',
-            audio: [{
-                name: '存在信号',
-                artist: 'AcuticNotes',
-                url: 'http://nojsja.gitee.io/static-resources/audio/life-signal.mp3',
-                cover: 'http://nojsja.gitee.io/static-resources/audio/life-signal.jpg'
-
-            }, {
-                name: '遺サレタ場所／斜光',
-                artist: '岡部啓一',
-                url: 'http://nojsja.gitee.io/static-resources/audio/%E6%96%9C%E5%85%89.mp3',
-                cover: 'http://nojsja.gitee.io/static-resources/audio/%E6%96%9C%E5%85%89.jpg'
-            }]
-        });
-    };
-
-    /* get player resources */
-    var apinit = function (cssHref, jsSrc) {
-        var sources = [];
-        cssHref && (sources.push(cssHref));
-        jsSrc && (sources.push(jsSrc));
-
-        sources.forEach(function (source) {
-            async(source, function () {
-                if (/^.*.js$/.test(source)) {
-                    apcallback();
-                }
-            }, /^.*.css$/.test(source) ? 'link' : 'script');
-        });
-
-    }
-
-
-    /* scroll listener */
-    if (IntersectionObserver) {
-
-        apobserver = new IntersectionObserver(function (entrys) {
-
-            entrys.forEach(function (entry) {
-                if (!entry.isIntersecting) return;
-                apobserver.unobserve(entry.target);
-
-                var sources = [];
-                var cssHref = entry.target.getAttribute('lazy-css-href');
-                var jsSrc = entry.target.getAttribute('lazy-js-src');
-
-                apinit(cssHref, jsSrc);
-
+    (function() {
+        var musicPlayer = document.querySelector('#aplayer');
+        var apobserver;
+    
+        /* load player */
+        var apcallback = function () {
+            if (apobserver) apobserver.disconnect();
+            musicPlayer.className = "";
+            musicPlayer.innerHTML = "";
+            var ap = new APlayer({
+                container: document.getElementById('aplayer'),
+                theme: '#e9e9e9',
+                audio: [{
+                    name: '存在信号',
+                    artist: 'AcuticNotes',
+                    url: 'http://nojsja.gitee.io/static-resources/audio/life-signal.mp3',
+                    cover: 'http://nojsja.gitee.io/static-resources/audio/life-signal.jpg'
+    
+                }, {
+                    name: '遺サレタ場所／斜光',
+                    artist: '岡部啓一',
+                    url: 'http://nojsja.gitee.io/static-resources/audio/%E6%96%9C%E5%85%89.mp3',
+                    cover: 'http://nojsja.gitee.io/static-resources/audio/%E6%96%9C%E5%85%89.jpg'
+                }]
             });
-        });
+        };
+    
+        /* get player resources */
+        var apinit = function (cssHref, jsSrc) {
+            var sources = [];
+            cssHref && (sources.push(cssHref));
+            jsSrc && (sources.push(jsSrc));
+    
+            sources.forEach(function (source) {
+                async(source, function () {
+                    if (/^.*.js$/.test(source)) {
+                        apcallback();
+                    }
+                }, /^.*.css$/.test(source) ? 'link' : 'script');
+            });
+    
+        }
+    
+    
+        /* scroll listener */
+        if (window.IntersectionObserver) {
+    
+            apobserver = new IntersectionObserver(function (entrys) {
+    
+                entrys.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    apobserver.unobserve(entry.target);
+    
+                    var sources = [];
+                    var cssHref = entry.target.getAttribute('lazy-css-href');
+                    var jsSrc = entry.target.getAttribute('lazy-js-src');
+    
+                    apinit(cssHref, jsSrc);
+    
+                });
+            });
+    
+            apobserver.observe(musicPlayer);
+    
+        } else {
+    
+            var cssHref = musicPlayer.getAttribute('lazy-css-href');
+            var jsSrc = musicPlayer.getAttribute('lazy-js-src');
+    
+            apinit(cssHref, jsSrc);
+    
+        }
 
-        apobserver.observe(musicPlayer);
-
-    } else {
-
-        var cssHref = musicPlayer.getAttribute('lazy-css-href');
-        var jsSrc = musicPlayer.getAttribute('lazy-js-src');
-
-        apinit(cssHref, jsSrc);
-
-    }
+    }.bind(window))();
 
 </script>

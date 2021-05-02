@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="<%= config.favicon %>">
 
     <!-- pre actions -->
-    <link href="/blogs/fonts/fontawesome-webfont.woff2?v=4.3.0" rel=preload>
+    <link href="/blogs/fonts/fontawesome-webfont.woff2?v=4.3.0" rel=preload as="font" crossorigin>
     <link href="https://www.google-analytics.com" rel="preconnect" crossorigin>
     <link href="http://busuanzi.ibruce.info" rel="preconnect" crossorigin>
     <link href="http://nojsja.gitee.io" rel="preconnect" crossorigin>
@@ -58,32 +58,8 @@
 
     <%- css('css/font-awesome.min.css') %>
 
-    <!-- async load function -->
-    <script>
-      function async(u, c, tag) {
-        var d = document, t = tag || 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-        
-        switch(t) {
-          case 'script':
-            o.src = u;
-            break;
-          case 'link':
-            o.type = "text/css";
-            o.href = u;
-            o.rel = "stylesheet";
-            break;
-          default:
-            o.src = u;
-            break;
-        }
-
-        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-
-        s.parentNode.insertBefore(o, s);
-      }
-    </script>
+    <!-- polyfill -->
+  	<%- partial('_partial/polyfill',{ cache: true }) %>
 
     <%- js({ src: 'js/buttons.js', async: true, defer: true }) %>
 

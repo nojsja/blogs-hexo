@@ -4,9 +4,9 @@ A image lazyload plugin for hexo@^5.0.0, doesn't work in lower version.
 
 ### Install
 ```bash
-$: yarn add hexo-img-Lazyload
+$: yarn add hexo-img-lazyload
 # or
-$: npm install hexo-img-Lazyload
+$: npm install hexo-img-lazyload
 ```
 
 ### Usage

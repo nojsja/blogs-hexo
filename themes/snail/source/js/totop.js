@@ -1,6 +1,8 @@
-$(window).scroll(function() {
-    $(window).scrollTop() > $(window).height()*0.5 ? $("#rocket").addClass("show") : $("#rocket").removeClass("show");
-});
+$(window).scroll(fnThrottle(function() {
+    $(window).scrollTop() > $(window).height()*0.5 ?
+        $("#rocket").addClass("show") :
+        $("#rocket").removeClass("show");
+}, 1000));
 
 $("#rocket").click(function() {
     $("#rocket").addClass("launch");

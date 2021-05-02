@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
       $(window).on('scroll', {
               previousTop: 0
           },
-          function() {
+          fnThrottle(function() {
               var currentTop = $(window).scrollTop();
               //check if user is scrolling up
               if (currentTop < this.previousTop) {
@@ -63,7 +63,7 @@ jQuery(document).ready(function($) {
                   if (currentTop > headerHeight && !$('.navbar-custom').hasClass('is-fixed')) $('.navbar-custom').addClass('is-fixed');
               }
               this.previousTop = currentTop;
-          });
+          }, 500));
   }
 });
 

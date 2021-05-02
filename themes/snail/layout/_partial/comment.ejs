@@ -1,11 +1,12 @@
 
-<%- js('js/Valine.min.js') %>
 <div id="vcomments"></div>
-  <script>
-      new Valine({
-          el: '#vcomments',
-          appId: "<%= config.comment.valine.appId %>",
-          appKey: "<%= config.comment.valine.appKey %>",
-          visitor: true
-      })
-  </script>
+<script>
+    async('/blogs/js/Valine.min.js', function() {
+        new Valine({
+            el: '#vcomments',
+            appId: "<%= config.comment.valine.appId %>",
+            appKey: "<%= config.comment.valine.appKey %>",
+            visitor: true
+        })
+    });
+</script>

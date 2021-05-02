@@ -1,35 +1,51 @@
-'use strict'
 
-function query(selector) {
-  return document.querySelectorAll(selector);
-}
+(function() {
+  /* avoid garbage collection */
+  window.hexoLoadingImages = window.hexoLoadingImages || {};
 
-if (IntersectionObserver) {
-
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        var img = new Image();
-        img.src = entry.target.getAttribute('data-src');
-        entry.target.src = entry.target.getAttribute('data-loading');
-        img.onload = function() {
-          entry.target.src = img.src;
-          entry.target.setAttribute('data-loaded', true);
-          img.onload = undefined;
-        };
-        observer.unobserve(entry.target);
-      }
-    });
-  });
+  function query(selector) {
+    return document.querySelectorAll(selector);
+  }
   
-  query('img[lazyload]').forEach(function (item) {
-    observer.observe(item);
-  });
+  /* registry listener */
+  if (window.IntersectionObserver) {
+  
+    var observer = new IntersectionObserver(function (entries) {
 
-} else {
+      entries.forEach(function (entry) {
+        // in view port
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
 
-  query('img[lazyload]').forEach(function (img) {
-    img.src = img.getAttribute('data-src');
-  });
+          // proxy image
+          var img = new Image();
+          var imgId = "_img_" + Math.random();
+          window.hexoLoadingImages[imgId] = img;
 
-}
+          img.onload = function() {
+            entry.target.src = entry.target.getAttribute('data-src');
+            window.hexoLoadingImages[imgId] = null;
+          };
+          img.onerror = function() {
+            window.hexoLoadingImages[imgId] = null;
+          }
+
+          entry.target.src = entry.target.getAttribute('data-loading');
+          img.src = entry.target.getAttribute('data-src');
+
+        }
+      });
+    });
+    
+    query('img[lazyload]').forEach(function (item) {
+      observer.observe(item);
+    });
+  
+  } else {
+  /* fallback */
+    query('img[lazyload]').forEach(function (img) {
+      img.src = img.getAttribute('data-src');
+    });
+  
+  }
+}).bind(window)();

@@ -11,7 +11,6 @@ function lazyProcessor(content, replacement) {
         if (/no-lazy/gi.test(str)) {
             return str;
         }
-
         return `<img ${p1} src="${emptyStr}" lazyload data-loading="${replacement}" data-src="${p2}" ${p3}>`;
     });  
 }
