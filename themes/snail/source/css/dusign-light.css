@@ -448,7 +448,7 @@ nav.navbar {
   -webkit-transition: all .2s;
   -o-transition: all .2s;
   transition: all .2s;
-  color: #8a8a8a !important;
+  color: #7c7c7c !important;
 }
 .sidebar-container a:hover,
 .sidebar-container a:active {
@@ -456,7 +456,7 @@ nav.navbar {
 }
 .sidebar-container .tags a {
   border-color: #bfbfbf !important;
-  color: #8a8a8a !important;
+  color: #7c7c7c !important;
 }
 .sidebar-container .tags a:hover,
 .sidebar-container .tags a:active {
@@ -1044,7 +1044,7 @@ pre code {
 }
 .post-preview > .post-meta {
   font-family: 'Lora', 'Times New Roman', serif;
-  color: #808080;
+  color: #8b8b8b;
   font-size: 16px;
   font-style: italic;
   padding-left: 1rem;
@@ -1077,7 +1077,7 @@ pre code {
   font-size: 13px;
   font-style: normal;
   padding-left: 1rem;
-  color: #a3a3a3;
+  color: #8f8f8f;
   font-weight: 500;
   word-wrap: break-word;
   word-break: break-all;
@@ -1086,7 +1086,16 @@ pre code {
   transition: all .3s;
 }
 .post-content-preview:hover {
-  color: #8a8a8a;
+  color: #7c7c7c;
+}
+
+.post-preview .post-meta .post-description {
+  margin-right: 1rem;
+  font-style: normal !important;
+}
+
+.post-preview .post-meta .post-meta-item-text {
+  font-style: normal;
 }
 @media only screen and (min-width: 768px) {
   .post-content-preview {
@@ -1314,7 +1323,7 @@ body {
   line-height: 28px;
   margin: 0 2px;
   margin-bottom: 8px;
-  background: #D6D6D6;
+  background: #b4b4b4;
 }
 #tag_clouds a:hover,
 #tag_clouds .tag:hover,

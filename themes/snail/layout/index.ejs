@@ -21,8 +21,15 @@ layout: page
             </a>
             <% if (config.home_posts_tag){%>
                 <p class="post-meta" style="margin: 10px 0;">
-                    Posted by <%- post.author || config.author %> on
-                    <%= post.date.format(config.date_format) %>
+                    <span class="post-description">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <%- post.author || config.author %>
+                    </span>
+                    <span class="post-description">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <%= post.date.format(config.date_format) %>
+                    </span>
+                    
                 </p>
                 <div class="tags">
                     <% post.tags.forEach(function(tag){ %>
@@ -31,8 +38,14 @@ layout: page
                 </div>
             <%} else {%>
                 <p class="post-meta">
-                    Posted by <%- post.author || config.author %> on
-                    <%= post.date.format(config.date_format) %>
+                    <span class="post-description">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <%- post.author || config.author %>
+                    </span>
+                    <span class="post-description">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <%= post.date.format(config.date_format) %>
+                    </span>
                 </p>
             <%}%>
 
@@ -62,8 +75,14 @@ layout: page
             </a>
             <% if (config.home_posts_tag){%>
                 <p class="post-meta" style="margin: 10px 0;">
-                    Posted by <%- post.author || config.author %> on
-                    <%= post.date.format(config.date_format) %>
+                    <span class="post-description">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <%- post.author || config.author %>
+                    </span>
+                    <span class="post-description">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <%= post.date.format(config.date_format) %>
+                    </span>
                 </p>
                 <div class="tags">
                     <% post.tags.forEach(function(tag){ %>
@@ -72,8 +91,14 @@ layout: page
                 </div>
             <%} else {%>
                 <p class="post-meta">
-                    Posted by <%- post.author || config.author %> on
-                    <%= post.date.format(config.date_format) %>
+                    <span class="post-description">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <%- post.author || config.author %>
+                    </span>
+                    <span class="post-description">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <%= post.date.format(config.date_format) %>
+                    </span>
                 </p>
             <%}%>
 
