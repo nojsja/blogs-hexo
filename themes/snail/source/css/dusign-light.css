@@ -984,11 +984,18 @@ pre code {
   margin-right: 1rem;
 }
 
-.intro-header .post-heading .meta .post-meta-item-text {
+#headerViewCountWrapper {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color:#3481c0;
+}
+
+#headerViewCountWrapper .post-meta-item-text {
   font-style: normal;
 }
 
-.intro-header .post-heading .meta .leancloud-visitors-count {
+#headerViewCountWrapper .leancloud-visitors-count {
   margin-right: 1rem;
   font-style: normal !important;
   text-decoration:underline;
@@ -1072,6 +1079,35 @@ pre code {
     padding-left: 1rem;
     font-size: 18px;
   }
+}
+
+@keyframes rotate {
+  0% {
+    -webkit-transform: scale(1.0);
+            transform: scale(1.0);
+  }
+  50% {
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1);
+  }
+  100% {
+    -webkit-transform: scale(1.0);
+            transform: scale(1.0);
+
+  }
+}
+.post-top {
+  display: inline-block;
+  color: #F2A729;
+  transition: transform .2s;
+  -webkit-animation-name: rotate;
+          animation-name: rotate;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  -webkit-animation-duration: 1s;
+          animation-duration: 1s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
 }
 .post-content-preview {
   font-size: 13px;
