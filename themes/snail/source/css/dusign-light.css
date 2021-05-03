@@ -1076,9 +1076,10 @@ pre code {
 .post-content-preview {
   font-size: 13px;
   font-style: normal;
-  padding-left: 1rem;
+  padding: 10px 5px 10px 10px;
   color: #8f8f8f;
   font-weight: 500;
+  background-color: #fafafa;
   word-wrap: break-word;
   word-break: break-all;
   -webkit-transition: all .3s;
