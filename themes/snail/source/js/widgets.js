@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
       $(window).on('scroll', {
               previousTop: 0
           },
-          fnThrottle(function() {
+          (function() {
               var currentTop = $(window).scrollTop();
               //check if user is scrolling up
               if (currentTop < this.previousTop) {
@@ -60,10 +60,11 @@ jQuery(document).ready(function($) {
               } else {
                   //if scrolling down...
                   $('.navbar-custom').removeClass('is-visible');
-                  if (currentTop > headerHeight && !$('.navbar-custom').hasClass('is-fixed')) $('.navbar-custom').addClass('is-fixed');
+                  if (currentTop > headerHeight && !$('.navbar-custom').hasClass('is-fixed'))
+                    $('.navbar-custom').addClass('is-fixed');
               }
               this.previousTop = currentTop;
-          }, 500));
+          }));
   }
 });
 

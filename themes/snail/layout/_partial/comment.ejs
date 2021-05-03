@@ -1,12 +1,40 @@
 
 <div id="vcomments"></div>
 <script>
-    async('/blogs/js/Valine.min.js', function() {
-        new Valine({
-            el: '#vcomments',
-            appId: "<%= config.comment.valine.appId %>",
-            appKey: "<%= config.comment.valine.appKey %>",
-            visitor: true
-        })
-    });
+    (function() {
+
+        /* 初始化 comments 组件 */
+        function initComments() {
+            async('/blogs/js/Valine.min.js', function () {
+                new Valine({
+                    el: '#vcomments',
+                    appId: "<%= config.comment.valine.appId %>",
+                    appKey: "<%= config.comment.valine.appKey %>",
+                    visitor: true
+                });
+            });
+        }
+
+        /* scroll listener */
+        if (window.IntersectionObserver) {
+    
+            var vobserver = new IntersectionObserver(function (entrys) {
+    
+                entrys.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    vobserver.unobserve(entry.target);
+                    vobserver.disconnect();
+                    initComments();
+                });
+            });
+    
+            vobserver.observe(document.querySelector('#vcomments'));
+    
+        } else {
+
+            initComments();
+
+        }
+        
+    }).bind(window)();
 </script>

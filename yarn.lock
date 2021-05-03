@@ -2342,6 +2342,11 @@ hexo-deployer-git@^2.0.0:
     moment "^2.18.0"
     swig-templates "^2.0.2"
 
+hexo-filter-nofollow@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.nlark.com/hexo-filter-nofollow/download/hexo-filter-nofollow-2.0.2.tgz#903692f95f26d6ad8933e9926c94d422bbf25d68"
+  integrity sha1-kDaS+V8m1q2JM+mSbJTUIrvyXWg=
+
 hexo-front-matter@^0.2.3:
   version "0.2.3"
   resolved "https://registry.nlark.com/hexo-front-matter/download/hexo-front-matter-0.2.3.tgz#c7ca8ef420ea36bd85e8408a2e8c9bf49efa605e"
@@ -2473,10 +2478,10 @@ hexo-i18n@^1.0.0:
   dependencies:
     sprintf-js "^1.0.3"
 
-hexo-img-lazyload@^0.0.0:
-  version "0.0.0"
-  resolved "https://registry.nlark.com/hexo-img-lazyload/download/hexo-img-lazyload-0.0.0.tgz#37dc0d41868a7375ea05f858538101b0e7b49448"
-  integrity sha1-N9wNQYaKc3XqBfhYU4EBsOe0lEg=
+hexo-img-lazyload@^0.0.4:
+  version "0.0.3"
+  resolved "https://registry.nlark.com/hexo-img-lazyload/download/hexo-img-lazyload-0.0.3.tgz#55e72034d5881a9c31f40774a11f432302a46251"
+  integrity sha1-VecgNNWIGpwx9Ad0oR9DIwKkYlE=
 
 hexo-log@^0.2.0:
   version "0.2.0"

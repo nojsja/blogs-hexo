@@ -22,7 +22,7 @@
         (!$toc.hasClass('toc-normal')) && $toc.addClass('toc-normal');
         ($$toc.scrollTop > 0) && ($$toc.scrollTop = 0);
       }
-  }, 200);
+  }, 150);
 
   $(function() {
     left = $$tocBar.getBoundingClientRect().left;

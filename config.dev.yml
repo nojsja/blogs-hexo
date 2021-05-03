@@ -41,12 +41,6 @@ segmentfault_username:   nojsja
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 
-# Analytics settings
-# Baidu Analytics
-# ba_track_id: 4cc1f2d8f3067386cc5cdb626a202900
-# Google Analytics
-ga_track_id: 'UA-XXXXXXXX-X'          # Format: UA-xxxxxx-xx
-ga_domain: yoursite
 
 # Sidebar settings
 sidebar: true                      # whether or not using Sidebar.
@@ -266,7 +260,7 @@ chinese_blog:
   enable: false
   url: YOUR_CHINESE_BLOG_URL
 
-# minifier all
+# ---- 代码和资源压缩
 html_minifier:
   enable: false
   exclude:
@@ -291,9 +285,18 @@ image_minifier:
   pngquant: false
   progressive: false
 
+# ---- 图片懒加载
 image_lazy:
   enable: true
   type: post
   replacement: "/blogs/img/loading.gif"
+
+# ---- 外链减少权重
+nofollow:
+  enable: true #是否启用插件，默认值为 true
+  field: site #插件的处理范围，默认值为 site，可选 post 或 site
+  exclude: #域名白名单
+    - 'nojsja.gitee.io'
+    - 'nojsja.github.io'
 
 favicon: /blogs/img/favicon.ico
