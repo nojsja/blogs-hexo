@@ -79,6 +79,14 @@
 <!-- fn debounce / throttle -->
 
 <script>
+
+  /**
+  * fnDebounce [去抖函数]
+  * @author nojsja
+  * @param  {Function} fn [需要被包裹的原始函数逻辑]
+  * @param  {Numberl} timeout [延迟时间]
+  * @return {Function} [高阶函数]
+  */
   var fnDebounce = function(fn, timeout) {
     var time = null;
 
@@ -93,6 +101,13 @@
     };
   };
 
+  /**
+  * fnThrottle [节流函数]
+  * @author nojsja
+  * @param  {Function} fn [需要被包裹的原始函数逻辑]
+  * @param  {Numberl} timeout [延迟时间]
+  * @return {Function} [高阶函数]
+  */
   var fnThrottle = function(fn, timeout) {
     var time = null;
 
