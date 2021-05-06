@@ -171,7 +171,7 @@ Annual report.
   </tbody>
 </table>
 ```
-- video 元素指定 `track`文本字幕资源以方便听障人士使用(需要有字母资源文件)：
+- video 元素指定 `track`文本字幕资源以方便听障人士使用(需要有字幕资源文件)：
 ```html
 <video width="300" height="200">
     <source src="marathonFinishLine.mp4" type="video/mp4">
@@ -724,7 +724,7 @@ Reflow:
 
 ![caniuse](https://nojsja.gitee.io/static-resources/images/optimization/caniuse.png)
 
-因此为了解决个别低版本浏览器的兼容性问题，这里采用了一种比较极端的处理方式。常规情况下我们需要引入外部 `[xxx].polyfill.js` (xxx为相应的 API) 来为低版本浏览器添加相应功能，但是对于高版本浏览器自身已经支持了这个 API，却要重复下载 polyfill 库，造成网页请求数和带宽资源的浪费。因此我这里不采用这种方式，因为这个 API 大部分浏览器已经支持，我们默认不使用 `<script>` 标签引入 polyfill.js 而是通过脚本判断当前浏览器是否支持此 API，如果不支持的话再使用`同步XHR请求`远程 下载[polyfill](https://github.com/w3c/IntersectionObserver) 文件，下载后使用 `eval(...)` 的方式执行整个脚本。使用同步方式会阻塞当前 js 执行线程，请谨慎使，此处是为了保证 `IntersectionObserver` 以高优先级方式被注入到网页中，不然可能引发一些使用了此 API 脚本错误。
+因此为了解决个别低版本浏览器的兼容性问题，这里采用了一种比较极端的处理方式。常规情况下我们需要引入外部 `[xxx].polyfill.js` (xxx为相应的 API) 来为低版本浏览器添加相应功能，但是对于高版本浏览器自身已经支持了这个 API，却要重复下载 polyfill 库，造成网页请求数和带宽资源的浪费。因此我这里不采用这种方式，因为这个 API 大部分浏览器已经支持，我们默认不使用 `<script>` 标签引入 polyfill.js 而是通过脚本判断当前浏览器是否支持此 API，如果不支持的话再使用`同步XHR请求`远程 下载[polyfill](https://github.com/w3c/IntersectionObserver) 文件，下载后使用 `eval(...)` 的方式执行整个脚本。使用同步方式会阻塞当前 js 执行线程，请谨慎使用，此处是为了保证 `IntersectionObserver` 以高优先级方式被注入到网页中，不然可能引发一些使用了此 API 脚本错误。
 
 ```html
 <!-- 此脚本被放置在靠近页面首部某个位置 -->
@@ -835,7 +835,7 @@ abbrlink:
 网站内部有大量的外链会影响网站的权重,不利于SEO。
 
 - `nofollow`：是 Google、Yahoo 和微软公司前几年一起提出的一个属性，链接加上这个属性后就不会被计算权值。nofollow 告诉爬虫无需追踪目标页，为了对抗 blogspam(博客垃圾留言信息)，Google推荐使用nofollow，告诉搜索引擎爬虫无需抓取目标页，同时告诉搜索引擎无需将的当前页的Pagerank传递到目标页。但是如果你是通过 sitemap 直接提交该页面，爬虫还是会爬取，这里的nofollow只是当前页对目标页的一种态度，并不代表其他页对目标页的态度。
-- `noreferrer` 和 `noopener`：当 a 标签使用 `target="_blank"` 属性链接到另一个页面时，新页面将与您的页面在同一个进程上运行。如果新页面正在执行开销极大的 JavaScript，旧页面性能可能会受影响。并且新页面可以通过 `window.opener` 拿到旧页面窗口对象执行任意操作，具有极大的安全隐患。使用 `noopener` (兼容属性 `noreferrer`) 之后，新打开的页面就不能拿到旧页面窗口对象了。
+- `noreferrer` 和 `noopener`：当 `<a>` 标签使用 `target="_blank"` 属性链接到另一个页面时，新页面将与您的页面在同一个进程上运行。如果新页面正在执行开销极大的 JavaScript，旧页面性能可能会受影响。并且新页面可以通过 `window.opener` 拿到旧页面窗口对象执行任意操作，具有极大的安全隐患。使用 `noopener` (兼容属性 `noreferrer`) 之后，新打开的页面就不能拿到旧页面窗口对象了。
 - `external`：告诉搜素引擎，这是非本站的链接，这个作用相当于 `target=“_blank”`，减少外部链接的 SEO 权重影响。
 ### 4. 网站SEO优化
 
