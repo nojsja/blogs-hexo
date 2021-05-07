@@ -58,6 +58,7 @@ date: 2021-05-04 12:04:43
   - [3. 网站最佳实践](#3-%E7%BD%91%E7%AB%99%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5)
     - [➣ 使用 hexo-abbrlink 插件生成文章链接](#%E2%9E%A3-%E4%BD%BF%E7%94%A8-hexo-abbrlink-%E6%8F%92%E4%BB%B6%E7%94%9F%E6%88%90%E6%96%87%E7%AB%A0%E9%93%BE%E6%8E%A5)
     - [➣ 使用 hexo-filter-nofollow 规避安全风险](#%E2%9E%A3-%E4%BD%BF%E7%94%A8-hexo-filter-nofollow-%E8%A7%84%E9%81%BF%E5%AE%89%E5%85%A8%E9%A3%8E%E9%99%A9)
+    - [➣ 使用 hexo-deployer-git 和 github workflow 进行自动化部署](#%E2%9E%A3-%E4%BD%BF%E7%94%A8-hexo-deployer-git-%E5%92%8C-github-workflow-%E8%BF%9B%E8%A1%8C%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2)
   - [4. 网站SEO优化](#4-%E7%BD%91%E7%AB%99seo%E4%BC%98%E5%8C%96)
     - [➣ 使用 hexo-generator-sitemap 插件自动生成网站地图](#%E2%9E%A3-%E4%BD%BF%E7%94%A8-hexo-generator-sitemap-%E6%8F%92%E4%BB%B6%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E7%BD%91%E7%AB%99%E5%9C%B0%E5%9B%BE)
     - [➣ 向 Google Search Console 提交个人网站地图](#%E2%9E%A3-%E5%90%91-google-search-console-%E6%8F%90%E4%BA%A4%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E5%9C%B0%E5%9B%BE)
@@ -837,6 +838,25 @@ abbrlink:
 - `nofollow`：是 Google、Yahoo 和微软公司前几年一起提出的一个属性，链接加上这个属性后就不会被计算权值。nofollow 告诉爬虫无需追踪目标页，为了对抗 blogspam(博客垃圾留言信息)，Google推荐使用nofollow，告诉搜索引擎爬虫无需抓取目标页，同时告诉搜索引擎无需将的当前页的Pagerank传递到目标页。但是如果你是通过 sitemap 直接提交该页面，爬虫还是会爬取，这里的nofollow只是当前页对目标页的一种态度，并不代表其他页对目标页的态度。
 - `noreferrer` 和 `noopener`：当 `<a>` 标签使用 `target="_blank"` 属性链接到另一个页面时，新页面将与您的页面在同一个进程上运行。如果新页面正在执行开销极大的 JavaScript，旧页面性能可能会受影响。并且新页面可以通过 `window.opener` 拿到旧页面窗口对象执行任意操作，具有极大的安全隐患。使用 `noopener` (兼容属性 `noreferrer`) 之后，新打开的页面就不能拿到旧页面窗口对象了。
 - `external`：告诉搜素引擎，这是非本站的链接，这个作用相当于 `target=“_blank”`，减少外部链接的 SEO 权重影响。
+
+#### ➣ 使用 hexo-deployer-git 和 github workflow 进行自动化部署
+静态资源打包生成完成后，我需要将其提交到对应的 `github pages` 或 `gitee pages` 仓库中，当需要部署多个仓库时，手动操作效率非常低。因此这里采用 `hexo-deployer-git` 插件进行自动化部署，可以向下面一样声明需要部署的仓库信息，如果有多个仓库直接声明多个 `deploy` 字段即可：
+
+```yml
+# Deployment
+deploy:
+  type: git
+  repository: https://github.com/nojsja/blogs
+  branch: master
+  ignore_hidden:
+    public: false
+  message: update
+```
+
+值得说明的是，非付费用户 `gitee pages` 仓库不支持提交后自动部署。因此我采用的方案是只声明一个 `deploy` 部署仓库指向 `github pages` 仓库，然后再通过 github 仓库自带的 `github workflow` 服务配合 [gitee-pages-action](https://github.com/yanglbme/gitee-pages-action) 这个脚本实现的 gitee 自动部署。它的原理就是使用 github 自动化工作流将 github 仓库的代码同步到 gitee 仓库中去，然后通过读取我们配置的 gitee 账户信息自动执行登录 gitee 账户并调用网页的手动部署接口，实现整个自动化部署流程。
+
+![github-workflow](https://nojsja.gitee.io/static-resources/images/optimization/github-workflow.png)
+
 ### 4. 网站SEO优化
 
 #### ➣ 使用 hexo-generator-sitemap 插件自动生成网站地图
