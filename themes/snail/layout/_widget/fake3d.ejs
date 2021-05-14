@@ -1,0 +1,24 @@
+<!-- fake3d -->
+<script>
+  document.documentElement.className="js";
+  var supportsCssVars=function(){
+    var e,t=document.createElement("style");
+    return t.innerHTML="root: { --tmp-var: bold; }", document.head.appendChild(t),
+      e=!!(window.CSS&&window.CSS.supports&&window.CSS.supports("font-weight","var(--tmp-var)")),
+      t.parentNode.removeChild(t),e
+  };
+  supportsCssVars() || console.log("Please view this demo in a modern browser that supports CSS Variables.");
+</script>
+
+<div class="frame">
+    <div 
+      id="gl" 
+      data-imageOriginal="/blogs/img/header_img/mount.jpg" 
+      data-imageDepth="/blogs/img/header_img/mount-map.jpg" 
+      data-horizontalThreshold="15" 
+      data-verticalThreshold="25">
+    </div>
+    <div class="frame__content"></div>
+</div>
+
+<script src="/blogs/js/fake3d.js"></script>
