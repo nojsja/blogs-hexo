@@ -2,11 +2,11 @@
   "name": "hexo-site",
   "version": "0.0.0",
   "scripts": {
-    "prestart": "hexo clean --config config.dev.yml; hexo generate --config config.dev.yml",
-    "prestart:prod": "hexo clean; hexo generate",
-    "predeploy": "hexo clean; hexo generate",
-    "start": "hexo generate --config config.dev.yml; hexo server --config config.dev.yml",
-    "start:prod": "hexo generate --config config.dev.yml; hexo server",
+    "prestart": "hexo clean --config config.dev.yml && hexo generate --config config.dev.yml",
+    "prestart:prod": "hexo clean && hexo generate",
+    "predeploy": "hexo clean && hexo generate",
+    "start": "hexo generate --config config.dev.yml && hexo server --config config.dev.yml",
+    "start:prod": "hexo generate --config config.dev.yml && hexo server",
     "performance:prod": "lighthouse https://nojsja.gitee.io/blogs --view --preset=desktop --output-path='/home/nojsja/Desktop/lighthouse.html'",
     "performance": "lighthouse http://localhost:4000/blogs --view --preset=desktop --output-path='/home/nojsja/Desktop/lighthouse.html'",
     "deploy": "hexo deploy"
