@@ -870,8 +870,9 @@ pre code {
     /* when the user scrolls down, we hide the header right above the viewport */
     position: fixed;
     top: -61px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid #f2f2f2;
+    backdrop-filter: saturate(180%) blur(5px);
     -webkit-transition: -webkit-transform 0.3s;
     -webkit-transition: all 0.3s;
     -o-transition: all 0.3s;
