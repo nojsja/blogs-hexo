@@ -111,8 +111,9 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 include:
-- ".github/**/*"
+  - ".github/**/*"
 skip_render:
+ - ".github/**/**"
 
 # Writing
 new_post_name: :year-:month-:day-:title.md # File name of new posts
@@ -193,12 +194,11 @@ path: baidusitemap.xml
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/nojsja/blogs
+  repository: https://github.com/nojsja/nojsja.github.io
   # repository: https://gitee.com/nojsja/blogs
   # repository: https://e.coding.net/nojsja/blogs/blogs.git
   branch: master
-  ignore_hidden:
-    public: false
+  ignore_hidden: false # 防止设置编译忽略的文件不被部署到服务器
   message: update
 
 ## share
