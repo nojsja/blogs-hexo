@@ -186,15 +186,12 @@ theme: snail
 #sitemap
 sitemap:
   path: sitemap.xml
-## Baidusitemap
-baidusitemap:
-path: baidusitemap.xml
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/nojsja/nojsja.github.io
+  repository: https://github.com/nojsja/nojsja.github.io.git
   # repository: https://gitee.com/nojsja/blogs
   # repository: https://e.coding.net/nojsja/blogs/blogs.git
   branch: master
