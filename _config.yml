@@ -191,9 +191,8 @@ sitemap:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/nojsja/nojsja.github.io.git
-  # repository: https://gitee.com/nojsja/blogs
-  # repository: https://e.coding.net/nojsja/blogs/blogs.git
+  # repository: https://github.com/nojsja/nojsja.github.io.git
+  repository: https://github.com/nojsja/blogs.git
   branch: master
   ignore_hidden: false # 防止设置编译忽略的文件不被部署到服务器
   message: update
