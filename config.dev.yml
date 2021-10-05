@@ -201,6 +201,16 @@ deploy:
 ## share
 share: false
 
+## rss
+feed:
+    type: atom
+    path: atom.xml
+    limit: 20
+    hub:
+    content:
+    content_limit:
+    content_limit_delim: ' '
+
 # Comment
 ## This comment system is gitment
 comment:
