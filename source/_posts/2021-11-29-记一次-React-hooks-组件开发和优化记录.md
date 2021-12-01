@@ -320,8 +320,8 @@ const Editor = React.memo(props => {
   // 取消编辑
   const cancelEdit = id => {
     setStatus('view');
-    editValues.value = null;
-    getComputeValues(editValues.value);
+    editValues.delete(id);
+    getComputeValues(editValues, id);
     form.resetFields();
   };
 ```
@@ -330,27 +330,26 @@ const Editor = React.memo(props => {
 
 注意看下面我们同时使用 export 关键字将这个对象导出，这样子设计后有一个方便之处就是我们在 getColumns (获取最新的表格列渲染数据) 中可以读取实时缓存的编辑数据，而不会陷入 React Hooks 组件的闭包陷进中，因为我们知道 Hooks 组件的每次渲染过程中各个声明的函数只会读取当前这次渲染的数据，这样可能引发延迟更新的问题。
 
-同时为了在 getColumns 函数中不重复计算一些值，我使用 `getComputeValues(editValues.value)` 在editValues.value 更新的时候手动生成一个计算值以供 getColumns 使用，它的具体使用可以查看 `5.全选模式的处理`。
+同时为了在 getColumns 函数中不重复计算一些值，我使用 `getComputeValues(editValues, id)` 在 editValues 更新的时候手动生成一个计算值以供 getColumns 使用，它的具体使用可以查看 `5.全选模式的处理`。
 
 ```javascript
 // React 组件外部的数据缓存
-export const editValues = {
-  value: null,
-};
+export const editValues = new Map();
 
 // 计算值
-export const computeValues = {
-  value: null,
-};
+export const computeValues = new Map();
 
-const getComputeValues = values => {
-  if (values && values.length) {
-    computeValues.value = values.reduce((pre, cur) => {
-      pre[cur.id] = cur;
-      return pre;
-    }, {});
+const getComputeValues = (values, id) => {
+  if (values.get(id) && values.get(id).length) {
+    computeValues.set(
+      id,
+      values.get(id).reduce((pre, cur) => {
+        pre[cur.id] = cur;
+        return pre;
+      }, {}),
+    );
   } else {
-    computeValues.value = null;
+    computeValues.delete(id);
   }
 };
 
@@ -382,16 +381,19 @@ const getComputeValues = values => {
 
 // 选择所有承保项
   const setAllCheckedAction = status => {
-    editValues.value = editValues.value
-      ? editValues.value.map(item => {
+    if (editValues.has(id)) {
+      editValues.set(
+        id,
+        editValues.get(id).map(item => {
           item.acceptInsurance = status;
           return item;
-        })
-      : null;
+        }),
+      );
+    }
     setAllChecked(status);
-    getComputeValues(editValues.value);
-    if (editValues.value) {
-      form.resetFields(editValues.value.map(item => `acceptInsurance_${item.id}`));
+    getComputeValues(editValues, id);
+    if (editValues.has(id)) {
+      form.resetFields(editValues.get(id).map(item => `acceptInsurance_${item.id}`));
     }
   };
 
