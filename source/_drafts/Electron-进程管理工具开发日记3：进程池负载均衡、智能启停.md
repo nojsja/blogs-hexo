@@ -36,27 +36,36 @@ date: 2021-12-22 13:22:31
 │   ├── 1) 用于 Electron 应用
 │   └── 2) 用于 Electron/Nodejs 应用
 │
-├── IV.UI功能介绍
+├── IV. UI 功能介绍
 │   ├── 主界面
 │   ├── 功能1：Kill 进程
 │   ├── 功能2：一键开启 DevTools
 │   ├── 功能3：查看进程日志
-│   └── 功能4：查看进程 CPU/Memory 占用趋势
+│   ├── 功能4：查看进程 CPU/Memory 占用趋势
+│   └── 功能5：查看 `MessageChannel` 请求发送日志
 │
 ├── V. 新特性：进程池负载均衡
-│   ├── 引入
-│   ├── 怎样捕获进程资源占用？
-│   ├── 怎样在主进程和UI之间共享数据？
-│   └── 怎样在UI窗口中绘制折线图？
+│   ├── 关于负载均衡
+│   ├── 负载均衡策略说明
+│   ├── 负载均衡策略的简易实现
+│   ├── 负载均衡器的实现
+│   └── 进程池配合 LoadBalancer 来实现负载均衡
 │
 ├── VI. 新特性：子进程智能启停
+│   ├── 使进程休眠的各种方式
+│   ├── 生命周期 LifeCycle 的实现
+│   └── 进程互斥锁的雏形
 │
-├── VII. Next To Do
+├── VII. 存在的已知问题
+├── VIII. Next To Do
 │
-├── VIII. 几个实际使用示例
-│   ├── 1) Service/MessageChannel 示例
-│   ├── 2) ChildProcessPool/ProcessHost 示例
-│   └── 3) test 测试目录示例
+├── IX. 几个实际使用示例
+│   ├── 1) Service/MessageChannel 使用示例
+│   ├── 2) 一个实际用于生产项目的例子
+│   ├── 3) ChildProcessPool/ProcessHost 使用示例
+│   ├── 3) test 测试目录示例
+│   └── 4) github README 说明
+│
 ```
 
 ### I. 前言
@@ -206,6 +215,14 @@ UI 功能基于 `electron-re` 基础架构上开发，它通过异步 IPC 和主
 ### V. 新特性：进程池负载均衡
 
 -----------
+> 简化的初版实现
+
+[>> 代码地址](https://github.com/nojsja/electron-re/blob/master/src/libs/LoadBalancer/algorithm/index.js)
+
+#### ➣ 关于负载均衡
+
+“ 负载均衡，英文名称为 Load Balance，其含义就是指将负载（工作任务）进行平衡、分摊到多个操作单元上进行运行，例如 FTP 服务器、Web服务器、企业核心应用服务器和其它主要任务服务器等，从而协同完成工作任务。
+负载均衡构建在原有网络结构之上，它提供了一种透明且廉价有效的方法扩展服务器和网络设备的带宽、加强网络数据处理能力、增加吞吐量、提高网络的可用性和灵活性。” -- 《百度百科》
 
 #### ➣ 负载均衡策略说明
 
@@ -228,16 +245,14 @@ UI 功能基于 `electron-re` 基础架构上开发，它通过异步 IPC 和主
 
 #### ➣ 负载均衡策略的简易实现
 
-[代码地址](https://github.com/nojsja/electron-re/blob/master/src/libs/LoadBalancer/algorithm/index.js)
-
 参数说明：
 
-- tasks：任务数组，一个示例：`[{id: 11101, weight: 2}, {id: 11102, weight: 1}]`
-- currentIndex: 目前所处的任务索引，默认为 0，每次调用时会自动加 1，超出任务数组长度时会自动取模
-- context：主进程参数上下文，用于动态更新当前任务索引和权重索引
-- weightIndex：权重索引，用于权重策略，默认为 0，每次调用时会自动加 1，超出权重总和时会自动取模、
-- weightTotal：权重总和，用于权重策略相关计算
-- connectionsMap：各个进程活动连接数的映射，用于最小连接数策略相关计算
+- tasks：任务数组，一个示例：`[{id: 11101, weight: 2}, {id: 11102, weight: 1}]`。
+- currentIndex: 目前所处的任务索引，默认为 0，每次调用时会自动加 1，超出任务数组长度时会自动取模。
+- context：主进程参数上下文，用于动态更新当前任务索引和权重索引。
+- weightIndex：权重索引，用于权重策略，默认为 0，每次调用时会自动加 1，超出权重总和时会自动取模。
+- weightTotal：权重总和，用于权重策略相关计算。
+- connectionsMap：各个进程活动连接数的映射，用于最小连接数策略相关计算。
 
 ##### 1. 轮询策略(POLLING)
 
@@ -412,11 +427,11 @@ module.exports = function (tasks, weightTotal, connectionsMap, context) {
 
 代码都不复杂，有几点需要说明：
 
-1. `params` 对象保存了用于各种策略计算的一些参数，比如权重索引、权重总和、连接数、CPU/Memory占用等等。
-2. `scheduler‵对象用于调用各种策略进行计算，`scheduler.calculate()` 会返回一个命中的进程 id。
-3. `targets` 即所有用于计算的目标进程，不过其中仅存放了目标进程 pid 和 其权重 weight：`[{id: [pid], weight: [number]}, ...]`。
-4. `algorithm` 为特定的负载均衡策略，默认值为轮询策略。
-5. `ProcessManager.on('refresh', this.refreshParams)`，负载均衡器通过监听 `ProcessManager` 的 refresh 事件来定时更新各个进程的计算参数。`ProcessManager` 中有一个定时器，每隔一段时间就会采集一次各个被监听的进程的资源占用情况，并携带采集数据触发一次 refresh 事件。
+1. __params__ 对象保存了用于各种策略计算的一些参数，比如权重索引、权重总和、连接数、CPU/Memory占用等等。
+2. __scheduler__ 对象用于调用各种策略进行计算，`scheduler.calculate()` 会返回一个命中的进程 id。
+3. __targets__ 即所有用于计算的目标进程，不过其中仅存放了目标进程 pid 和 其权重 weight：`[{id: [pid], weight: [number]}, ...]`。
+4. __algorithm__ 为特定的负载均衡策略，默认值为轮询策略。
+5. __ProcessManager.on('refresh', this.refreshParams)__，负载均衡器通过监听 `ProcessManager` 的 refresh 事件来定时更新各个进程的计算参数。`ProcessManager` 中有一个定时器，每隔一段时间就会采集一次各个被监听的进程的资源占用情况，并携带采集数据触发一次 refresh 事件。
 
 
 ```javascript
@@ -535,7 +550,7 @@ class LoadBalancer {
 module.exports = Object.assign(LoadBalancer, { ALGORITHM: CONSTS });
 ```
 
-#### ➣ 进程池中配合 LoadBalancer 来实现负载均衡
+#### ➣ 进程池配合 LoadBalancer 来实现负载均衡
 
 有几点需要说明：
 
@@ -824,6 +839,17 @@ module.exports = Object.assign(ProcessLifeCycle, { defaultLifecycle });
 
 之前看文章时看到关于 API - [Atomic.wait](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics/wait) 的一篇文章，Atomic 除了用于实现进程睡眠，也能基于它来理解进程互斥锁的实现原理。这里有个[基本雏形](https://github.com/nojsja/electron-re/blob/master/src/libs/AsyncLock.js)可以作为参考，相关文档可以参阅 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Atomics)。
 
+AsyncLock 对象需要在子进程中引入，创建 AsyncLock 的构造函数中有一个参数 `sab` 需要注意。这个参数是一个 `SharedArrayBuffer` 共享数据块，这个共享数据快需要在主进程创建，然后通过 IPC 通信发送到各个子进程，通常 IPC 通信会序列化一般的诸如 Object / Array 等数据，导致消息接受者和消息发送者拿到的不是同一个对象，但是经由 IPC 发送的 `SharedArrayBuffer` 对象却会指向同一个内存块。
+
+在子进程中使用 `SharedArrayBuffer` 数据创建 AsyncLock 实例后，任意一个子进程对共享数据的修改都会导致其它进程内指向这块内存的 `SharedArrayBuffer` 数据内容变化，这就是我们使用它实现进程锁的基本要点。
+
+先对 `Atomic` API 做个简单说明：
+
+- __Atomics.compareExchange(typedArray, index, expectedValue, newValue)__：Atomics.compareExchange() 静态方法会在数组的值与期望值相等的时候，将给定的替换值替换掉数组上的值，然后返回旧值。此原子操作保证在写上修改的值之前不会发生其他写操作。
+- __Atomics.waitAsync(typedArray, index, value[, timeout])__：静态方法 Atomics.wait() 确保了一个在 Int32Array 数组中给定位置的值没有发生变化且仍然是给定的值时进程将会睡眠，直到被唤醒或超时。该方法返回一个字符串，值为"ok", "not-equal", 或 "timed-out" 之一。
+- __Atomics.notify(typedArray, index[, count])__：静态方法 Atomics.notify() 唤醒指定数量的在等待队列中休眠的进程，不指定 count 时默认唤醒所有。
+
+AsyncLock 听名字就知道是异步锁的意思，主要看 `executeAfterLocked()` 这个方法，调用该方法并传入回调函数，该回调函数会在锁被获取后执行，并且在执行完毕后自动释放锁。其中一步的关键就是 `tryGetLock()` 函数，它返回了一个 `Promise` 对象，因此我们等待锁释放的逻辑在微任务队列中执行而并不阻塞主线程。
 
 ```javascript
 /**
@@ -887,17 +913,17 @@ class AsyncLock {
           AsyncLock.UNLOCKED,
           AsyncLock.LOCKED
         );
-        if (oldValue == AsyncLock.UNLOCKED) { // success
+        if (oldValue == AsyncLock.UNLOCKED) { // success if AsyncLock.UNLOCKED
           callback();
           this.unlock();
           return;
         }
-        const result = Atomics.waitAsync( // wait
+        const result = Atomics.waitAsync( // wait when AsyncLock.LOCKED
           this.i32a,
           AsyncLock.INDEX,
           AsyncLock.LOCKED
         );
-        await result.value;
+        await result.value; // return a Promise, will not block the main thread
       }
     }
 
@@ -916,6 +942,9 @@ class AsyncLock {
 
 2. 容错处理做的不够好，这一块会成为之后的重要优化点。
 
+3. 采集进程池中活动连接数时采用了"调用计数"的方式。这个方法不太好，准确性不够高，但是目前还未想到更好的解决方法用于统计子进程中活跃的连接数。我觉得还是要从底层进行解决，比如：宏任务和微任务队列、V8 虚拟机、垃圾回收、Libuv 底层原理、Node 进程和线程原理...
+
+4. 暂时没在 windows 平台测试进程休眠功能，win 平台本身不支持进程信号，但是 Node 提供了模拟支持，但是具体表现还需测试。
 
 ### VIII. Next To Do
 
