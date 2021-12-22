@@ -1,0 +1,947 @@
+---
+title: Electron 进程管理工具开发日记3：进程池负载均衡、智能启停
+subtitle: Electron 进程管理工具开发日记3：进程池负载均衡、智能启停
+catalog: true
+comments: true
+indexing: true
+header-img: >-
+  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+top: false
+tocnum: true
+tags:
+  - electron
+  - node
+  - process
+categories:
+  - Electron
+  - Node
+date: 2021-12-22 13:22:31
+---
+
+> 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...
+
+> 在Ubuntu20.04上进行开发/测试，可直接用于Electron项目，测试版本：Electron@8.2.0 / 9.3.5
+
+### Contents
+
+------------
+
+```sh
+├── Contents (you are here!)
+│
+├── I. 前言
+├── II. 架构图
+│
+├── III.electron-re 可以用来做什么？
+│   ├── 1) 用于 Electron 应用
+│   └── 2) 用于 Electron/Nodejs 应用
+│
+├── IV.UI功能介绍
+│   ├── 主界面
+│   ├── 功能1：Kill 进程
+│   ├── 功能2：一键开启 DevTools
+│   ├── 功能3：查看进程日志
+│   └── 功能4：查看进程 CPU/Memory 占用趋势
+│
+├── V. 新特性：进程池负载均衡
+│   ├── 引入
+│   ├── 怎样捕获进程资源占用？
+│   ├── 怎样在主进程和UI之间共享数据？
+│   └── 怎样在UI窗口中绘制折线图？
+│
+├── VI. 新特性：子进程智能启停
+│
+├── VII. Next To Do
+│
+├── VIII. 几个实际使用示例
+│   ├── 1) Service/MessageChannel 示例
+│   ├── 2) ChildProcessPool/ProcessHost 示例
+│   └── 3) test 测试目录示例
+```
+
+### I. 前言
+
+---------------
+
+之前在做 Electron 应用开发的时候，写了个 Electron 进程管理工具 [electron-re](https://github.com/nojsja/electron-re)，支持 Electron/Node 多进程管理、service 模拟、进程实时监控(UI功能)、Node.js 进程池等特性。已经发布为npm组件，可以直接安装：
+
+[>> github地址](https://github.com/nojsja/electron-re)
+
+```sh
+$: npm install electron-re --save
+# or
+$: yarn add electron-re
+```
+
+本主题前面两篇文章：
+
+1. [《Electron/Node多进程工具开发日记》](/blogs/2020/12/08/6d582478.html/) 描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法。
+2. [《Electron多进程工具开发日记2》](https://nojsja.gitee.io/blogs/2020/12/18/927d467e.html/) 介绍了新特性 "多进程管理 UI" 的开发和使用相关。UI 界面基于 `electron-re` 已有的 `BrowserService/MessageChannel` 和 `ChildProcessPool/ProcessHost` 基础架构驱动，使用 React17 / Babel7 开发。
+
+这篇文章主要是描述最近支持的进程池模块新特性 - "进程池负载均衡" 和 "子进程智能启停"，以及相关的基本实现原理。同时提出自己遇到的一些问题，以及对这些问题的思考、解决方案，对之后版本迭代的一些想法等等。
+
+### II. electron-re架构图
+
+--------------
+
+![archtecture](http://nojsja.gitee.io/static-resources/images/electron-re/electron-re.png)
+
+### III. electron-re 可以用来做什么？
+
+--------------
+
+#### 1. 用于Electron应用
+
+- `BrowserService`
+- `MessageChannel`
+
+在 Electron 的一些“最佳实践”中，建议将占用cpu的代码放到渲染过程中而不是直接放在主过程中，这里先看下 chromium 的架构图：
+
+![archtecture](http://nojsja.gitee.io/static-resources/images/electron-re/chromium.jpg)
+
+每个渲染进程都有一个全局对象 RenderProcess，用来管理与父浏览器进程的通信，同时维护着一份全局状态。浏览器进程为每个渲染进程维护一个 RenderProcessHost 对象，用来管理浏览器状态和与渲染进程的通信。浏览器进程和渲染进程使用 Chromium 的 IPC 系统进行通信。在 chromium 中，页面渲染时，UI进程需要和 main process 不断的进行 IPC 同步，若此时 main process 忙，则 UIprocess 就会在 IPC 时阻塞。所以如果主进程持续进行消耗 CPU 时间的任务或阻塞同步 IO 的任务的话，就会在一定程度上阻塞，从而影响主进程和各个渲染进程之间的 IPC 通信，IPC 通信有延迟或是受阻，渲染进程窗口就会卡顿掉帧，严重的话甚至会卡住不动。
+
+因此 `electron-re` 在 Electron 已有的 `Main Process` 主进程 和 `Renderer Process` 渲染进程逻辑的基础上独立出一个单独的 `Service` 概念。`Service`即不需要显示界面的后台进程，它不参与 UI 交互，单独为主进程或其它渲染进程提供服务，它的底层实现为一个允许 `node注入` 和 `remote调用` 的 __隐藏渲染窗口进程__。
+
+这样就可以将代码中耗费 cpu 的操作(比如文件上传中维护一个数千个上传任务的队列)编写成一个单独的js文件，然后使用 `BrowserService` 构造函数以这个 js 文件的地址 `path` 为参数构造一个 `Service` 实例，从而将他们从主进程中分离。如果你说那这部分耗费 cpu 的操作直接放到渲染窗口进程可以嘛？这其实取决于项目自身的架构设计，以及对进程之间数据传输性能损耗和传输时间等各方面的权衡，创建一个 `Service` 的简单示例：
+
+```js
+const { BrowserService } = require('electron-re');
+const myServcie = new BrowserService('app', path.join(__dirname, 'path/to/app.service.js'));
+```
+
+如果使用了 `BrowserService` 的话，要想在主进程、渲染进程、service 进程之间相互发送消息就要使用 `electron-re` 提供的 `MessageChannel` 通信工具，它的接口设计跟 Electron 内建的`ipc`基本一致，底层也是基于原生的 `ipc` 异步通信原理来实现的，简单示例如下：
+
+```js
+/* ---- main.js ---- */
+const { BrowserService } = require('electron-re');
+// 主进程中向一个 service 'app' 发送消息
+MessageChannel.send('app', 'channel1', { value: 'test1' });
+```
+
+#### 2. 用于 Electron/Nodejs 应用
+
+- `ChildProcessPool`
+- `ProcessHost`
+
+此外，如果要创建一些不依赖于 Electron 运行时的子进程（相关参考nodejs `child_process`），可以使用 `electron-re` 提供的专门为 nodejs 运行时编写的进程池 `ChildProcessPool` 。因为创建进程本身所需的开销很大，使用进程池来重复利用已经创建了的子进程，将多进程架构带来的性能效益最大化，简单示例如下：
+
+```js
+/* --- 主进程中 --- */
+const { ChildProcessPool, LoadBalancer } = require('electron-re');
+
+const pool = new ChildProcessPool({
+  path: path.join(app.getAppPath(), 'app/services/child.js'), // 子进程执行文件路径
+  max: 3, // 最大进程数
+  strategy: LoadBalancer.ALGORITHM.WEIGHTS, // 负载均衡策略 - 权重
+  weights: [1, 2, 3], // 权重分配
+});
+
+pool
+  .send('sync-work', params)
+  .then(rsp => console.log(rsp));
+```
+
+一般情况下，在我们的子进程执行文件中，为了在主进程和子进程之间同步数据，可以使用 `process.send('channel', params)` 和 `process.on('channel', function)` 的方式实现(前提是进程以以 `fork` 方式创建或者手动开启了 `ipc` 通信)。但是这样在处理业务逻辑的同时也强迫我们去关注进程之间的通信，你需要知道子进程什么时候能处理完毕，然后再使用`process.send`再将数据返回主进程，使用方式繁琐。
+
+`electron-re` 引入了 `ProcessHost` 的概念，我称之为"进程事务中心"。实际使用时在子进程执行文件中只需要将各个任务函数通过 `ProcessHost.registry('task-name', function)` 注册成多个被监听的事务，然后配合进程池的 `ChildProcessPool.send('task-name', params)` 来触发子进程事务逻辑的调用即可，`ChildProcessPool.send()` 同时会返回一个 Promise 实例以便获取回调数据，简单示例如下：
+
+```js
+/* --- 子进程中 --- */
+const { ProcessHost } = require('electron-re');
+
+ProcessHost
+  .registry('sync-work', (params) => {
+    return { value: 'task-value' };
+  })
+  .registry('async-work', (params) => {
+    return fetch(params.url);
+  });
+```
+
+### IV. UI 功能介绍
+
+--------
+
+UI 功能基于 `electron-re` 基础架构上开发，它通过异步 IPC 和主进程的 `ProcessManager` 进行通信，实时刷新进程状态。操作者可以通过 UI 手动 Kill 进程、查看进程 console 数据、查看进程数 CPU/Memory 占用趋势以及查看 `MessageChannel` 工具的请求发送记录。
+
+#### 主界面
+
+> UI参考`electron-process-manager`设计
+
+预览图：
+
+![process-manager.main.png](http://nojsja.gitee.io/static-resources/images/electron-re/process-manager.main.png)
+
+主要功能如下：
+
+1. 展示 Electron 应用中所有开启的进程，包括主进程、普通的渲染进程、Service 进程(electron-re 引入)、ChildProcessPool 创建的子进程(electron-re 引入)。
+
+2. 进程列表中显示各个进程进程号、进程标识、父进程号、内存占用大小、CPU 占用百分比等，所有进程标识分为：main(主进程)、service(服务进程)、renderer(渲染进程)、node(进程池子进程)，点击表格头可以针对对某项进行递增/递减排序。
+
+3. 选中某个进程后可以 Kill 此进程、查看进程控制台 Console 数据、查看1分钟内进程 CPU/Memory 占用趋势，如果此进程是渲染进程的话还可以通过 `DevTools` 按钮一键打开内置调试工具。
+
+4. ChildProcessPool 创建的子进程暂不支持直接打开 DevTools 进行调试，不过由于创建子进程时添加了 `--inspect` 参数，可以使用 chrome 的 `chrome://inspect` 进行远程调试。
+
+5. 点击 `Signals` 按钮可以查看 `MessageChannel` 工具的请求发送日志，包括简单的请求参数、请求名、请求返回数据等。
+
+#### 功能：Kill 进程
+
+![kill.gif](http://nojsja.gitee.io/static-resources/images/electron-re/kill.gif)
+
+#### 功能：一键开启 DevTools
+
+![devtools.gif](http://nojsja.gitee.io/static-resources/images/electron-re/devtools.gif)
+
+#### 功能：查看进程日志
+
+![console.gif](http://nojsja.gitee.io/static-resources/images/electron-re/console.gif)
+
+#### 功能：查看进程 CPU/Memory 占用趋势
+
+![trends.gif](http://nojsja.gitee.io/static-resources/images/electron-re/trends.gif)
+
+#### 功能：查看 `MessageChannel` 请求发送日志
+
+### V. 新特性：进程池负载均衡
+
+-----------
+
+#### ➣ 负载均衡策略说明
+
+之前的实现中，进程池创建好后，当使用 pool 发送请求时，采用两种方式处理请求发送策略：
+
+1. 默认使用轮询策略选择一个子进程处理请求，只能保证基本的请求平均分配。
+
+2. 另一种使用情况是通过手动指定发送请求时的额外参数 id：`pool.send(channel, params, id)`，这样子让 `id` 相同的请求发送到同一个子进程上。一个适用情景就是：第一次我们向某个子进程发送请求，该子进程处理请求后在其运行时内存空间中存储了一些处理结果，之后某个情况下需要将之前那次请求产生的处理结果再次拿回主进程，这时候就需要使用 `id` 来区分请求。
+
+新版本引入了一些负载均衡策略，包括：
+
+- __POLLING__ - 轮询：子进程轮流处理请求
+- __WEIGHTS__ - 权重：子进程根据设置的权重来处理请求
+- __RANDOM__ - 随机：子进程随机处理请求
+- __SPECIFY__ - 指定：子进程根据指定的进程 id 处理请求
+- __WEIGHTS_POLLING__ - 权重轮询：权重轮询策略与轮询策略类似，但是权重轮询策略会根据权重来计算子进程的轮询次数，从而稳定每个子进程的平均处理请求数量。
+- __WEIGHTS_RANDOM__ - 权重随机：权重随机策略与随机策略类似，但是权重随机策略会根据权重来计算子进程的随机次数，从而稳定每个子进程的平均处理请求数量。
+- __MINIMUM_CONNECTION__ - 最小连接数：选择子进程上具有最小连接活动数量的子进程处理请求。
+- __WEIGHTS_MINIMUM_CONNECTION__ - 权重最小连接数：权重最小连接数策略与最小连接数策略类似，不过各个子进程被选中的概率由连接数和权重共同决定。
+
+#### ➣ 负载均衡策略的简易实现
+
+[代码地址](https://github.com/nojsja/electron-re/blob/master/src/libs/LoadBalancer/algorithm/index.js)
+
+参数说明：
+
+- tasks：任务数组，一个示例：`[{id: 11101, weight: 2}, {id: 11102, weight: 1}]`
+- currentIndex: 目前所处的任务索引，默认为 0，每次调用时会自动加 1，超出任务数组长度时会自动取模
+- context：主进程参数上下文，用于动态更新当前任务索引和权重索引
+- weightIndex：权重索引，用于权重策略，默认为 0，每次调用时会自动加 1，超出权重总和时会自动取模、
+- weightTotal：权重总和，用于权重策略相关计算
+- connectionsMap：各个进程活动连接数的映射，用于最小连接数策略相关计算
+
+##### 1. 轮询策略(POLLING)
+
+> 原理：索引值递增，每次调用时会自动加 1，超出任务数组长度时会自动取模，保证平均调用。
+
+```javascript
+/* polling algorithm */
+module.exports = function (tasks, currentIndex, context) {
+  if (!tasks.length) return null;
+
+  const task = tasks[currentIndex];
+  context.currentIndex ++;
+  context.currentIndex %= tasks.length;
+
+  return task || null;
+};
+```
+
+##### 2. 权重策略(WEIGHTS)
+
+> 原理：每个进程根据 (权重值 + (权重总和 * 随机因子)) 生成最终计算值，最终计算值中的最大值被命中。
+
+
+```javascript
+/* weight algorithm */
+module.exports = function (tasks, weightTotal, context) {
+
+  if (!tasks.length) return null;
+
+  let max = tasks[0].weight, maxIndex = 0, sum;
+
+  for (let i = 0; i < tasks.length; i++) {
+    sum = (tasks[i].weight || 0) + Math.random() * weightTotal;
+    if (sum >= max) {
+      max = sum;
+      maxIndex = i;
+    }
+  }
+
+  context.weightIndex += 1;
+  context.weightIndex %= (weightTotal + 1);
+
+  return tasks[maxIndex];
+};
+```
+
+##### 3. 随机策略(RANDOM)
+
+> 原理：随机函数在 [0, length) 中任意选取一个索引即可
+
+```javascript
+/* random algorithm */
+module.exports = function (tasks) {
+
+  const length = tasks.length;
+  const target = tasks[Math.floor(Math.random() * length)];
+
+  return target || null;
+};
+```
+
+##### 4. 权重轮询策略(WEIGHTS_POLLING)
+
+> 原理：类似轮询策略，不过轮询的区间为：[最小权重值, 权重总和]，根据各项权重累加值进行命中区间计算。每次调用时权重索引会自动加 1，超出权重总和时会自动取模。
+
+```javascript
+/* weights polling */
+module.exports = function (tasks, weightIndex, weightTotal, context) {
+
+  if (!tasks.length) return null;
+
+  let weight = 0;
+  let task;
+
+  for (let i = 0; i < tasks.length; i++) {
+    weight += tasks[i].weight || 0;
+    if (weight >= weightIndex) {
+      task = tasks[i];
+      break;
+    }
+  }
+
+  context.weightIndex += 1;
+  context.weightIndex %= (weightTotal + 1);
+
+  return task;
+};
+```
+
+##### 5. 权重随机策略(WEIGHTS_RANDOM)
+
+> 原理：由 (权重总和 * 随机因子) 产生计算值，将各项权重值与其相减，第一个不大于零的最终值即被命中。
+
+```javascript
+/* weights random algorithm */
+module.exports = function (tasks, weightTotal) {
+  let task;
+  let weight = Math.ceil(Math.random() * weightTotal);
+
+  for (let i = 0; i < tasks.length; i++) {
+    weight -= tasks[i].weight || 0;
+    if (weight <= 0) {
+      task = tasks[i];
+      break;
+    }
+  }
+
+  return task || null;
+};
+```
+
+##### 6. 最小连接数策略(MINIMUM_CONNECTION)
+
+> 原理：直接选择当前连接数最小的项即可。
+
+```javascript
+/* minimum connections algorithm */
+module.exports = function (tasks, connectionsMap={}) {
+  if (tasks.length < 2) return tasks[0] || null;
+
+  let min = connectionsMap[tasks[0].id];
+  let minIndex = 0;
+
+  for (let i = 1; i < tasks.length; i++) {
+    const con = connectionsMap[tasks[i].id] || 0;
+    if (con <= min) {
+      min = con;
+      minIndex = i;
+    }
+  }
+
+  return tasks[minIndex] || null;
+};
+```
+
+##### 7. 权重最小连接数(WEIGHTS_MINIMUM_CONNECTION)
+
+> 原理：权重 + ( 随机因子 * 权重总和 ) + ( 连接数占比 * 权重总和 ) 三个因子，计算出最终值，根据最终值的大小进行比较，最小值所代表项即被命中。
+
+```javascript
+/* weights minimum connections algorithm */
+module.exports = function (tasks, weightTotal, connectionsMap, context) {
+
+  if (!tasks.length) return null;
+
+  let min = tasks[0].weight, minIndex = 0, sum;
+
+  const connectionsTotal = tasks.reduce((total, cur) => {
+    total += (connectionsMap[cur.id] || 0);
+    return total;
+  }, 0);
+
+  // algorithm: (weight + connections'weight) + random factor
+  for (let i = 0; i < tasks.length; i++) {
+    sum =
+      (tasks[i].weight || 0) + (Math.random() * weightTotal) +
+      (( (connectionsMap[tasks[i].id] || 0) * weightTotal ) / connectionsTotal);
+    if (sum <= min) {
+      min = sum;
+      minIndex = i;
+    }
+  }
+
+  context.weightIndex += 1;
+  context.weightIndex %= (weightTotal + 1);
+
+  return tasks[minIndex];
+};
+```
+
+#### ➣ 负载均衡器的实现
+
+代码都不复杂，有几点需要说明：
+
+1. `params` 对象保存了用于各种策略计算的一些参数，比如权重索引、权重总和、连接数、CPU/Memory占用等等。
+2. `scheduler‵对象用于调用各种策略进行计算，`scheduler.calculate()` 会返回一个命中的进程 id。
+3. `targets` 即所有用于计算的目标进程，不过其中仅存放了目标进程 pid 和 其权重 weight：`[{id: [pid], weight: [number]}, ...]`。
+4. `algorithm` 为特定的负载均衡策略，默认值为轮询策略。
+5. `ProcessManager.on('refresh', this.refreshParams)`，负载均衡器通过监听 `ProcessManager` 的 refresh 事件来定时更新各个进程的计算参数。`ProcessManager` 中有一个定时器，每隔一段时间就会采集一次各个被监听的进程的资源占用情况，并携带采集数据触发一次 refresh 事件。
+
+
+```javascript
+const CONSTS = require("./consts");
+const Scheduler = require("./scheduler");
+const {
+  RANDOM,
+  POLLING,
+  WEIGHTS,
+  SPECIFY,
+  WEIGHTS_RANDOM,
+  WEIGHTS_POLLING,
+  MINIMUM_CONNECTION,
+  WEIGHTS_MINIMUM_CONNECTION,
+} = CONSTS;
+const ProcessManager = require('../ProcessManager');
+
+/* Load Balance Instance */
+class LoadBalancer {
+  /**
+    * @param  {Object} options [ options object ]
+    * @param  {Array } options.targets [ targets for load balancing calculation: [{id: 1, weight: 1}, {id: 2, weight: 2}] ]
+    * @param  {String} options.algorithm [ strategies for load balancing calculation : RANDOM | POLLING | WEIGHTS | SPECIFY | WEIGHTS_RANDOM | WEIGHTS_POLLING | MINIMUM_CONNECTION | WEIGHTS_MINIMUM_CONNECTION]
+    */
+  constructor(options) {
+    this.targets = options.targets;
+    this.algorithm = options.algorithm || POLLING;
+    this.params = { // data for algorithm
+      currentIndex: 0, // index
+      weightIndex: 0, // index for weight alogrithm
+      weightTotal: 0, // total weight
+      connectionsMap: {}, // connections of each target
+      cpuOccupancyMap: {}, // cpu occupancy of each target
+      memoryOccupancyMap: {}, // cpu occupancy of each target
+    };
+    this.scheduler = new Scheduler(this.algorithm);
+    this.memoParams = this.memorizedParams();
+    this.calculateWeightIndex();
+    ProcessManager.on('refresh', this.refreshParams);
+  }
+
+  /* params formatter */
+  memorizedParams = () => {
+    return {
+      [RANDOM]: () => [],
+      [POLLING]: () => [this.params.currentIndex, this.params],
+      [WEIGHTS]: () => [this.params.weightTotal, this.params],
+      [SPECIFY]: (id) => [id],
+      [WEIGHTS_RANDOM]: () => [this.params.weightTotal],
+      [WEIGHTS_POLLING]: () => [this.params.weightIndex, this.params.weightTotal, this.params],
+      [MINIMUM_CONNECTION]: () => [this.params.connectionsMap],
+      [WEIGHTS_MINIMUM_CONNECTION]: () => [this.params.weightTotal, this.params.connectionsMap, this.params],
+    };
+  }
+
+  /* refresh params data */
+  refreshParams = (pidMap) => { ... }
+
+  /* pick one task from queue */
+  pickOne = (...params) => {
+    return this.scheduler.calculate(
+      this.targets, this.memoParams[this.algorithm](...params)
+    );
+  }
+
+  /* pick multi task from queue */
+  pickMulti = (count = 1, ...params) => {
+    return new Array(count).fill().map(
+      () => this.pickOne(...params)
+    );
+  }
+
+  /* calculate weight */
+  calculateWeightIndex = () => {
+    this.params.weightTotal = this.targets.reduce((total, cur) => total + (cur.weight || 0), 0);
+    if (this.params.weightIndex > this.params.weightTotal) {
+      this.params.weightIndex = this.params.weightTotal;
+    }
+  }
+
+  /* calculate index */
+  calculateIndex = () => {
+    if (this.params.currentIndex >= this.targets.length) {
+      this.params.currentIndex = (ths.params.currentIndex - 1 >= 0) ? (this.params.currentIndex - 1) : 0;
+    }
+  }
+
+  /* clean data of a task or all task */
+  clean = (id) => { ... }
+
+  /* add a task */
+  add = (task) => {...}
+
+  /* remove target from queue */
+  del = (target) => {...}
+
+  /* wipe queue and data */
+  wipe = () => {...}
+
+  /* update calculate params */
+  updateParams = (object) => {
+    Object.entries(object).map(([key, value]) => {
+      if (key in this.params) {
+        this.params[key] = value;
+      }
+    });
+  }
+
+  /* reset targets */
+  setTargets = (targets) => {...}
+
+  /* change algorithm strategy */
+  setAlgorithm = (algorithm) => {...}
+}
+
+module.exports = Object.assign(LoadBalancer, { ALGORITHM: CONSTS });
+```
+
+#### ➣ 进程池中配合 LoadBalancer 来实现负载均衡
+
+有几点需要说明：
+
+1. 当我们使用 `pool.send('channel', params)` 时，pool 内部 `getForkedFromPool()` 函数会被调用，函数从进程池中选择一个进程来执行任务，如果子进程数未达到最大设定数，则优先创建一个子进程来处理请求。
+2. 子进程 创建/销毁/退出 时需要同步更新 `LoadBalancer` 中监听的 `targets`，否则已被销毁的进程 pid 可能会在执行负载均衡策略计算后被返回。
+3. `ForkedProcess` 是一个装饰器类，封装了 `child_process.fork` 逻辑，为其增加了一些额外功能，如：进程睡眠、唤醒、绑定事件、发送请求等基本方法。
+
+```javascript
+const _path = require('path');
+const EventEmitter = require('events');
+
+const ForkedProcess = require('./ForkedProcess');
+const ProcessLifeCycle = require('../ProcessLifeCycle.class');
+const ProcessManager = require('../ProcessManager/index');
+const { defaultLifecycle } = require('../ProcessLifeCycle.class');
+const LoadBalancer = require('../LoadBalancer');
+let { inspectStartIndex } = require('../../conf/global.json');
+const { getRandomString, removeForkedFromPool, convertForkedToMap, isValidValue } = require('../utils');
+const { UPDATE_CONNECTIONS_SIGNAL } = require('../consts');
+
+const defaultStrategy = LoadBalancer.ALGORITHM.POLLING;
+
+class ChildProcessPool extends EventEmitter {
+  constructor({
+    path, max=6, cwd, env={},
+    weights=[], // weights of processes, the length is equal to max
+    strategy=defaultStrategy,
+    ...
+  }) {
+    super();
+    this.cwd = cwd || _path.dirname(path);
+    this.env = {
+      ...process.env,
+      ...env
+    };
+    this.callbacks = {};
+    this.pidMap = new Map();
+    this.callbacksMap = new Map();
+    this.connectionsMap={};
+    this.forked = [];
+    this.connectionsTimer = null;
+    this.forkedMap = {};
+    this.forkedPath = path;
+    this.forkIndex = 0;
+    this.maxInstance = max;
+    this.weights = new Array(max).fill().map(
+      (_, i) => (isValidValue(weights[i]) ? weights[i] : 1)
+    );
+    this.LB = new LoadBalancer({
+      algorithm: strategy,
+      targets: [],
+    });
+
+    this.initEvents();
+  }
+
+  /* -------------- internal -------------- */
+
+  /* init events */
+  initEvents = () => {
+    // process exit
+    this.on('forked_exit', (pid) => {
+      this.onForkedDisconnect(pid);
+    });
+    ...
+  }
+
+  /**
+    * onForkedCreate [triggered when a process instance created]
+    * @param  {[String]} pid [process pid]
+    */
+  onForkedCreate = (forked) => {
+    const pidsValue = this.forked.map(f => f.pid);
+    const length = this.forked.length;
+
+    this.LB.add({
+      id: forked.pid,
+      weight: this.weights[length - 1],
+    });
+    ProcessManager.listen(pidsValue, 'node', this.forkedPath);
+    ...
+  }
+
+  /**
+    * onForkedDisconnect [triggered when a process instance disconnect]
+    * @param  {[String]} pid [process pid]
+    */
+   onForkedDisconnect = (pid) => {
+    const length = this.forked.length;
+
+    removeForkedFromPool(this.forked, pid, this.pidMap);
+    this.LB.del({
+      id: pid,
+      weight: this.weights[length - 1],
+    });
+    ProcessManager.unlisten([pid]);
+    ...
+  }
+
+  /* Get a process instance from the pool */
+  getForkedFromPool = (id="default") => {
+    let forked;
+    if (!this.pidMap.get(id)) {
+      // create new process and put it into the pool
+      if (this.forked.length < this.maxInstance) {
+        inspectStartIndex ++;
+        forked = new ForkedProcess(
+          this,
+          this.forkedPath,
+          this.env.NODE_ENV === "development" ? [`--inspect=${inspectStartIndex}`] : [],
+          { cwd: this.cwd, env: { ...this.env, id }, stdio: 'pipe' }
+        );
+        this.forked.push(forked);
+        this.onForkedCreate(forked);
+      } else {
+      // get a process from the pool based on load balancing strategy
+        forked = this.forkedMap[this.LB.pickOne().id];
+      }
+      if (id !== 'default') {
+        this.pidMap.set(id, forked.pid);
+      }
+    } else {
+      // pick a special process from the pool
+      forked = this.forkedMap[this.pidMap.get(id)];
+    }
+
+    if (!forked) throw new Error(`Get forked process from pool failed! the process pid: ${this.pidMap.get(id)}.`);
+
+    return forked;
+  }
+
+  /* -------------- caller -------------- */
+
+  /**
+  * send [Send request to a process]
+  * @param  {[String]} taskName [task name - necessary]
+  * @param  {[Any]} params [data passed to process - necessary]
+  * @param  {[String]} id [the unique id bound to a process instance - not necessary]
+  * @return {[Promise]} [return a Promise instance]
+  */
+  send = (taskName, params, givenId) => {
+    if (givenId === 'default') throw new Error('ChildProcessPool: Prohibit the use of this id value: [default] !')
+
+    const id = getRandomString();
+    const forked = this.getForkedFromPool(givenId);
+    this.lifecycle.refresh([forked.pid]);
+
+    return new Promise(resolve => {
+      this.callbacks[id] = resolve;
+      forked.send({action: taskName, params, id });
+    });
+  }
+  ...
+}
+
+module.exports = ChildProcessPool;
+```
+
+### VI. 新特性：子进程智能启停
+
+-----------
+
+这个特性我也将其称为 `进程生命周期` (lifecycle)。
+
+主要作用是：当子进程一段时间未被调用，则自动进入休眠状态，减少 CPU 占用 (减少内存占用很难)。进入休眠状态的时间可以和由创建者控制，默认为 10 min。当子进程进入休眠后，如果有新的请求到来并分发到该休眠的进程上，则会自动唤醒该进程并继续处理当前请求。一段时间闲置后，将会再次进入休眠状态。
+
+#### ➣ 使进程休眠的各种方式
+
+1）如果是让进程暂停的话，可以向进程发送 `SIGSTOP` 信号，发送 `SIGCONT` 信号可以恢复进程。
+
+Node.js:
+```js
+process.kill([pid], "SIGSTOP");
+process.kill([pid], "SIGCONT");
+```
+
+Unix System (Windows 暂未测试):
+```bash
+kill -STOP [pid]
+kill -CONT [pid]
+```
+
+2）Node.js 新的 [Atomic.wait](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics/wait) API 也可以做到编程控制。该方法会监听一个 Int32Array 对象的给定下标下的值，若值未发生改变，则一直等待(阻塞 event loop)，直到发生超时(由 ms 参数决定)。可以在主进程中操作这块共享数据，然后为子进程解除休眠锁定。
+
+```js
+const nil = new Int32Array(new SharedArrayBuffer(4));
+const array = new Array(100000).fill(0);
+setInterval(() => {
+console.log(1);
+}, 1e3);
+Atomics.wait(nil, 0, 0, Number(600e3));
+```
+
+#### ➣ 生命周期 LifeCycle 的实现
+
+代码同样很简单，有几点需要说明：
+
+1. 采用了 `标记清除法`，子进程触发请求时更新调用时间，同时使用定时器循环计算各个被监听子进程的 ( 当前时间 - 上次调用时间) 差值。如果有超过设定的时间的进程则发送 `sleep` 信号，同时携带所有进程 pid。
+
+2. 每个 `ChildProcessPool` 进程池实例都会拥有一个 `ProcessLifeCycle` 实例对象用于控制当前进程池中的进程的 休眠/唤醒。`ChildProcessPool` 会监听 `ProcessLifeCycle` 对象的 `sleep` 事件，拿到需要 sleep 的进程 pid 后调用 `ForkedProcess` 的 `sleep()` 方法使其睡眠。下个请求分发到该进程时，会自动唤醒该进程。
+
+```javascript
+const EventEmitter = require('events');
+
+const defaultLifecycle = {
+  expect: 600e3, // default timeout 10 minutes
+  internal: 30e3 // default loop check interval 30 seconds
+};
+
+class ProcessLifeCycle extends EventEmitter {
+  constructor(options) {
+    super();
+    const {
+      expect=defaultLifecycle.expect,
+      internal=defaultLifecycle.internal
+    } = options;
+    this.timer = null;
+    this.internal = internal;
+    this.expect = expect;
+    this.params = {
+      activities: new Map()
+    };
+  }
+
+  /* task check loop */
+  taskLoop = () => {
+    if (this.timer) return console.warn('ProcessLifeCycle: the task loop is already running');
+
+    this.timer = setInterval(() => {
+      const sleepTasks = [];
+      const date = new Date();
+      const { activities } = this.params;
+      ([...activities.entries()]).map(([key, value]) => {
+        if (date - value > this.expect) {
+          sleepTasks.push(key);
+        }
+      });
+      if (sleepTasks.length) {
+        // this.unwatch(sleepTasks);
+        this.emit('sleep', sleepTasks);
+      }
+    }, this.internal);
+  }
+
+  /* watch processes */
+  watch = (ids=[]) => {
+    ids.forEach(id => {
+      this.params.activities.set(id, new Date());
+    });
+  }
+
+  /* unwatch processes */
+  unwatch = (ids=[]) => {
+    ids.forEach(id => {
+      this.params.activities.delete(id);
+    });
+  }
+
+  /* stop task check loop */
+  stop = () => {
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+
+  /* start task check loop */
+  start = () => {
+    this.taskLoop();
+  }
+
+  /* refresh tasks */
+  refresh = (ids=[]) => {
+    ids.forEach(id => {
+      if (this.params.activities.has(id)) {
+        this.params.activities.set(id, new Date());
+      } else {
+        console.warn(`The task with id ${id} is not being watched.`);
+      }
+    });
+  }
+}
+
+module.exports = Object.assign(ProcessLifeCycle, { defaultLifecycle });
+```
+
+#### ➣ 进程互斥锁的雏形
+
+之前看文章时看到关于 API - [Atomic.wait](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics/wait) 的一篇文章，Atomic 除了用于实现进程睡眠，也能基于它来理解进程互斥锁的实现原理。这里有个[基本雏形](https://github.com/nojsja/electron-re/blob/master/src/libs/AsyncLock.js)可以作为参考，相关文档可以参阅 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Atomics)。
+
+
+```javascript
+/**
+  * @name AsyncLock
+  * @description
+  *   Use it in child processes, mutex lock logic.
+  *   First create SharedArrayBuffer in main process and transfer it to all child processes to control the lock.
+  */
+
+class AsyncLock {
+  static INDEX = 0;
+  static UNLOCKED = 0;
+  static LOCKED = 1;
+
+  constructor(sab) {
+    this.sab = sab; // data like this: const sab = new SharedArrayBuffer(16);
+    this.i32a = new Int32Array(sab);
+  }
+
+  lock() {
+    while (true) {
+      const oldValue = Atomics.compareExchange(
+        this.i32a, AsyncLock.INDEX,
+        AsyncLock.UNLOCKED, // old
+        AsyncLock.LOCKED // new
+      );
+      if (oldValue == AsyncLock.UNLOCKED) { // success
+        return;
+      }
+      Atomics.wait( // wait
+        this.i32a,
+        AsyncLock.INDEX,
+        AsyncLock.LOCKED // expect
+      );
+    }
+  }
+
+  unlock() {
+    const oldValue = Atomics.compareExchange(
+      this.i32a, AsyncLock.INDEX,
+      AsyncLock.LOCKED,
+      AsyncLock.UNLOCKED
+    );
+    if (oldValue != AsyncLock.LOCKED) { // failed
+      throw new Error('Tried to unlock while not holding the mutex');
+    }
+    Atomics.notify(this.i32a, AsyncLock.INDEX, 1);
+  }
+
+  /**
+    * executeLocked [async function to acquired the lock and execute callback]
+    * @param  {Function} callback [callback function]
+    */
+  executeAfterLocked(callback) {
+
+    const tryGetLock = async () => {
+      while (true) {
+        const oldValue = Atomics.compareExchange(
+          this.i32a,
+          AsyncLock.INDEX,
+          AsyncLock.UNLOCKED,
+          AsyncLock.LOCKED
+        );
+        if (oldValue == AsyncLock.UNLOCKED) { // success
+          callback();
+          this.unlock();
+          return;
+        }
+        const result = Atomics.waitAsync( // wait
+          this.i32a,
+          AsyncLock.INDEX,
+          AsyncLock.LOCKED
+        );
+        await result.value;
+      }
+    }
+
+    tryGetLock();
+  }
+}
+```
+
+
+
+### VII. 存在的已知问题
+
+------------
+
+1. 由于使用了 Electron 原生的 `remote` API，因此 `electron-re` 部分特性(Service 相关)不支持 Electron 14 以及以上版本(已经移除 remote)，正考虑近期使用第三方 `remote` 库进行替代兼容。
+
+2. 容错处理做的不够好，这一块会成为之后的重要优化点。
+
+
+### VIII. Next To Do
+
+----------------------
+
+- [x] 让 Service 支持代码更新后自动重启
+- [x] 添加 ChildProcessPool 子进程调度逻辑
+- [x] 优化 ChildProcessPool 多进程console输出
+- [x] 添加可视化进程管理界面
+- [x] 增强 ChildProcessPool 进程池功能
+- [ ] 增强 ProcessHost 事务中心功能
+- [ ] 子进程之间互斥锁逻辑的实现
+- [ ] 使用外部 remote 库以支持最新版本的 Electron
+- [ ] __Kill Bugs__ 🐛
+
+### IX. 几个实际使用示例
+
+----------------------
+
+1. [electronux](https://github.com/nojsja/electronux) - 我的一个Electron项目，使用了 `BrowserService/MessageChannel`，并且附带了`ChildProcessPool/ProcessHost`使用demo。
+
+
+2. [shadowsocks-electron](https://github.com/nojsja/shadowsocks-electron) - 我的另一个Electron 跨平台桌面应用项目，使用 `electron-re` 进行调试开发，并且在生产环境下可以打开 `ProcessManager` UI 用于 CPU/Memory 资源占用监控和请求日志查看。
+
+3. [file-slice-upload](https://github.com/nojsja/javascript-learning/tree/master/file-slice-upload) - 一个关于多文件分片并行上传的demo，使用了 `ChildProcessPool` and `ProcessHost`，基于 Electron@9.3.5开发。
+
+4. 也可直接查看 `index.test.js` 和 `test` 目录下的测试样例文件，包含了一些使用示例。
+
+5. 当然 github - [README](https://github.com/nojsja/electron-re) 也有相关说明项。
