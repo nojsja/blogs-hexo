@@ -12,7 +12,6 @@ tags:
 categories:
   - Electron
   - Node
-top: 2
 abbrlink: 6d582478
 date: 2020-12-08 16:34:01
 updateDate: 2020-12-08 16:34:01
