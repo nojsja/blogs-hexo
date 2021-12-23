@@ -1,12 +1,12 @@
 ---
-title: "Electron 进程管理工具开发日记3：进程池负载均衡、智能启停"
-subtitle: "Electron process management tool dev diary3: process pool load balancing, smart sleep and wake up"
+title: Electron 进程管理工具开发日记3：进程池负载均衡、智能启停
+subtitle: Electron 进程管理工具开发日记3：进程池负载均衡、智能启停
 catalog: true
 comments: true
 indexing: true
 header-img: >-
   https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
-top: 1
+top: false
 tocnum: true
 tags:
   - electron
@@ -15,14 +15,12 @@ tags:
 categories:
   - Electron
   - Node
-abbrlink: 1deae768
 date: 2021-12-22 13:22:31
 ---
 
-
 > 文中实现的部分工具方法正处于早期/测试阶段，仍在持续优化中，仅供参考...
 
-> 在 Ubuntu20.04 上进行开发/测试，可用于 Electron 项目，测试版本：Electron@8.2.0 / 9.3.5
+> 在Ubuntu20.04上进行开发/测试，可直接用于Electron项目，测试版本：Electron@8.2.0 / 9.3.5
 
 ### Contents
 
@@ -44,7 +42,7 @@ date: 2021-12-22 13:22:31
 │   ├── 功能2：一键开启 DevTools
 │   ├── 功能3：查看进程日志
 │   ├── 功能4：查看进程 CPU/Memory 占用趋势
-│   └── 功能5：查看 MessageChannel 请求发送日志
+│   └── 功能5：查看 `MessageChannel` 请求发送日志
 │
 ├── V. 新特性：进程池负载均衡
 │   ├── 关于负载均衡
@@ -74,7 +72,7 @@ date: 2021-12-22 13:22:31
 
 ---------------
 
-之前在做 Electron 应用开发的时候，写了个 Electron 进程管理工具 [electron-re](https://github.com/nojsja/electron-re)，支持 Electron/Node 多进程管理、service 模拟、进程实时监控(UI功能)、Node.js 进程池等特性。已经发布为npm组件，可以直接安装(最新特性还没发布到线上，需要再进行测试)：
+之前在做 Electron 应用开发的时候，写了个 Electron 进程管理工具 [electron-re](https://github.com/nojsja/electron-re)，支持 Electron/Node 多进程管理、service 模拟、进程实时监控(UI功能)、Node.js 进程池等特性。已经发布为npm组件，可以直接安装：
 
 [>> github地址](https://github.com/nojsja/electron-re)
 
@@ -86,7 +84,7 @@ $: yarn add electron-re
 
 本主题前面两篇文章：
 
-1. [《Electron/Node多进程工具开发日记》](https://nojsja.gitee.io/blogs/2020/12/08/6d582478.html/) 描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法。
+1. [《Electron/Node多进程工具开发日记》](/blogs/2020/12/08/6d582478.html/) 描述了`electron-re`的开发背景、针对的问题场景以及详细的使用方法。
 2. [《Electron多进程工具开发日记2》](https://nojsja.gitee.io/blogs/2020/12/18/927d467e.html/) 介绍了新特性 "多进程管理 UI" 的开发和使用相关。UI 界面基于 `electron-re` 已有的 `BrowserService/MessageChannel` 和 `ChildProcessPool/ProcessHost` 基础架构驱动，使用 React17 / Babel7 开发。
 
 这篇文章主要是描述最近支持的进程池模块新特性 - "进程池负载均衡" 和 "子进程智能启停"，以及相关的基本实现原理。同时提出自己遇到的一些问题，以及对这些问题的思考、解决方案，对之后版本迭代的一些想法等等。
@@ -96,17 +94,6 @@ $: yarn add electron-re
 --------------
 
 ![archtecture](http://nojsja.gitee.io/static-resources/images/electron-re/electron-re_arch.png)
-
-- __Electron Core__：Electron 应用的一系列核心功能，包含了应用的主进程、渲染进程、窗口等等(Electron 自带)。
-- __BrowserWindow__：渲染窗口进程，一般用于UI渲染 (Electron 自带)。
-- __ProcessManager__：进程管理器，负责进程占用资源采集、异步刷新UI、响应和发出各种进程管理信号，作为一个观察者对象给其它模块和UI提供服务 (electron-re 引入)。
-- __MessageChannel__：适用于主进程、渲染进程、Service 进程的消息发送工具，基于原生 IPC 封装，主要服务于 BrowserService，也可替代原生的 IPC 通信方法 (electron-re 引入)。
-- __ChildProcess__：由 `child_process.fork` 方法生成的子进程，不过以装饰器的方式为其添加了简单的进程休眠和唤醒逻辑 (electron-re 引入)。
-- __ProcessHost__：配合进程池使用的工具，我称它为 "进程事务中心"，封装了 `process.send / process.on` 基本逻辑，提供了 Promise 的调用方式让 主进程/子进程 之间 IPC 消息通信更简单 (electron-re 引入)。
-- __LoadBalancer__：服务于进程池的负载均衡器。
-- __LifeCycle__：服务于进程池的生命周期。
-- __ChildProcessPool__：基于 Node.js - `child_process.fork` 方法实现的进程池，内部管理多个 ChildProcess 实例对象，支持自定义负载均衡策略、子进程智能启停、子进程异常退出后自动重启等特性 (electron-re 引入)。
-- __BrowserService__：基于 BrowserWindow 实现的 Service 进程，可以看成是一个运行在后台的隐藏渲染窗口进程，允许 Node 注入，不过仅支持 `CommonJs` 规范。
 
 ### III. electron-re 可以用来做什么？
 
@@ -132,7 +119,7 @@ const { BrowserService } = require('electron-re');
 const myServcie = new BrowserService('app', path.join(__dirname, 'path/to/app.service.js'));
 ```
 
-如果使用了 `BrowserService` 的话，要想在主进程、渲染进程、service 进程之间相互发送消息就要使用 `electron-re` 提供的 `MessageChannel` 通信工具，它的接口设计跟 Electron 内建的`IPC`基本一致，底层也是基于原生的 `IPC` 异步通信原理来实现的，简单示例如下：
+如果使用了 `BrowserService` 的话，要想在主进程、渲染进程、service 进程之间相互发送消息就要使用 `electron-re` 提供的 `MessageChannel` 通信工具，它的接口设计跟 Electron 内建的`ipc`基本一致，底层也是基于原生的 `ipc` 异步通信原理来实现的，简单示例如下：
 
 ```js
 /* ---- main.js ---- */
@@ -164,7 +151,7 @@ pool
   .then(rsp => console.log(rsp));
 ```
 
-一般情况下，在我们的子进程执行文件中，为了在主进程和子进程之间同步数据，可以使用 `process.send('channel', params)` 和 `process.on('channel', function)` 的方式实现(前提是进程以以 `fork` 方式创建或者手动开启了 `IPC` 通信)。但是这样在处理业务逻辑的同时也强迫我们去关注进程之间的通信，你需要知道子进程什么时候能处理完毕，然后再使用`process.send`再将数据返回主进程，使用方式繁琐。
+一般情况下，在我们的子进程执行文件中，为了在主进程和子进程之间同步数据，可以使用 `process.send('channel', params)` 和 `process.on('channel', function)` 的方式实现(前提是进程以以 `fork` 方式创建或者手动开启了 `ipc` 通信)。但是这样在处理业务逻辑的同时也强迫我们去关注进程之间的通信，你需要知道子进程什么时候能处理完毕，然后再使用`process.send`再将数据返回主进程，使用方式繁琐。
 
 `electron-re` 引入了 `ProcessHost` 的概念，我称之为"进程事务中心"。实际使用时在子进程执行文件中只需要将各个任务函数通过 `ProcessHost.registry('task-name', function)` 注册成多个被监听的事务，然后配合进程池的 `ChildProcessPool.send('task-name', params)` 来触发子进程事务逻辑的调用即可，`ChildProcessPool.send()` 同时会返回一个 Promise 实例以便获取回调数据，简单示例如下：
 
@@ -185,11 +172,11 @@ ProcessHost
 
 --------
 
-UI 功能基于 `electron-re` 基础架构开发，它通过异步 IPC 和主进程的 `ProcessManager` 进行通信，实时刷新进程状态。操作者可以通过 UI 手动 Kill 进程、查看进程 console 数据、查看进程数 CPU/Memory 占用趋势以及查看 `MessageChannel` 工具的请求发送记录。
+UI 功能基于 `electron-re` 基础架构上开发，它通过异步 IPC 和主进程的 `ProcessManager` 进行通信，实时刷新进程状态。操作者可以通过 UI 手动 Kill 进程、查看进程 console 数据、查看进程数 CPU/Memory 占用趋势以及查看 `MessageChannel` 工具的请求发送记录。
 
 #### 主界面
 
-> UI参考 electron-process-manager 设计
+> UI参考`electron-process-manager`设计
 
 预览图：
 
@@ -223,9 +210,7 @@ UI 功能基于 `electron-re` 基础架构开发，它通过异步 IPC 和主进
 
 ![trends.gif](http://nojsja.gitee.io/static-resources/images/electron-re/trends.gif)
 
-#### 功能：查看 MessageChannel 请求发送日志
-
-![console.gif](http://nojsja.gitee.io/static-resources/images/electron-re/signals.png)
+#### 功能：查看 `MessageChannel` 请求发送日志
 
 ### V. 新特性：进程池负载均衡
 
@@ -269,10 +254,9 @@ UI 功能基于 `electron-re` 基础架构开发，它通过异步 IPC 和主进
 - weightTotal：权重总和，用于权重策略相关计算。
 - connectionsMap：各个进程活动连接数的映射，用于最小连接数策略相关计算。
 
-##### 1. 轮询策略(POLLING) 
+##### 1. 轮询策略(POLLING)
 
 > 原理：索引值递增，每次调用时会自动加 1，超出任务数组长度时会自动取模，保证平均调用。
-> 时间复杂度 O(n) = 1
 
 ```javascript
 /* polling algorithm */
@@ -290,7 +274,7 @@ module.exports = function (tasks, currentIndex, context) {
 ##### 2. 权重策略(WEIGHTS)
 
 > 原理：每个进程根据 (权重值 + (权重总和 * 随机因子)) 生成最终计算值，最终计算值中的最大值被命中。
-> 时间复杂度 O(n) = n
+
 
 ```javascript
 /* weight algorithm */
@@ -318,7 +302,6 @@ module.exports = function (tasks, weightTotal, context) {
 ##### 3. 随机策略(RANDOM)
 
 > 原理：随机函数在 [0, length) 中任意选取一个索引即可
-> 时间复杂度 O(n) = 1
 
 ```javascript
 /* random algorithm */
@@ -334,7 +317,6 @@ module.exports = function (tasks) {
 ##### 4. 权重轮询策略(WEIGHTS_POLLING)
 
 > 原理：类似轮询策略，不过轮询的区间为：[最小权重值, 权重总和]，根据各项权重累加值进行命中区间计算。每次调用时权重索引会自动加 1，超出权重总和时会自动取模。
-> 时间复杂度 O(n) = n
 
 ```javascript
 /* weights polling */
@@ -363,7 +345,6 @@ module.exports = function (tasks, weightIndex, weightTotal, context) {
 ##### 5. 权重随机策略(WEIGHTS_RANDOM)
 
 > 原理：由 (权重总和 * 随机因子) 产生计算值，将各项权重值与其相减，第一个不大于零的最终值即被命中。
-> 时间复杂度 O(n) = n
 
 ```javascript
 /* weights random algorithm */
@@ -386,7 +367,6 @@ module.exports = function (tasks, weightTotal) {
 ##### 6. 最小连接数策略(MINIMUM_CONNECTION)
 
 > 原理：直接选择当前连接数最小的项即可。
-> 时间复杂度 O(n) = n
 
 ```javascript
 /* minimum connections algorithm */
@@ -411,7 +391,6 @@ module.exports = function (tasks, connectionsMap={}) {
 ##### 7. 权重最小连接数(WEIGHTS_MINIMUM_CONNECTION)
 
 > 原理：权重 + ( 随机因子 * 权重总和 ) + ( 连接数占比 * 权重总和 ) 三个因子，计算出最终值，根据最终值的大小进行比较，最小值所代表项即被命中。
-> 时间复杂度 O(n) = n
 
 ```javascript
 /* weights minimum connections algorithm */
@@ -870,7 +849,7 @@ AsyncLock 对象需要在子进程中引入，创建 AsyncLock 的构造函数�
 - __Atomics.waitAsync(typedArray, index, value[, timeout])__：静态方法 Atomics.wait() 确保了一个在 Int32Array 数组中给定位置的值没有发生变化且仍然是给定的值时进程将会睡眠，直到被唤醒或超时。该方法返回一个字符串，值为"ok", "not-equal", 或 "timed-out" 之一。
 - __Atomics.notify(typedArray, index[, count])__：静态方法 Atomics.notify() 唤醒指定数量的在等待队列中休眠的进程，不指定 count 时默认唤醒所有。
 
-AsyncLock 即异步锁，等待锁释放的时候不会阻塞主线程。主要关注 `executeAfterLocked()` 这个方法，调用该方法并传入回调函数，该回调函数会在锁被获取后执行，并且在执行完毕后自动释放锁。其中一步的关键就是 `tryGetLock()` 函数，它返回了一个 `Promise` 对象，因此我们等待锁释放的逻辑在微任务队列中执行而并不阻塞主线程。
+AsyncLock 听名字就知道是异步锁的意思，主要看 `executeAfterLocked()` 这个方法，调用该方法并传入回调函数，该回调函数会在锁被获取后执行，并且在执行完毕后自动释放锁。其中一步的关键就是 `tryGetLock()` 函数，它返回了一个 `Promise` 对象，因此我们等待锁释放的逻辑在微任务队列中执行而并不阻塞主线程。
 
 ```javascript
 /**
@@ -963,7 +942,7 @@ class AsyncLock {
 
 2. 容错处理做的不够好，这一块会成为之后的重要优化点。
 
-3. 采集进程池中活动连接数时采用了"调用计数"的方式。这个处理方法不太好，准确性也不够高，但是目前还未想到更好的解决方法用于统计子进程中活跃的连接数。我觉得还是要从底层进行解决，比如：宏任务和微任务队列、V8 虚拟机、垃圾回收、Libuv 底层原理、Node 进程和线程原理...
+3. 采集进程池中活动连接数时采用了"调用计数"的方式。这个方法不太好，准确性不够高，但是目前还未想到更好的解决方法用于统计子进程中活跃的连接数。我觉得还是要从底层进行解决，比如：宏任务和微任务队列、V8 虚拟机、垃圾回收、Libuv 底层原理、Node 进程和线程原理...
 
 4. 暂时没在 windows 平台测试进程休眠功能，win 平台本身不支持进程信号，但是 Node 提供了模拟支持，但是具体表现还需测试。
 
