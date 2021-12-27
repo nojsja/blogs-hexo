@@ -217,6 +217,7 @@ comment:
     enable: true
     appId: "wUKKBx8BRzGaNfhgdg2UKtub-MdYXbMMI"
     appKey: "MAwYM4KlW5YJ3q06qwnUScBr"
+    serverURLs: "https://wukkbx8b.api.lncldglobal.com"
     notify: false
     verify: false
     visitor: true

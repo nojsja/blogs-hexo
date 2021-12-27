@@ -220,6 +220,7 @@ comment:
     # appKey: "XJVaEhLbr7dcGs7fas0Livs1"
     appId: "wUKKBx8BRzGaNfhgdg2UKtub-MdYXbMMI"
     appKey: "MAwYM4KlW5YJ3q06qwnUScBr"
+    serverURLs: "https://wukkbx8b.api.lncldglobal.com"
     notify: false
     verify: false
     visitor: true
