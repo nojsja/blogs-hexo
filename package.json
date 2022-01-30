@@ -12,7 +12,7 @@
     "deploy": "hexo deploy"
   },
   "hexo": {
-    "version": "5.4.0"
+    "version": "5.4.1"
   },
   "dependencies": {
     "github-markdown-css": "^4.0.0",
