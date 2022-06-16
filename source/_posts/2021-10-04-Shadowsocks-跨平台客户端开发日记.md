@@ -11,7 +11,7 @@ tocnum: true
 tags:
   - electron
   - shadowsocks
-  - crossplatform
+  - ssr
 categories:
   - Electron
 abbrlink: '5384287'
