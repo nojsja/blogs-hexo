@@ -5,7 +5,7 @@
 
         /* 初始化 comments 组件 */
         function initComments() {
-            async('/blogs/js/Valine.min.js', function () {
+            async('js/Valine.min.js', function () {
                 new Valine({
                     el: '#vcomments',
                     appId: "<%= config.comment.valine.appId %>",

@@ -294,7 +294,7 @@ image_minifier:
 image_lazy:
   enable: true
   type: post
-  replacement: "/blogs/img/loading.gif"
+  replacement: "img/loading.gif"
 
 # ---- 外链减少权重
 nofollow:
@@ -304,7 +304,7 @@ nofollow:
     - 'nojsja.gitee.io'
     - 'nojsja.github.io'
 
-favicon: /blogs/img/favicon.ico
+favicon: img/favicon.ico
 
 # hexo-admin authentification
 admin:

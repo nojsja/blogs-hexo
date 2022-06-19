@@ -1654,7 +1654,7 @@ body {
 ------------------------------------------------------- */
 
 .filter-grid:before {
-  background-image: url('/blogs/img/grid.png');
+  background-image: url('img/grid.png');
 }
 .filter-grid:before {
   content: '';
