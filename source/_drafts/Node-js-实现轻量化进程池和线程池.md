@@ -110,17 +110,142 @@ child.stdout.on('data', function(data){
 
 #### 2. 使用 cluster 方式半自动创建进程
 
-#### 3. 使用基于 cluster 封装的 PM2 工具全自动创建进程
+以下是使用 `Cluster` 模块创建一个 http 服务集群的简单示例。示例中创建 Cluster 时使用同一个 Js 执行文件，在文件内使用 `cluster.isPrimary` 判断当前执行环境是在主进程还是子进程，如果是主进程则使用当前执行文件创建子进程实例，如果时子进程则进入子进程的业务处理流程。
+
+```js
+/*
+  简单示例：使用同一个JS执行文件创建子进程集群Cluster
+*/
+const cluster = require('node:cluster');
+const http = require('node:http');
+const numCPUs = require('node:os').cpus().length;
+const process = require('node:process');
+
+if (cluster.isPrimary) {
+  console.log(`Primary ${process.pid} is running`);
+  // Fork workers.
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
+  // Workers can share any TCP connection
+  http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('hello world\n');
+  }).listen(8000);
+  console.log(`Worker ${process.pid} started`);
+}
+```
+
+`Cluster` 模块允许设立一个主进程和若干个子进程，使用 `child_process.fork()` 在内部隐式创建子进程，由主进程监控和协调子进程的运行。
+
+子进程之间采用进程间通信交换消息，Cluster 模块内置一个负载均衡器，采用 Round-robin 算法（轮流执行）协调各个子进程之间的负载。运行时，所有新建立的连接都由主进程完成，然后主进程再把TCP连接分配给指定的子进程。
+
+使用集群创建的子进程可以使用同一个端口，Node.js 内部对 `http/net` 内置模块进行了特殊支持。Node.js 主进程负责监听目标端口，收到请求后根据负载均衡策略将请求分发给某一个子进程。
+
+#### 3. 使用基于 Cluster 封装的 PM2 工具全自动创建进程
+
+PM2是常用的node进程管理工具，它可以提供node.js应用管理能力，如自动重载、性能监控、负载均衡等。
+
+其主要用于`独立应用`的进程化管理，在 Node.js 单机服务部署方面笔记适合。可以用于生产环境下启动同个应用的多个实例提高CPU利用率、抗风险、热加载等能力。
+
+由于是外部库，需要使用 npm 包管理器安装：
+
+```bash
+$: npm install -g pm2
+```
+
+pm2支持直接运行 server.js 启动项目，如下：
+
+```bash
+$: pm2 start server.js
+```
+
+即可启动Node.js应用，成功后会看到打印的信息：
+
+```bash
+┌──────────┬────┬─────────┬──────┬───────┬────────┬─────────┬────────┬─────┬───────────┬───────┬──────────┐
+│ App name │ id │ version │ mode │ pid   │ status │ restart │ uptime │ cpu │ mem       │ user  │ watching │
+├──────────┼────┼─────────┼──────┼───────┼────────┼─────────┼────────┼─────┼───────────┼───────┼──────────┤
+│ server   │ 0  │ 1.0.0   │ fork │ 24776 │ online │ 9       │ 19m    │ 0%  │ 35.4 MB   │ 23101 │ disabled │
+└──────────┴────┴─────────┴──────┴───────┴────────┴─────────┴────────┴─────┴───────────┴───────┴──────────┘
+```
+
+pm2 也支持配置文件启动，通过配置文件 `ecosystem.config.js` 可以定制 pm2 的各项参数：
+
+```js
+module.exports = {
+  apps : [{
+    name: 'API', // 应用名
+    script: 'app.js', // 启动脚本
+    args: 'one two', // 命令行参数
+    instances: 1, // 启动实例数量
+    autorestart: true, // 自动重启
+    watch: false, // 文件更改监听器
+    max_memory_restart: '1G', // 最大内存使用亮
+    env: { // development 默认环境变量
+      // pm2 start ecosystem.config.js --watch --env development
+      NODE_ENV: 'development'
+    },
+    env_production: { // production 自定义环境变量
+      NODE_ENV: 'production'
+    }
+  }],
+
+  deploy : {
+    production : {
+      user : 'node',
+      host : '212.83.163.1',
+      ref  : 'origin/master',
+      repo : 'git@github.com:repo.git',
+      path : '/var/www/production',
+      'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production'
+    }
+  }
+};
+```
+
+pm2 logs 日志功能也十分强大：
+
+```bash
+$: pm2 logs
+```
 
 ## II. 进程池和线程池的对比
 ---
 
-### 一、适用场景
+### 一、名词定义
 
-### 二、各自优缺点
+#### 1. 进程
+
+学术上说，进程是一个具有一定独立功能的程序在一个数据集上的一次动态执行的过程，是操作系统进行资源分配和调度的一个独立单位，是应用程序运行的载体。我们这里将进程比喻为工厂的车间，它代表CPU所能处理的单个任务。任一时刻，CPU总是运行一个进程，其他进程处于非运行状态。
+
+#### 2. 线程
+
+在早期的操作系统中并没有线程的概念，进程是能拥有资源和独立运行的最小单位，也是程序执行的最小单位。任务调度采用的是时间片轮转的抢占式调度方式，而进程是任务调度的最小单位，每个进程有各自独立的一块内存，使得各个进程之间内存地址相互隔离。后来，随着计算机的发展，对CPU的要求越来越高，进程之间的切换开销较大，已经无法满足越来越复杂的程序的要求了。于是就发明了线程，线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。这里把线程比喻一个车间的工人，即一个车间可以允许由多个工人协同完成一个任务。
+
+### 二、适用场景
+
+### 三、各自优缺点
 
 ## III. 进程池
 ---
+
+进程池是对进程的创建、执行任务、销毁等流程进行管控的一个应用或是一套程序逻辑。之所以称之为池是因为其内部包含多个进程实例，进程实例随时都在进程池内进行着状态流转，多个创建的实例可以被重复利用，而不是每次执行完一系列任务后就被销毁。因此，进程池的部分存在目的是为了减少进程创建的资源消耗。
+
+此外进程池最重要的一个作用就是负责将任务分发给各个进程执行，各个进程的任务执行优先级取决于进程池上的负载均衡运算，由算法决定应该将当前任务派发给哪个进程。常见的负载均衡算法有：
+
+- POLLING - 轮询：子进程轮流处理请求
+- WEIGHTS - 权重：子进程根据设置的权重来处理请求
+- RANDOM - 随机：子进程随机处理请求
+- SPECIFY - 指定：子进程根据指定的进程 id 处理请求
+- WEIGHTS_POLLING - 权重轮询：权重轮询策略与轮询策略类似，但是权重轮询策略会根据权重来计算子进程的轮询次数，从而稳定每个子进程的平均处理请求数量。
+- WEIGHTS_RANDOM - 权重随机：权重随机策略与随机策略类似，但是权重随机策略会根据权重来计算子进程的随机次数，从而稳定每个子进程的平均处理请求数量。
+- MINIMUM_CONNECTION - 最小连接数：选择子进程上具有最小连接活动数量的子进程处理请求。
+- WEIGHTS_MINIMUM_CONNECTION - 权重最小连接数：权重最小连接数策略与最小连接数策略类似，不过各个子进程被选中的概率由连接数和权重共同决定。
 
 ### 一、要点
 
