@@ -287,9 +287,38 @@ $: pm2 logs
 
 #### 1. 架构图
 
+![archtecture](http://nojsja.gitee.io/static-resources/images/electron-re/electron-re_arch.png)
+
 #### 2. 关键流程
 
 ### 三、示例
+
+#### 1. Electron网页代理工具中多进程的应用
+
+1）shadowsocks 基本代理原理：
+
+![shadow_working_principle.png](https://nojsja.gitee.io/static-resources/images/shadowsocks/shadow_working_principle.png)
+
+2）单进程下客户端执行原理：
+
+- 通过用户预先保存的服务器配置信息，使用 node.js 子进程来启动 ss-local 可执行文件建立和 shadowsocks 服务器的连接来代理用户本地电脑的流量，每个子进程占用一个 socket 端口。
+- 其它支持 socks5 代理的 proxy 工具比如：浏览器上的 SwitchOmega 插件会和这个端口的 tcp 服务建立连接，将 tcp 流量加密后通过代理服务器转发给我们需要访问的目标服务器。
+
+![ssr-single.png](https://nojsja.gitee.io/static-resources/images/shadowsocks/ssr-single.png?v=2)
+
+3）多进程下客户端执行原理：
+
+以上描述的是客户端连接单个节点的工作模式，节点订阅组中的负载均衡模式需要同时启动多个子进程，每个子进程启动 ss-local 执行文件占用一个本地端口并连接到远端一个服务器节点。
+
+每个子进程启动时选择的端口是会变化的，因为某些端口可能已经被系统占用，程序需要先选择未被使用的端口。并且浏览器 proxy 工具也不可能同时连接到我们本地启动的子进程上的多个 ss-local 服务上。因此需要一个占用固定端口的中间节点接收 proxy 工具发出的连接请求，然后按照某种分发规则将 tcp 流量转发到各个子进程的 ss-local 服务的端口上。
+
+![ssr-cluster.png](https://nojsja.gitee.io/static-resources/images/shadowsocks/ssr-cluster.png)
+
+#### 2. 多进程文件分片上传Electron客户端
+
+之前做过一个支持SMB协议多文件分片上传的客户端，Node.js 端的上传任务管理、IO操作等都使用多进程实现过一版本，不过是在 gitlab 实验分支自己搞得（逃）。
+
+![upload](https://nojsja.gitee.io/static-resources/images/upload/upload.png)
 
 ## IV. 线程池
 ---
@@ -308,7 +337,11 @@ Node.js 内部虽然有使用线程池，但是对于开发者而言是完全透
 
 ### 二、流程设计
 
+![archtecture](http://nojsja.gitee.io/static-resources/images/nodejs/worker-thread-pool.jpg)
+
 ### 三、示例
+
+暂无实际使用，可考虑在前端图片像素处理、音视频转码处理等 CPU 密集性任务中进行实践。
 
 ## V. 结尾
 ---
