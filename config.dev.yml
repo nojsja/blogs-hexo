@@ -192,7 +192,6 @@ sitemap:
 deploy:
   type: git
   repository: https://github.com/nojsja/nojsja.github.io.git
-  # repository: https://gitee.com/nojsja/blogs
   branch: master
   ignore_hidden: false # 防止设置编译忽略的文件不被部署到服务器
   message: update
