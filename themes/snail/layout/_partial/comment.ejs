@@ -1,40 +1,39 @@
-
 <div id="vcomments"></div>
 <script>
-    (function() {
+  (function () {
 
-        /* 初始化 comments 组件 */
-        function initComments() {
-            async('/js/Valine.min.js', function () {
-                new Valine({
-                    el: '#vcomments',
-                    appId: "<%= config.comment.valine.appId %>",
-                    appKey: "<%= config.comment.valine.appKey %>",
-                    visitor: true
-                });
-            });
-        }
+    /* 初始化 comments 组件 */
+    function initComments() {
+      async ('/js/Valine.min.js', function () {
+        new Valine({
+          el: '#vcomments',
+          appId: "<%= config.comment.valine.appId %>",
+          appKey: "<%= config.comment.valine.appKey %>",
+          visitor: true
+        });
+      });
+    }
 
-        /* scroll listener */
-        if (window.IntersectionObserver) {
-    
-            var vobserver = new IntersectionObserver(function (entrys) {
-    
-                entrys.forEach(function (entry) {
-                    if (!entry.isIntersecting) return;
-                    vobserver.unobserve(entry.target);
-                    vobserver.disconnect();
-                    initComments();
-                });
-            });
-    
-            vobserver.observe(document.querySelector('#headerViewCountWrapper'));
-    
-        } else {
+    /* scroll listener */
+    if (window.IntersectionObserver) {
 
-            initComments();
+      var vobserver = new IntersectionObserver(function (entrys) {
 
-        }
-        
-    }).bind(window)();
+        entrys.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          vobserver.unobserve(entry.target);
+          vobserver.disconnect();
+          initComments();
+        });
+      });
+
+      vobserver.observe(document.querySelector('#headerViewCountWrapper'));
+
+    } else {
+
+      initComments();
+
+    }
+
+  }).bind(window)();
 </script>

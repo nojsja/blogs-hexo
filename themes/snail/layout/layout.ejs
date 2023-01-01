@@ -1,23 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<!-- Head tag -->
 <%- partial('_partial/head') %>
-
-<!-- hack iOS CSS :active style -->
 <body>
-
-	<%- partial('_partial/header',{cache: true}) %>
-	
-    <%- partial('_partial/nav',{cache: true}) %>
-
-    <%- body %>
-
-    <%- partial('_partial/footer') %>
-
-	<a id="rocket" href="#top" class=""></a>
-    
-	<script type="text/javascript" src="/js/totop.js" async=""></script>
+  <%- partial('_partial/header',{cache: true}) %>
+  <%- partial('_partial/nav',{cache: true}) %>
+  <%- body %>
+  <%- partial('_partial/footer') %>
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
 </body>
 
 </html>

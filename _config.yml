@@ -304,10 +304,3 @@ nofollow:
     - 'nojsja.github.io'
 
 favicon: /img/favicon.ico
-
-# hexo-admin authentification
-admin:
-  username: nojsja
-  password_hash: $2a$10$5Ba7K/I846WuN9GVi785COTlcraV/f8HSYfEi2fTdvSq2PqJ9H9Xu
-  secret: yangwei13@outlook.com
-  deployCommand: "hexo c && hexo g && hexo d"
