@@ -1,0 +1,135 @@
+function async (u, c, tag, async) {
+  var head = document.head ||
+    document.getElementsByTagName('head')[0] ||
+    document.documentElement;
+  var d = document,
+    t = tag || 'script',
+    o = d.createElement(t),
+    s = d.getElementsByTagName(t)[0];
+  async = ['async', 'defer'].includes(async) ? async :!!async;
+
+  switch (t) {
+    case 'script':
+      o.src = u;
+      if (async) o[async] = true;
+      break;
+    case 'link':
+      o.type = "text/css";
+      o.href = u;
+      o.rel = "stylesheet";
+      break;
+    default:
+      o.src = u;
+      break;
+  }
+
+  /* callback */
+
+  if (c) {
+    if (o.readyState) { //IE
+      o.onreadystatechange = function (e) {
+        if (o.readyState == "loaded" ||
+          o.readyState == "complete") {
+          o.onreadystatechange = null;
+          c(null, e)();
+        }
+      };
+    } else { //其他浏览器
+      o.onload = function (e) {
+        c(null, e);
+      };
+    }
+  }
+
+  s.parentNode.insertBefore(o, head.firstChild);
+}
+
+/* xhr */
+function sendXMLHttpRequest(options) {
+  var url = options.url;
+  var method = (options.method || 'get').toUpperCase();
+  var callback = options.callback;
+  var async = ('async' in options) ? !!options.async : true;
+  var xhr = null;
+
+  if (!url) return;
+
+  if (window.XMLHttpRequest) {
+    xhr = new XMLHttpRequest();
+  } else {
+    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xhr.open(method, url, async);
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4) {
+      if (callback) callback(this.responseText);
+      xhr.onreadystatechange = null;
+    }
+  };
+  xhr.send(null);
+}
+
+/**
+ * fnDebounce [去抖函数]
+ * @author nojsja
+ * @param  {Function} fn [需要被包裹的原始函数逻辑]
+ * @param  {Numberl} timeout [延迟时间]
+ * @return {Function} [高阶函数]
+ */
+var fnDebounce = function (fn, timeout) {
+  var time = null;
+
+  return function () {
+    if (!time) return time = Date.now();
+    if (Date.now() - time >= timeout) {
+      time = null;
+      return fn.apply(this, [].slice.call(arguments));
+    } else {
+      time = Date.now();
+    }
+  };
+};
+
+/**
+ * fnThrottle [节流函数]
+ * @author nojsja
+ * @param  {Function} fn [需要被包裹的原始函数逻辑]
+ * @param  {Numberl} timeout [延迟时间]
+ * @return {Function} [高阶函数]
+ */
+var fnThrottle = function (fn, timeout) {
+  var time = null;
+
+  return function () {
+    if (!time) return time = Date.now();
+    if ((Date.now() - time) >= timeout) {
+      time = null;
+      return fn.apply(this, [].slice.call(arguments));
+    }
+  };
+};
+
+/* intersection-observer.js */
+if ('IntersectionObserver' in window &&
+  'IntersectionObserverEntry' in window &&
+  'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+
+  if (!('isIntersecting' in window.IntersectionObserverEntry.prototype)) {
+    Object.defineProperty(window.IntersectionObserverEntry.prototype,
+      'isIntersecting', {
+        get: function () {
+          return this.intersectionRatio > 0;
+        }
+      });
+  }
+} else {
+  /* load polyfill sync */
+  sendXMLHttpRequest({
+    url: '/js/intersection-observer.js',
+    async: false,
+    method: 'get',
+    callback: function (txt) {
+      eval(txt);
+    }
+  });
+}
