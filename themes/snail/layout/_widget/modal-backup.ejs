@@ -1,0 +1,43 @@
+<style>
+  #websiteModal .modal-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  #websiteModal .modal-body img {
+    max-width: 100%;
+    height: auto;
+  }
+
+</style>
+
+<script>
+  $(document).ready(function() {
+    $(document)
+    .on("click","img",function(e) {
+      if (!$(this).hasClass('click-disable')) {
+        e && e.stopPropagation();
+        var $img = $(this).clone();
+        $('#websiteModal').modal('show');
+        $img.addClass('click-disable');
+        $('#websiteModal .modal-body').html($img);
+      } else {
+        e && e.stopPropagation();
+      }
+    })
+    .on('click', '.modal-body', function() {
+      $('#websiteModal').modal('hide');
+    })
+  });
+</script>
+
+<div class="modal fade" id="websiteModal" tabindex="-1" role="dialog" aria-labelledby="websiteModalTitle" aria-hidden="true">
+  <div class="modal-body">
+    
+  </div>
+</div>

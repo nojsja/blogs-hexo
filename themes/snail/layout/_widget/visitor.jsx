@@ -1,0 +1,20 @@
+import React from 'react'
+
+export default function Visitor({ site, __ }) {
+  return (
+    site.posts.length && (
+      <>
+        <h5>{__('VISITORS')}</h5>
+        <div class="widget">
+          <span>
+            Viewed <b><i><span id="busuanzi_value_site_pv"><i class="fa fa-spinner fa-spin"></i></span></i></b> Times
+        </span>
+        <br/>
+        <span>
+          <b><i><span id="busuanzi_value_site_uv"><i class="fa fa-spinner fa-spin"></i></span></i></b> Visitors In Total
+        </span>
+        </div>
+      </>
+    )
+  );
+}
