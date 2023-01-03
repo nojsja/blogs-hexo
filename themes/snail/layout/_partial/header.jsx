@@ -1,16 +1,14 @@
 import React from 'react';
 
 const Header = ({ is_post, page, config, wordcount, min2read, is_home }) => {
-  const introHeaderStyle = is_home() ? {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${config["header-img"]}')`
-  } : is_post() ? {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${page["header-img"]}')`
-  } : {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${page["header-img"]}')`
-  };
   const signatureStyle = config.signature ? {
-    backgroundImage: `url('${config.root}${config["signature-img"]}')`,
+    backgroundImage: `url('${config.root}${config['signature-img']}')`,
   } : {};
+  const introHeaderStyle = {
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${
+      is_home() ? config['header-img'] : page['header-img']
+    }')`,
+  };
 
   return (
     <header className="intro-header" style={introHeaderStyle}>
@@ -41,14 +39,14 @@ const Header = ({ is_post, page, config, wordcount, min2read, is_home }) => {
 
                     {
                       (config['visitor']['enable']) && (
-                        <React.Fragment>
+                        <>
                           <div className="blank_box"></div>
                           <span className="meta">
                             字数：<span className="post-count">{wordcount(page.content)}</span>丨
                             阅读时间：<span className="post-count">{min2read(page.content)}</span> 分钟
                           </span>
                           <div className="blank_box"></div>
-                        </React.Fragment>
+                        </>
                       )
                     }
                   </div>

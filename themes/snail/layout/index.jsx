@@ -8,7 +8,7 @@ const Index = ({ site, config, page }) => {
           <a href={`${config.root}${post.path}`}>
             <h2 className="post-title">
               {
-                isTop && (<React.Fragment><span className="post-top">✪</span>&nbsp;</React.Fragment>)
+                isTop && (<><span className="post-top">✪</span>&nbsp;</>)
               }
               {
                 post.title || "Untitled"
@@ -54,7 +54,7 @@ const Index = ({ site, config, page }) => {
   };
 
   return (
-    <React.Fragment>
+    <>
     {
       (site.posts || []).filter((post) => post.top).map((post) => {
         return postRender(post, true);
@@ -65,7 +65,7 @@ const Index = ({ site, config, page }) => {
         return postRender(post, false);
       })
     }
-    </React.Fragment>
+    </>
   );
 };
 
