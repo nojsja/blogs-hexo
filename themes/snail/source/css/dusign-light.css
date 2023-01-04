@@ -1858,6 +1858,10 @@ body {
   color: #ddd;
 }
 
+.table-responsive {
+  border: none !important;
+}
+
 /* -------------- anchor.ejs -------------- */
 
 /* place left on bigger screen */

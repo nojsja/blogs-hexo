@@ -38,8 +38,8 @@ const Head = ({ page, config, is_post }) => {
       <link rel="stylesheet" href={`${config.root}css/widget.css`} />
       <link rel="stylesheet" href={`${config.root}css/fonts.googleapis.css`} />
       <link rel="stylesheet" href={`${config.root}css/font-awesome.min.css`} />
-      <script href={`${config.root}js/buttons.js`} async={true} defer={true} />
-      <script href={`${config.root}js/polyfill.js`} />
+      <script src={`${config.root}js/buttons.js`} async={true} defer={true} />
+      <script src={`${config.root}js/polyfill.js`} />
     </head>
   );
 };
