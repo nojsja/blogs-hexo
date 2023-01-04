@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import { eventDelegate } from './utils';
 
 export default function Modal() {
   const catchImgClick = useCallback(function(e) {
@@ -20,8 +19,8 @@ export default function Modal() {
   }, []);
 
   useEffect(() => {
-    const removeEventImg = eventDelegate('document', 'click', 'img', catchImgClick);
-    const removeEventModal = eventDelegate('document', 'click', '.modal-body', catchModalClick);
+    const removeEventImg = window.eventDelegate('document', 'click', 'img', catchImgClick);
+    const removeEventModal = window.eventDelegate('document', 'click', '.modal-body', catchModalClick);
     return () => {
       removeEventImg();
       removeEventModal();
