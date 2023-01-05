@@ -5,7 +5,7 @@ export default function Category({ site, __ }) {
     site.categories.length && (
       <>
         <h5>{__('categories')}</h5>
-        <div class="widget">
+        <div className="widget">
           <ul>
             {
               site.categories.map((category) => <a key={category.name} href={`categories/#${category.name}`}><li>{category.name}</li></a>)

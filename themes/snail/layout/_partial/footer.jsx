@@ -10,7 +10,6 @@ export default function Footer({ config }) {
   ]);
 
   useScripts([
-    "//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",
     "/js/busuanzi.pure.mini.js",
   ], true);
 
@@ -33,17 +32,17 @@ export default function Footer({ config }) {
 
   return (
     <footer>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <ul class="list-inline text-center">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <ul className="list-inline text-center">
               {
                 config.github_username && (
                   <li>
                     <a target="_blank" rel="noopener" href={`https://github.com/${config.github_username}`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa fa-github fa-stack-1x fa-inverse"></i>
                       </span>
                     </a>
                   </li>
@@ -54,9 +53,9 @@ export default function Footer({ config }) {
                 config.twitter_username && (
                   <li>
                     <a target="_blank" rel="noopener" href={`https://twitter.com/${config.twitter_username}`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa fa-twitter fa-stack-1x fa-inverse"></i>
                       </span>
                     </a>
                   </li>
@@ -67,9 +66,9 @@ export default function Footer({ config }) {
                 config.facebook_username && (
                   <li>
                     <a target="_blank" rel="noopener" href={`https://www.facebook.com/${config.facebook_username}`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa fa-facebook fa-stack-1x fa-inverse"></i>
                       </span>
                     </a>
                   </li>
@@ -80,9 +79,9 @@ export default function Footer({ config }) {
                 config.zhihu_username && (
                   <li>
                     <a target="_blank" rel="noopener" href={`https://www.zhihu.com/people/${config.zhihu_username}`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa  fa-stack-1x fa-inverse">知</i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa  fa-stack-1x fa-inverse">知</i>
                       </span>
                     </a>
                   </li>
@@ -93,9 +92,9 @@ export default function Footer({ config }) {
                 config.weibo_username && (
                   <li>
                     <a target="_blank" rel="noopener" href={`http://weibo.com/${config.weibo_username}`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa fa-weibo fa-stack-1x fa-inverse"></i>
                       </span>
                     </a>
                   </li>
@@ -106,9 +105,9 @@ export default function Footer({ config }) {
                 config.linkedin_username && (
                   <li>
                     <a target="_blank" rel="noopener" href={`https://www.linkedin.com/in/${config.linkedin_username}`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa fa-linkedin fa-stack-1x fa-inverse"></i>
                       </span>
                     </a>
                   </li>
@@ -119,9 +118,9 @@ export default function Footer({ config }) {
                 config.RSS && (
                   <li>
                     <a href={`${config.root}feed.xml`}>
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-circle fa-stack-2x"></i>
+                        <i className="fa fa-rss fa-stack-1x fa-inverse"></i>
                       </span>
                     </a>
                   </li>
@@ -129,7 +128,7 @@ export default function Footer({ config }) {
               }
 
             </ul>
-            <p class="copyright text-muted">
+            <p className="copyright text-muted">
               Copyright &copy; {config.author} {new Date().getFullYear()}
             </p>
           </div>

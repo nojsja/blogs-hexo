@@ -28,8 +28,8 @@ export default function Modal() {
   }, []);
 
   return (
-    <div class="modal fade" id="websiteModal" tabindex="-1" role="dialog" aria-labelledby="websiteModalTitle" aria-hidden="true">
-      <div class="modal-body"></div>
+    <div className="modal fade" id="websiteModal" tabindex="-1" role="dialog" aria-labelledby="websiteModalTitle" aria-hidden="true">
+      <div className="modal-body"></div>
     </div>
   );
 }

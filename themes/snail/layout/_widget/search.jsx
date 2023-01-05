@@ -6,7 +6,7 @@ export default function Search({ config, __ }) {
       <>
         <h5>SEARCH</h5>
         <div id="site_search">
-          <div class="form-group">
+          <div className="form-group">
             <input
               type="text"
               id="local-search-input"

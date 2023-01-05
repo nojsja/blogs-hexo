@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
+import useIntersectionObserver from '../_hooks/useIntersectionObserver';
 
 const audios = [
   {
@@ -18,9 +19,8 @@ const audios = [
 export default function Music() {
 
   /* load player */
-  const apcallback = useCallback(function (apobserver) {
+  const initPlayer = useCallback(function () {
     var musicPlayer = document.querySelector('#aplayer');
-    if (apobserver) apobserver.disconnect();
     musicPlayer.className = "";
     musicPlayer.innerHTML = "";
 
@@ -32,53 +32,30 @@ export default function Music() {
   }, []);
 
   /* get player resources */
-  const apinit = useCallback(function (sources, apobserver) {
+  const apinit = useCallback(function (sources) {
     sources.forEach(function (source) {
       if (!source) return;
       async(source, function () {
         if (/^.*.js$/.test(source)) {
-          apcallback(apobserver);
+          initPlayer();
         }
       }, /^.*.css$/.test(source) ? 'link' : 'script');
     });
   }, []);
 
-  useEffect(() => {
+  useIntersectionObserver(() => {
     const musicPlayer = document.querySelector('#aplayer');
-    let apobserver;
+    if (!musicPlayer) return;
+    const cssHref = musicPlayer.getAttribute('lazy-css-href');
+    const jsSrc = musicPlayer.getAttribute('lazy-js-src');
 
-    /* scroll listener */
-    if (window.IntersectionObserver) {
-      apobserver = new IntersectionObserver(function (entrys) {
-        entrys.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          apobserver.unobserve(entry.target);
-
-          const cssHref = entry.target.getAttribute('lazy-css-href');
-          const jsSrc = entry.target.getAttribute('lazy-js-src');
-          apinit([cssHref, jsSrc], apobserver);
-
-        });
-      });
-
-      apobserver.observe(musicPlayer);
-    } else {
-      const cssHref = musicPlayer.getAttribute('lazy-css-href');
-      const jsSrc = musicPlayer.getAttribute('lazy-js-src');
-
-      apinit([cssHref, jsSrc, apobserver]);
-    }
-
-    return () => {
-      apobserver && apobserver.disconnect();
-    };
-
-  }, []);
+    apinit([cssHref, jsSrc]);
+  }, '#aplayer');
 
   return (
-    <div class="aplayer-container">
+    <div className="aplayer-container">
       <div id="aplayer"
-        class="lds-roller-loading"
+        className="lds-roller-loading"
         lazy-css-href="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.css"
         lazy-js-src="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.js"
       >

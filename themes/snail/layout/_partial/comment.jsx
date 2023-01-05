@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import useIntersectionObserver from '../_hooks/useIntersectionObserver';
 
 export default function Comment({ config }) {
   /* 初始化 comments 组件 */
@@ -13,26 +14,10 @@ export default function Comment({ config }) {
     });
   }
 
-  useEffect(() => {
-    /* scroll listener */
-    if (window.IntersectionObserver) {
-      var vobserver = new IntersectionObserver(function (entrys) {
-        entrys.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          vobserver.unobserve(entry.target);
-          vobserver.disconnect();
-          initComments();
-        });
-      });
-      vobserver.observe(document.querySelector('#headerViewCountWrapper'));
-    } else {
-      initComments();
-    }
-
-    return () => {
-      vobserver && vobserver.disconnect();
-    };
-  }, []);
+  useIntersectionObserver(
+    initComments,
+    '#headerViewCountWrapper',
+  );
 
   return (
     <div id="vcomments"></div>

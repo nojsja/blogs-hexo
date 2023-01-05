@@ -5,8 +5,8 @@ export default function RecentPosts({ site, __, url_for }) {
     site.posts.length && (
       <>
         <h5>Recent</h5>
-        <div class="widget">
-          <ul class="recent">
+        <div className="widget">
+          <ul className="recent">
             {
               site.posts.sort('date', -1).limit(5).map((post) => (
                 <li>
