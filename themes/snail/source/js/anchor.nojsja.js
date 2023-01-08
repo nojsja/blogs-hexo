@@ -39,8 +39,11 @@ $(function () {
           // in view port
           if (entry.intersectionRatio > 0) {
             if (cacheNavActiveItem === entry.target) return;
-            cacheNavActiveItem = entry.target;
             var preTargetNavItem = $anchorNav.querySelector('.' + anchorNavActiveClass);
+            if (cacheNavActiveItem && preTargetNavItem) {
+              preTargetNavItem.classList.remove(anchorNavActiveClass);
+            }
+            cacheNavActiveItem = entry.target;
             var targetNavItem = $anchorNav.querySelector('.toc-nav-link[href="#' + encodeURIComponent(entry.target.id) + '"]');
             if (preTargetNavItem) { // 移除上一个高亮
               preTargetNavItem.classList.remove(anchorNavActiveClass);
@@ -55,14 +58,6 @@ $(function () {
               }
               targetNavItem.parentNode.classList.add(anchorNavActiveClass);
               $toc.scrollTop = targetNavItem.parentNode.offsetTop;
-            }
-          } else {
-            if (entry.target === cacheNavActiveItem) { // 退出视口时，清除高亮
-              cacheNavActiveItem = null;
-              var preTargetNavItem = $anchorNav.querySelector('.' + anchorNavActiveClass);
-              if (preTargetNavItem) {
-                preTargetNavItem.classList.remove(anchorNavActiveClass);
-              }
             }
           }
         });
