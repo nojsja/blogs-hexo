@@ -519,6 +519,12 @@ nav.navbar {
   font-size: 14px;
 }
 
+@media (max-width: 992px) {
+  .sidebar-container {
+    position: static;
+  }
+}
+
 .sidebar-container h5 {
   color: #808080;
   padding-bottom: 1em;
