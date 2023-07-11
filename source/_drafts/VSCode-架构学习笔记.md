@@ -432,24 +432,20 @@ private _createServiceInstance<T>(id: ServiceIdentifier<T>, ctor: any, args: any
  }
 ```
 
-## VSCode 应用入口
+## 五、VSCode 应用入口
+
+### 5.1 CodeMain
 
 > src/vs/code/electron-main/main.ts
 
-CodeMain 类是 VSCode 应用的入口，它的 main 方法是整个应用的入口，它会创建所有的服务并初始化，然后调用 `startup` 方法启动应用：
+VSCode 至多只会启用一个 CodeMain 实例，它是整个 VSCode 应用的入口，它的入口方法是 main 方法，它会调用 `startup` 方法启动应用。
+
+CodeMain 的主要职责：
 - 调用 createServices 方法创建所有`基础服务`和 `InstantiationService 实例化服务`。
 - 调用 initServices 方法创建目录并初始化服务。
-
+- CodeApplication
 
 ```ts
-/**
- * The main VS Code entry point.
- *
- * Note: This class can exist more than once for example when VS Code is already
- * running and a second instance is started from the command line. It will always
- * try to communicate with an existing instance to prevent that 2 VS Code instances
- * are running at the same time.
- */
 class CodeMain {
 
  main(): void {
@@ -509,14 +505,7 @@ class CodeMain {
   const disposables = new DisposableStore();
   process.once('exit', () => disposables.dispose());
 
-  // Product
-  const productService = { _serviceBrand: undefined, ...product };
-  services.set(IProductService, productService);
-
-  // Environment
-  const environmentMainService = new EnvironmentMainService(this.resolveArgs(), productService);
-  const instanceEnvironment = this.patchEnvironment(environmentMainService); // Patch `process.env` with the instance's environment
-  services.set(IEnvironmentMainService, environmentMainService);
+  ...
 
   // Files
   const fileService = new FileService(logService);
@@ -526,13 +515,13 @@ class CodeMain {
 
   // FileUserDataProvider for atomic read / write operations.
   fileService.registerProvider(Schemas.vscodeUserData, new FileUserDataProvider(Schemas.file, diskFileSystemProvider, Schemas.vscodeUserData, logService));
-  // ...
+
+  ...
+
   services.set(ILifecycleMainService, new SyncDescriptor(LifecycleMainService, undefined, false));
 
   return [new InstantiationService(services, true), instanceEnvironment, environmentMainService, configurationService, stateService, bufferLogger, productService, userDataProfilesMainService];
  }
-
- private patchEnvironment(environmentMainService: IEnvironmentMainService): IProcessEnvironment {...}
 
  private async initServices(environmentMainService: IEnvironmentMainService, userDataProfilesMainService: UserDataProfilesMainService, configurationService: ConfigurationService, stateService: StateService, productService: IProductService): Promise<void> {
   await Promises.settled<unknown>([
@@ -583,5 +572,6 @@ class CodeMain {
 // Main Startup
 const code = new CodeMain();
 code.main();
-
 ```
+
+### 5.2 CodeApplication
