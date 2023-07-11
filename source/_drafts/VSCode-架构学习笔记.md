@@ -443,7 +443,9 @@ VSCode 至多只会启用一个 CodeMain 实例，它是整个 VSCode 应用的�
 CodeMain 的主要职责：
 - 调用 createServices 方法创建所有`基础服务`和 `InstantiationService 实例化服务`。
 - 调用 initServices 方法创建目录并初始化服务。
-- CodeApplication
+- 创建 mainProcessNodeIpcServer 主 IPC 服务器，如果此步骤出错，则表明已经有其它 VSCode 实例在运行了，立即结束当前进程。
+- 通过 lifecycleMainService.onWillShutdown 方法监听应用退出事件用于关闭服务和清理数据。
+- 开始创建 CodeApplication 服务并调用 startup() 初始化。
 
 ```ts
 class CodeMain {
@@ -575,3 +577,208 @@ code.main();
 ```
 
 ### 5.2 CodeApplication
+
+> src/vs/code/electron-main/app.ts
+
+CodeApplication 也只会被初始化一次，其主要职责是：
+- 配置 Electron Session 会话：
+  - 使用 session.setPermissionRequestHandler/session.setPermissionCheckHandler 设置权限请求处理器。
+  - 使用 session.webRequest.onBeforeRequest 绑定请求拦截器，禁止非法访问。
+  - 使用 session.webRequest.onHeadersReceived 过滤非法 SVG 请求地址和 Content Type。
+  - 通过 session.setCodeCachePath 设置代码缓存路径并与 Chrome 缓存地址隔离。
+- 注册监听器 registerListeners：
+  - 捕获进程 process 的 uncaughtException/unhandledRejection 事件，记录错误日志。
+  - 通过 lifecycleMainService.onWillShutdown 监听应用退出事件，用于关闭服务和清理数据。
+  - 使用 registerContextMenuListener 注册右键菜单事件监听器，通过异步事件异步菜单显示。
+  - 监听 MacOS `activate` 事件，用于激活应用。
+  - 监听 `web-contents-created` 事件拿到 webcontents，通过 contents.setWindowOpenHandler 来处理新窗口打开事件。
+  - 监听并拦截 `open-file` 事件，使用 windowsMainService 内置服务来打开文件。
+  - 监听 `new-window-for-tab` 事件，使用 windowsMainService 内置服务来打开新窗口。
+  - 通过主进程 IPC 通信监听各种 `vscode:xxx` 内部事件，比如：`vscode:reloadWindow`。
+- 调用 startup() 方法启动应用：
+  - 创建 `ElectronIPCServer` 服务，并通过 lifecycleMainService.onWillShutdown 监听关闭事件。
+  - 创建 sharedProcess 共享进程服务。
+  - 初始化通道 initChannels（对通道还不太了解）。
+  - 初始化内部服务，比如：更新服务 IUpdateService、窗口服务 IWindowsMainService、对话框服务 IDialogMainService、键盘布局服务 IKeyboardLayoutMainService、菜单栏服务 IMenubarMainService、存储服务 IStorageMainService... 值得注意的是大部分服务都是延迟创建的，可以降低瞬时CPU和内存占用。
+  - 上一步中的所有服务集合将被当前 mainInstantiationService 的子服务实例 InstantiationService 管理。
+
+```ts
+/**
+ * The main VS Code application. There will only ever be one instance,
+ * even if the user starts many instances (e.g. from the command line).
+ */
+export class CodeApplication extends Disposable {
+
+ private windowsMainService: IWindowsMainService | undefined;
+ private nativeHostMainService: INativeHostMainService | undefined;
+
+ constructor(
+  private readonly mainProcessNodeIpcServer: NodeIPCServer,
+  private readonly userEnv: IProcessEnvironment,
+  @IInstantiationService private readonly mainInstantiationService: IInstantiationService,
+  @ILogService private readonly logService: ILogService,
+  @ILoggerService private readonly loggerService: ILoggerService,
+  @IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
+  @ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
+  @IConfigurationService private readonly configurationService: IConfigurationService,
+  @IStateService private readonly stateService: IStateService,
+  @IFileService private readonly fileService: IFileService,
+  @IProductService private readonly productService: IProductService,
+  @IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService,
+ ) {
+  super();
+
+  this.configureSession();
+  this.registerListeners();
+ }
+
+ private configureSession(): void {
+
+  const isUrlFromWebview = (requestingUrl: string | undefined) => requestingUrl?.startsWith(`${Schemas.vscodeWebview}://`);
+  const allowedPermissionsInWebview = new Set([
+   'clipboard-read',
+   'clipboard-sanitized-write',
+  ]);
+
+  session.defaultSession.setPermissionRequestHandler(() => {...});
+  session.defaultSession.setPermissionCheckHandler(() => {...});
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+   const uri = URI.parse(details.url);
+   if (uri.scheme === Schemas.vscodeWebview) {
+    if (!isAllowedWebviewRequest(uri, details)) {
+     this.logService.error('Blocked vscode-webview request', details.url);
+     return callback({ cancel: true });
+    }
+   }
+   ...
+
+   return callback({ cancel: false });
+  });
+
+  // Configure SVG header content type properly
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {...});
+
+  ...
+
+  //#region Code Cache
+  defaultSession.setCodeCachePath(join(this.environmentMainService.codeCachePath, 'chrome'));
+ }
+
+ private registerListeners(): void {
+
+  // We handle uncaught exceptions here to prevent electron from opening a dialog to the user
+  process.on('uncaughtException', error => {...});
+  process.on('unhandledRejection', (reason: unknown) => onUnexpectedError(reason));
+
+  // Dispose on shutdown
+  this.lifecycleMainService.onWillShutdown(() => this.dispose());
+  ...
+  // macOS dock activate
+  app.on('activate', async (event, hasVisibleWindows) => {
+   this.logService.trace('app#activate');
+
+   // Mac only event: open new window when we get activated
+   if (!hasVisibleWindows) {
+    await this.windowsMainService?.openEmptyWindow({ context: OpenContext.DOCK });
+   }
+  });
+
+  app.on('web-contents-created', (event, contents) => {...});
+
+  ...
+
+  app.on('new-window-for-tab', async () => {
+   await this.windowsMainService?.openEmptyWindow({ context: OpenContext.DESKTOP }); //macOS native tab "+" button
+  });
+
+  ...
+
+  validatedIpcMain.on('vscode:reloadWindow', event => event.sender.reload());
+
+ }
+
+ async startup(): Promise<void> {
+  ...
+
+  // Main process server (electron IPC based)
+  const mainProcessElectronServer = new ElectronIPCServer();
+  this.lifecycleMainService.onWillShutdown(e => {
+   if (e.reason === ShutdownReason.KILL) {
+    mainProcessElectronServer.dispose();
+   }
+  });
+
+  // Shared process
+  const { sharedProcessReady, sharedProcessClient } = this.setupSharedProcess(machineId);
+
+  // Services
+  const appInstantiationService = await this.initServices(machineId, sharedProcessReady);
+
+  // Init Channels
+  appInstantiationService.invokeFunction(accessor => this.initChannels(accessor, mainProcessElectronServer, sharedProcessClient));
+
+  // Signal phase: ready - before opening first window
+  this.lifecycleMainService.phase = LifecycleMainPhase.Ready;
+
+  // Open Windows
+  await appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor, initialProtocolUrls));
+
+  // Signal phase: after window open
+  this.lifecycleMainService.phase = LifecycleMainPhase.AfterWindowOpen;
+
+  // Post Open Windows Tasks
+  this.afterWindowOpen();
+
+  // Set lifecycle phase to `Eventually` after a short delay and when idle (min 2.5sec, max 5sec)
+  const eventuallyPhaseScheduler = this._register(new RunOnceScheduler(() => {
+   this._register(runWhenIdle(() => this.lifecycleMainService.phase = LifecycleMainPhase.Eventually, 2500));
+  }, 2500));
+  eventuallyPhaseScheduler.schedule();
+ }
+
+ private setupSharedProcess(machineId: string): { sharedProcessReady: Promise<MessagePortClient>; sharedProcessClient: Promise<MessagePortClient> } {
+  ...
+ }
+
+ private async initServices(machineId: string, sharedProcessReady: Promise<MessagePortClient>): Promise<IInstantiationService> {
+  const services = new ServiceCollection();
+  // Windows
+ services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, this.userEnv], false));
+  ...
+
+  return this.mainInstantiationService.createChild(services);
+ }
+
+ private initChannels(accessor: ServicesAccessor, mainProcessElectronServer: ElectronIPCServer, sharedProcessClient: Promise<MessagePortClient>): void {
+  const launchChannel = ProxyChannel.fromService(accessor.get(ILaunchMainService), { disableMarshalling: true });
+  this.mainProcessNodeIpcServer.registerChannel('launch', launchChannel);
+    ...
+ }
+
+ private async openFirstWindow(accessor: ServicesAccessor, initialProtocolUrls: IInitialProtocolUrls | undefined): Promise<ICodeWindow[]> {
+  const windowsMainService = this.windowsMainService = accessor.get(IWindowsMainService);
+    ...
+  // default: read paths from cli
+  return windowsMainService.open({
+   context,
+   cli: args,
+   forceNewWindow: args['new-window'] || (!hasCliArgs && args['unity-launch']),
+   diffMode: args.diff,
+   mergeMode: args.merge,
+   noRecentEntry,
+   waitMarkerFileURI,
+   gotoLineMode: args.goto,
+   initialStartup: true,
+   remoteAuthority,
+   forceProfile,
+   forceTempProfile
+  });
+ }
+
+ private afterWindowOpen(): void {
+  // Windows: mutex
+  this.installMutex();
+  ...
+ }
+}
+```
