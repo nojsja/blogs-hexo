@@ -14,7 +14,6 @@ categories:
   - 目录2
 date: 2023-07-09 23:33:20
 ---
-
 # VSCode 架构学习笔记
 
 ## 一、源码目录结构
@@ -184,8 +183,34 @@ export interface IInstantiationService {
 
 **ServiceCollection 服务集合**
 
-内部封装了 Map 用于存储 serviceIdentifier 和 instanceOrDescriptor 的映射关系。
-serviceIdentifier 即描述 Service 标识对象，对象上有一个 type 字段；stanceOrDescriptor 即 Service 实例或 Service 描述对象。因为有些服务是需要延迟创建的，因此只需要临时存储一下创建过程。
+内部封装了 Map 用于存储 **ServiceIdentifier** 和 **InstanceOrDescriptor** 的映射关系。
+
+ServiceIdentifier 即描述 Service 的标识符对象，对象上有一个 type 字段。其使用方式是作为 Service 构造函数**参数的装饰器**，TS 解析类定义时（非实例化阶段）会调用 ServiceIdentifier 内部逻辑来**收集依赖关系**，在类的实例化阶段会使用这些依赖信息来创建依赖图谱进行依赖分析，实现在实例化之前确保所有依赖服务已经被创建好了。
+
+```ts
+function storeServiceDependency(id: Function, target: Function, index: number): void {
+	if ((target as any)[_util.DI_TARGET] === target) {
+		(target as any)[_util.DI_DEPENDENCIES].push({ id, index });
+	} else {
+		(target as any)[_util.DI_DEPENDENCIES] = [{ id, index }];
+		(target as any)[_util.DI_TARGET] = target;
+	}
+}
+```
+
+```ts
+export class DialogMainService implements IDialogMainService {
+	...
+	constructor(
+		@ILogService private readonly logService: ILogService,
+		@IProductService private readonly productService: IProductService
+	) {
+	  ...
+	}
+}
+```
+
+InstanceOrDescriptor 即 Service 实例或 Service 描述对象。因为有些服务是需要延迟创建的，因此只需要临时存储一下创建过程。
 
 Service 实例不必多说，由 Service 类实例化而来。以下是一个 Service 描述对象的结构，包含实例化 Service 时用到的参数和构造器函数：
 
@@ -216,7 +241,7 @@ Graph 结构中可以执行这些操作：新建图节点、查找图节点、�
 export class Node<T> {
     readonly incoming = new Map<string, Node<T>>();
     readonly outgoing = new Map<string, Node<T>>();
-    
+  
     constructor(
         readonly key: string,
         readonly data: T
@@ -225,7 +250,7 @@ export class Node<T> {
 
 export class Graph<T> {
     private readonly _nodes = new Map<string, Node<T>>();
-    
+  
     constructor(private readonly _hashFn: (element: T) => string) {
         // empty
     }
@@ -244,7 +269,7 @@ export class Graph<T> {
 
 **创建依赖服务过程**
 
-创建一个服务实例时，会先收集该服务的所有依赖服务，然后根据这些依赖服务来创建服务依赖图谱。图谱创建之后，会先选出出度为的 0 的根节点（无其它依赖服务）进行创建，创建好后将根节点从图谱中删除，过程中使用 while 循环重复上述过程直到图谱中没有任何节点。
+创建一个服务实例时，会先收集该服务的所有依赖服务（ServiceIdentifier 实现依赖分析），然后根据这些依赖服务来创建服务依赖图谱。图谱创建之后，会先选出出度为的 0 的根节点（无其它依赖服务）进行创建，创建好后将根节点从图谱中删除，过程中使用 while 循环重复上述过程直到图谱中没有任何节点。
 
 ```ts
     ...
@@ -374,7 +399,7 @@ private _createServiceInstance<T>(id: ServiceIdentifier<T>, ctor: any, args: any
 
    const idle = new IdleValue<any>(() => {
     const result = child._createInstance<T>(ctor, args, _trace);
-    
+  
     for (const [key, values] of earlyListeners) {
      const candidate = <Event<any>>(<any>result)[key];
      if (typeof candidate === 'function') {
@@ -441,7 +466,8 @@ private _createServiceInstance<T>(id: ServiceIdentifier<T>, ctor: any, args: any
 VSCode 至多只会启用一个 CodeMain 实例，它是整个 VSCode 应用的入口，它的入口方法是 main 方法，它会调用 `startup` 方法启动应用。
 
 CodeMain 的主要职责：
-- 调用 createServices 方法创建所有`基础服务`和 `InstantiationService 实例化服务`。
+
+- 调用 createServices 方法创建所有 `基础服务`和 `InstantiationService 实例化服务`。
 - 调用 initServices 方法创建目录并初始化服务。
 - 创建 mainProcessNodeIpcServer 主 IPC 服务器，如果此步骤出错，则表明已经有其它 VSCode 实例在运行了，立即结束当前进程。
 - 通过 lifecycleMainService.onWillShutdown 方法监听应用退出事件用于关闭服务和清理数据。
@@ -581,6 +607,7 @@ code.main();
 > src/vs/code/electron-main/app.ts
 
 CodeApplication 也只会被初始化一次，其主要职责是：
+
 - 配置 Electron Session 会话：
   - 使用 session.setPermissionRequestHandler/session.setPermissionCheckHandler 设置权限请求处理器。
   - 使用 session.webRequest.onBeforeRequest 绑定请求拦截器，禁止非法访问。
