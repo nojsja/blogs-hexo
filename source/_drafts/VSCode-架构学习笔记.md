@@ -71,7 +71,7 @@ Render 进程之间的通讯本质上和多个 Web 页面之间通讯没有差�
 - Debug 进程：Debugger 相比普通插件做了特殊化
 - Search 进程：搜索是一类计算密集型的任务，单开进程保证软件整体体验与性能
 
-## 四、服务实例化
+## 四、Service 服务
 
 VSCode 中的所有基础功能都被视为服务 Service，比如：右键菜单 ContextMenuService、剪贴板 ClipboardService，大部分 Service 都继承自一个抽象类 - Disposable，而该抽象类继承自接口 IDisposable。
 
@@ -102,7 +102,7 @@ export  interface  IDisposable {
 
 > src/vs/base/common/lifecycle.ts
 
-抽象类对接口做了一层公用方法和属性扩展，包括：
+抽象类对接口做了一层公包括：公用用方法和属性扩展。
 
 - None：一个空的 disposable 对象
 - _store：管理多个 disposable 对象的存储空间，一个 Service 可能会存放多个 disposable 对象（*内部实现的 Emitter 事件触发器也属于 disposable，后面会专门说明 Emitter 的几种实现方式*），使用 Store 统一管理起来，当服务实例销毁时会自动调用这些 disposable 对象。_store 自身也是 disposable 的。
@@ -149,11 +149,46 @@ export abstract class Disposable implements IDisposable {
 }
 ```
 
-### 4.2 InstantiationService：负责实例化 Service 的 Service
+### 4.2 基本服务
+
+#### 4.2.1 存储服务 - IStorageMainService
+
+> src/vs/platform/storage/electron-main/storageMainService.ts
+
+#### 4.2.2 配置服务 - IConfigurationService
+
+> src/vs/platform/configuration/common/configurationService.ts
+
+#### 4.2.4 状态服务 - IStateService
+
+> src/vs/platform/state/node/stateService.ts
+
+#### 4.2.5 生命周期服务 - ILifecycleMainService
+
+> src/vs/platform/lifecycle/electron-main/lifecycleMainService.ts
+
+### 4.3 窗口和视图(Webview)管理
+
+#### 4.3.1 浏览器窗口 - ICodeWindow
+
+> src/vs/platform/windows/electron-main/windowImpl.ts
+
+#### 4.3.3 窗口管理服务 - IWindowsMainService
+
+> src/vs/platform/windows/electron-main/windowsMainService.ts
+
+#### 4.3.4 Webview 管理服务 - IWebviewManagerService
+
+> src/vs/platform/webview/electron-main/webviewMainService.ts
+
+## 五、服务实例化过程
+
+5.2 InstantiationService：负责实例化 Service 的 Service
 
 负责实例化 Service 的模块也被封装为一个 Service 即 InstantiationService - 实例化服务。
 
 > src/vs/platform/instantiation/common/instantiation.ts
+
 
 ```ts
 export interface IInstantiationService {
@@ -181,7 +216,7 @@ export interface IInstantiationService {
 
 实例化服务的逻辑稍稍复杂一点，大致解读一下关键点和主流程：
 
-**ServiceCollection 服务集合**
+#### 5.2.1 ServiceCollection 服务集合
 
 内部封装了 Map 用于存储 **ServiceIdentifier** 和 **InstanceOrDescriptor** 的映射关系。
 
@@ -231,7 +266,7 @@ export class SyncDescriptor<T> {
 }
 ```
 
-**Graph 服务依赖图谱**
+#### 5.2.2 Graph 服务依赖图谱
 
 简单的图算法，图数据结构中包含多个图节点，每个节点拥有**入度**和**出度**分别表明依赖当前节点的前置节点和当前节点依赖的后置节点。
 
@@ -267,7 +302,7 @@ export class Graph<T> {
 
 ```
 
-**创建依赖服务过程**
+#### 5.2.3 创建依赖服务
 
 创建一个服务实例时，会先收集该服务的所有依赖服务（ServiceIdentifier 实现依赖分析），然后根据这些依赖服务来创建服务依赖图谱。图谱创建之后，会先选出出度为的 0 的根节点（无其它依赖服务）进行创建，创建好后将根节点从图谱中删除，过程中使用 while 循环重复上述过程直到图谱中没有任何节点。
 
@@ -338,7 +373,7 @@ export class Graph<T> {
     ...
 ```
 
-**创建 Service 服务实例**
+#### 5.2.4 创建服务实例
 
 > src/vs/platform/instantiation/common/instantiationService.ts
 
@@ -457,13 +492,13 @@ private _createServiceInstance<T>(id: ServiceIdentifier<T>, ctor: any, args: any
  }
 ```
 
-## 五、VSCode 应用入口
+## 六、VSCode 应用入口
 
-### 5.1 CodeMain
+### 6.1 CodeMain
 
 > src/vs/code/electron-main/main.ts
 
-VSCode 至多只会启用一个 CodeMain 实例，它是整个 VSCode 应用的入口，它的入口方法是 main 方法，它会调用 `startup` 方法启动应用。
+VSCode 至多只会启用一个 CodeMain 实例，它是整个 VSCode 应用的入口，它的入口方法是 main 方法，会调用 `startup` 方法启动应用。
 
 CodeMain 的主要职责：
 
@@ -602,7 +637,7 @@ const code = new CodeMain();
 code.main();
 ```
 
-### 5.2 CodeApplication
+### 6.2 CodeApplication
 
 > src/vs/code/electron-main/app.ts
 
