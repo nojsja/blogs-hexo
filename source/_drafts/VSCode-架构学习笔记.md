@@ -9,37 +9,78 @@ header-img: >-
 top: false
 tocnum: true
 tags:
-  - 标签1
+  - vscode
 categories:
-  - 目录2
+  - Architecture
+  - VSCode
 date: 2023-07-09 23:33:20
 ---
 # VSCode 架构学习笔记
 
+> 持续更新中
+
 ## 一、源码目录结构
 
-### 1.1 子目录命名规则
+### 1.1 总览
 
-- xxx
-  - browser [渲染进程代码]
-  - common [通用代码，可被其它模块调用]
-  - electron-main [主进程代码]
-  - node [node 代码]
+**核心层**
+
+* base: 提供通用服务和构建用户界面
+* platform: 注入服务和基础服务代码
+* editor: 微软 Monaco 编辑器，也可独立运行使用
+* wrokbench: 配合 Monaco 并且给 viewlets 提供框架：如：浏览器状态栏，菜单栏利用 electron 实现桌面程序
+
+**核心环境**
+
+整个项目完全使用 typescript 实现，electron 中运行主进程和渲染进程，使用的 api 有所不同，所以在 core 中每个目录组织也是按照使用的 api 来安排，
+运行的环境分为几类：
+
+* common: 只使用 javascritp api 的代码，能在任何环境下运行。
+* browser: 浏览器 api, 如操作 dom; 可以调用 common。
+* node: 需要使用 node 的 api,比如文件 io 操作。
+* electron-brower: 渲染进程 api, 可以调用 common, brower, node, 依赖 [electron renderer-process API](https://link.zhihu.com/?target=https%3A//github.com/electron/electron/tree/master/docs%23modules-for-the-renderer-process-web-page)。
+* electron-main: 主进程 api, 可以调用: common, node 依赖于 [electron main-process AP](https://link.zhihu.com/?target=https%3A//github.com/electron/electron/tree/master/docs%23modules-for-the-main-process)。
 
 ### 1.2 目录解析
 
-- src/vs/base [基础工具库]
-- src/vs/platform [平台基本能力]
-  - instantiation [实例化]
-    - common/serviceCollection [服务集合]
-    - common/instantiationService [类实例化服务 - 使用图算法分析服务依赖，递归地实例化一个服务的所有依赖服务]
-    - common/instantiation [实例化工具 - 服务类型装饰器]
-    - common/graph [图算法]
-  - lifecycle [生命周期]
-    - electron-main/lifecycleMainService [主进程生命周期服务]
-    - node/sharedProcessLifecycleService [通用 node 进程生命周期服务]
-  - state [状态管理]
-  - storage [本地存储]
+```bash
+├── build         # gulp编译构建脚本
+├── extensions    # 内置插件
+├── product.json  # App meta信息
+├── resources     # 平台相关静态资源
+├── scripts       # 工具脚本，开发/测试
+├── src           # 源码目录
+└── typings       # 函数语法补全定义
+└── vs
+    ├── base        # 通用工具/协议和UI库
+    │   ├── browser # 基础UI组件，DOM操作
+    │   ├── common  # diff描述，markdown解析器，worker协议，各种工具函数
+    │   ├── node    # Node工具函数
+    │   ├── parts   # IPC协议（Electron、Node），quickopen、tree组件
+    │   ├── test    # base单测用例
+    │   └── worker  # Worker factory和main Worker（运行IDE Core：Monaco）
+    ├── code        # VSCode应用主进程入口
+    ├── editor        # IDE代码编辑器
+    |   ├── browser     # 代码编辑器核心
+    |   ├── common      # 代码编辑器核心
+    |   ├── contrib     # vscode 与独立 IDE共享的代码
+    |   └── standalone  # 独立 IDE 独有的代码
+    ├── platform      # 支持注入服务和平台相关基础服务（文件、剪切板、窗体、状态栏）
+    ├── workbench     # 工作区UI布局，功能主界面
+    │   ├── api              #
+    │   ├── browser          #
+    │   ├── common           #
+    │   ├── contrib          #
+    │   ├── electron-browser #
+    │   ├── services         #
+    │   └── test             #
+    ├── css.build.js  # 用于插件构建的CSS loader
+    ├── css.js        # CSS loader
+    ├── editor        # 对接IDE Core（读取编辑/交互状态），提供命令、上下文菜单、hover、snippet等支持
+    ├── loader.js     # AMD loader（用于异步加载AMD模块）
+    ├── nls.build.js  # 用于插件构建的NLS loader
+    └── nls.js        # NLS（National Language Support）多语言loader=
+```
 
 ## 二、Electron 进程
 
@@ -149,35 +190,91 @@ export abstract class Disposable implements IDisposable {
 }
 ```
 
-### 4.2 基本服务
+### 4.2 Service 依赖注入
 
-#### 4.2.1 存储服务 - IStorageMainService
+依赖注入作为一个设计模式，前端开发者可能使用的不多，但在 VSCode 的源码中随处可见，所以这里简单介绍下。首先看依赖注入的定义：
+
+> 在软件工程中，依赖注入是一种为一类对象提供依赖的对象的设计模式。被依赖的对象称为 `Service`，注入则是指将被依赖的对象 `Service`传递给使用服务的对象(称为 `Client`)，从而客户 `Client`不需要主动去建立(new)依赖的服务 `Service`，也不需要通过工厂模式去获取依赖的服务 `Service`。
+
+在典型的依赖注入模式中，存在以下几类角色：
+
+* 被依赖和使用的对象，即 `Service`
+* 使用服务的客户对象，即 `Client`
+* 客户使用服务的接口定义，`Interface`
+* 注入器：负责建立服务对象并提供给 Client，通常也负责建立客户对象
+
+而依赖注入的实现有几种形态，其中常见的一种的构造函数式的依赖注入：Client 在其构造函数的参数中申明所依赖的 Service，如下 TypeScript 代码所示：
+
+```tsx
+class Client {
+	constructor(serviceA: ServiceA, serviceB: ServiceB) {
+		// 注入器在建立Client的时候，将依赖的 Service 通过构造函数参数传递给 Client
+		// Client此时即可将依赖的服务保存在自身状态内：
+		this.serviceA = serviceA;
+		this.serviceB = serviceB;
+	}
+}
+```
+
+通过这种模式，Client 在使用的时候不需要去自己构造需要的 Service 对象，这样的好处之一就就是将对象的构造和行为分离，在引入接口后，Client 和 Service 的依赖关系只需要接口来定义，Client 在构造函数参数中主需要什么依赖的服务接口，结合注入器，能给客户对象更多的灵活性和解耦。
+
+最后，在 VSCode 的源码中，大部分基础功能是被实现为服务对象，一个服务的定义分为两部分：
+
+* 服务的接口
+* 服务的标识：通过 TypeScript 中的装饰器实现
+
+Client 在申明依赖的 Service 时，同样时在构造函数参数中申明，实例如下：
+
+```ts
+class Client {
+	constructor(
+		@IModelService modelService: IModelService,
+		@optional(IEditorService) editorService: IEditorService,
+	) {
+		// ...
+		this.modelService = modelService;
+		this.editorService = editorService;
+	}
+}
+```
+
+这里，申明的客户对象 `Client`，所依赖的 `Service`有 `IModelService`和 `IEditorService`，其中装饰器 `@IModelService`是 ModelService 的标识，后面的 `IModelService`只是 TypeScript 中的接口定义；`@optional(IEditorService)`是 EditorService 的标识，同时通过 `optional`的装饰申明为可选的依赖。
+
+最后，在代码中实际使用 `Client`对象时，需要通过注入器提供的 `instantiationService`来实例化的到 Client 的实例：
+
+```ts
+const myClient = instantiationService.createInstance(Client);
+```
+
+### 4.3 基本服务
+
+#### 4.3.1 存储服务 - IStorageMainService
 
 > src/vs/platform/storage/electron-main/storageMainService.ts
 
-#### 4.2.2 配置服务 - IConfigurationService
+#### 4.3.2 配置服务 - IConfigurationService
 
 > src/vs/platform/configuration/common/configurationService.ts
 
-#### 4.2.4 状态服务 - IStateService
+#### 4.3.3 状态服务 - IStateService
 
 > src/vs/platform/state/node/stateService.ts
 
-#### 4.2.5 生命周期服务 - ILifecycleMainService
+#### 4.3.4 生命周期服务 - ILifecycleMainService
 
 > src/vs/platform/lifecycle/electron-main/lifecycleMainService.ts
 
-### 4.3 窗口和视图(Webview)管理
+### 4.4 窗口和视图(Webview)管理
 
-#### 4.3.1 浏览器窗口 - ICodeWindow
+#### 4.4.1 浏览器窗口 - ICodeWindow
 
 > src/vs/platform/windows/electron-main/windowImpl.ts
 
-#### 4.3.3 窗口管理服务 - IWindowsMainService
+#### 4.4.2 窗口管理服务 - IWindowsMainService
 
 > src/vs/platform/windows/electron-main/windowsMainService.ts
 
-#### 4.3.4 Webview 管理服务 - IWebviewManagerService
+#### 4.4.4 Webview 管理服务 - IWebviewManagerService
 
 > src/vs/platform/webview/electron-main/webviewMainService.ts
 
@@ -188,7 +285,6 @@ export abstract class Disposable implements IDisposable {
 负责实例化 Service 的模块也被封装为一个 Service 即 InstantiationService - 实例化服务。
 
 > src/vs/platform/instantiation/common/instantiation.ts
-
 
 ```ts
 export interface IInstantiationService {
