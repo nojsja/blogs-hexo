@@ -26,8 +26,8 @@ SEOTitle: nojsja | Blog
 email: e-mail_address
 description: "nojsja 个人博客"
 keyword: ""
-header-img: https://nojsja.gitee.io/static-resources/images/hexo/header_img/home.jpg
-article-header-img: https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+header-img: https://nojsja.github.io/static-resources/images/hexo/header_img/home.jpg
+article-header-img: https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 article-img: img/article_header/article_bg.jpg
 404-img: img/header_img/404.png
 signature: false #show signature
