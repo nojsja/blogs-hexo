@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 subtitle: shadowsocks polipo
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
   - shadowsocks
   - proxy

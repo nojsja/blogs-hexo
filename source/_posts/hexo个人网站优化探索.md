@@ -5,7 +5,7 @@ catalog: true
 comments: true
 indexing: true
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
 tags:
@@ -315,15 +315,15 @@ Disallow: /?r=*
 
 如图，可以自行决定勾选测试项目和针对测试平台(桌面/移动端)，最后点击生成报告即可开始运行自动化测试任务，并在测试完成后打开一个分析结果页面：
 
-![lighthouse](https://nojsja.gitee.io/static-resources/images/optimization/lighthouse.png)
+![lighthouse](https://nojsja.github.io/static-resources/images/optimization/lighthouse.png)
 
 结果界面：
 
-![lighthouse-test](https://nojsja.gitee.io/static-resources/images/optimization/lighthouse-test.png)
+![lighthouse-test](https://nojsja.github.io/static-resources/images/optimization/lighthouse-test.png)
 
 至此我们就能对网站的整体性能进行一些评估了，上图中的`Performance`、`Accessibility`、`Best Practices`、和 `SEO` 依次对应上文我们提及的网站整体性能、网站可访问性、网站最佳实践、搜索引擎SEO优化等指标。我们可以点击每一个具体项目来查看测试工具给出的优化建议：
 
-![](https://nojsja.gitee.io/static-resources/images/optimization/lighthouse-test-detail.png)
+![](https://nojsja.github.io/static-resources/images/optimization/lighthouse-test-detail.png)
 
 测试结果很大程度上取决于你的 http 静态资源服务器的资源加载速度，比如在不使用代理的情况下，使用 github pages 服务来托管静态资源会比使用国内的 gitee pages 托管服务稍慢，而且可能出现部分资源加载失败的问题。因此国内用户可以使用 gitee pages 来替代 github pages，不过 gitee 非付费用户没有代码自动构建部署功能，需要使用下文提到的 `github action` 来进行自动化登录并触发构建和部署。
 
@@ -486,7 +486,7 @@ image_minifier:
 
 效果预览：
 
-![hexo-immg-lazyload](https://nojsja.gitee.io/static-resources/images/optimization/lazyloading.png)
+![hexo-immg-lazyload](https://nojsja.github.io/static-resources/images/optimization/lazyloading.png)
 
 插件主要原理就是监听博客构建流程的钩子事件，拿到构建好的代码字符串，然后代码中原生的图片声明比如：`<img src="path/to/xx.jpg">`通过正则全局匹配并替换为：`<img src="path/to/loading" data-src="path/to/xx.jpg">` 。
 ```js
@@ -609,15 +609,15 @@ var ap = new APlayer({
   audio: [{
     name: '存在信号',
     artist: 'AcuticNotes',
-    url: 'https://nojsja.gitee.io/static-resources/audio/life-signal.mp3',
-    cover: 'https://nojsja.gitee.io/static-resources/audio/life-signal.jpg'
+    url: 'https://nojsja.github.io/static-resources/audio/life-signal.mp3',
+    cover: 'https://nojsja.github.io/static-resources/audio/life-signal.jpg'
     
   },
   {
     name: '遺サレタ場所／斜光',
     artist: '岡部啓一',
-    url: 'https://nojsja.gitee.io/static-resources/audio/%E6%96%9C%E5%85%89.mp3',
-    cover: 'https://nojsja.gitee.io/static-resources/audio/%E6%96%9C%E5%85%89.jpg'
+    url: 'https://nojsja.github.io/static-resources/audio/%E6%96%9C%E5%85%89.mp3',
+    cover: 'https://nojsja.github.io/static-resources/audio/%E6%96%9C%E5%85%89.jpg'
   }]
 });
 ```
@@ -625,7 +625,7 @@ var ap = new APlayer({
 预览图：
 
 
-![aplayer](https://nojsja.gitee.io/static-resources/images/optimization/aplayer.png)
+![aplayer](https://nojsja.github.io/static-resources/images/optimization/aplayer.png)
 
 ### 2. 优化界面运行性能
 
@@ -639,15 +639,15 @@ var ap = new APlayer({
 
 其实一般基于 chromium 架构浏览器都附带一个网页开发工具 Devtools，但可以说绝大多数前端开发者都没有认真了解过这个工具的具体用途，只是把它用作简单的 log调试、网页请求追踪和样式调试这些基础功能。回流和重绘也是可以通过它来进行可视化度量的：F12打开 Devtools，找到右上角三个点的折叠按钮依次打开 -> More Tools(更多工具) -> Rendering (渲染) - 勾选前两项 `Paint Flashing` (高亮重绘区域) 和 `Layout Shift Regions` (高亮回流区域)，现在重新回到你打开的页面进行操作，操作过程中发生了回流的区域会变成蓝色，发生了重绘的区域会变成绿色，持续时间不长，注意观察。
 
-![Devtools](https://nojsja.gitee.io/static-resources/images/optimization/devtools-layout-paint.png)
+![Devtools](https://nojsja.github.io/static-resources/images/optimization/devtools-layout-paint.png)
 
 Repaint:
 
-![Repaint](https://nojsja.gitee.io/static-resources/images/optimization/repaint.png)
+![Repaint](https://nojsja.github.io/static-resources/images/optimization/repaint.png)
 
 Reflow:
 
-![Reflow](https://nojsja.gitee.io/static-resources/images/optimization/reflow.png)
+![Reflow](https://nojsja.github.io/static-resources/images/optimization/reflow.png)
 
 除了用于可视化界面回流/重绘的情况，Devtools 还有其他一些很实用的功能，比如：`Coverage Tools` 可以用于分析界面上引入的外部 `css/js` 脚本内容的使用覆盖率，就是说我们能通过这个工具衡量引入的外部文件的使用情况，使用频次较低的外部资源可以考虑内联或是直接手写实现，提升引入外部资源的`性价比`。
 
@@ -723,7 +723,7 @@ Reflow:
 #### ➣ IntersectionObserver API 的 polyfill 兼容策略
 文章中提到 `IntersectionObserver API` 已经用于博客中各个界面组件的懒加载功能，它的性能更好、功能也更加全面。但是网页开发中我们通常会考虑各个 API 的兼容性，这里可以通过 [Can I Use](https://caniuse.com/?search=IntersectionObserver) 这个兼容性报告网站进行查看，从下图可知这个 API 的兼容情况还是可以的，桌面端很多较高版本浏览器均已支持：
 
-![caniuse](https://nojsja.gitee.io/static-resources/images/optimization/caniuse.png)
+![caniuse](https://nojsja.github.io/static-resources/images/optimization/caniuse.png)
 
 因此为了解决个别低版本浏览器的兼容性问题，这里采用了一种比较极端的处理方式。常规情况下我们需要引入外部 `[xxx].polyfill.js` (xxx为相应的 API) 来为低版本浏览器添加相应功能，但是对于高版本浏览器自身已经支持了这个 API，却要重复下载 polyfill 库，造成网页请求数和带宽资源的浪费。因此我这里不采用这种方式，因为这个 API 大部分浏览器已经支持，我们默认不使用 `<script>` 标签引入 polyfill.js 而是通过脚本判断当前浏览器是否支持此 API，如果不支持的话再使用`同步XHR请求`远程 下载[polyfill](https://github.com/w3c/IntersectionObserver) 文件，下载后使用 `eval(...)` 的方式执行整个脚本。使用同步方式会阻塞当前 js 执行线程，请谨慎使用，此处是为了保证 `IntersectionObserver` 以高优先级方式被注入到网页中，不然可能引发一些使用了此 API 脚本错误。
 
@@ -855,7 +855,7 @@ deploy:
 
 值得说明的是，非付费用户 `gitee pages` 仓库不支持提交后自动部署。因此我采用的方案是只声明一个 `deploy` 部署仓库指向 `github pages` 仓库，然后再通过 github 仓库自带的 `github workflow` 服务配合 [gitee-pages-action](https://github.com/yanglbme/gitee-pages-action) 这个脚本实现的 gitee 自动部署。它的原理就是使用 github 自动化工作流将 github 仓库的代码同步到 gitee 仓库中去，然后通过读取我们配置的 gitee 账户信息自动执行登录 gitee 账户并调用网页的手动部署接口，实现整个自动化部署流程。
 
-![github-workflow](https://nojsja.gitee.io/static-resources/images/optimization/github-workflow.png)
+![github-workflow](https://nojsja.github.io/static-resources/images/optimization/github-workflow.png)
 
 ### 4. 网站SEO优化
 
@@ -883,11 +883,11 @@ url: https://nojsja.github.io/blogs
 #### ➣ 向 Google Search Console 提交个人网站地图
 - 登录 [Google Search Console](https://search.google.com/search-console)
 - 添加自己的网站信息
-![Search Console](https://nojsja.gitee.io/static-resources/images/optimization/search-console.png)
+![Search Console](https://nojsja.github.io/static-resources/images/optimization/search-console.png)
 - 可以通过几种方法验证所有权
-![Search Console](https://nojsja.gitee.io/static-resources/images/optimization/search-console2.png)
+![Search Console](https://nojsja.github.io/static-resources/images/optimization/search-console2.png)
 - 提交插件生成的 `sitemap.xml`
-![sitemap.xml](https://nojsja.gitee.io/static-resources/images/optimization/sitemap.png)
+![sitemap.xml](https://nojsja.github.io/static-resources/images/optimization/sitemap.png)
 
 `Google Search Console` 还能看到自己网站的点击情况、关键词索引情况等，非常方便。
 ## 参考

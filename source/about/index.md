@@ -3,7 +3,7 @@ layout: "about"
 title: "关于"
 date: 2017-10-03 10:48:33
 description: "real me"
-header-img: "http://nojsja.gitee.io/static-resources/images/hexo/header_img/about.jpg"
+header-img: "http://nojsja.github.io/static-resources/images/hexo/header_img/about.jpg"
 aplayer: true
 comments: false
 ---

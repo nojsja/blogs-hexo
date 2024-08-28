@@ -5,7 +5,7 @@ comments: true
 indexing: true
 subtitle: 'Learning react: The fiber arch and old/new lifecycle'
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
 tags:
@@ -27,13 +27,13 @@ date: 2021-01-25 11:16:47
 
 #### React15遗留问题
 
-![StackReconciler](http://nojsja.gitee.io/static-resources/images/react/StackReconciler.jpg)
+![StackReconciler](http://nojsja.github.io/static-resources/images/react/StackReconciler.jpg)
   - 1）浏览器的整体渲染是多线程的，包括GUI渲染线程、JS引擎线程、事件触发线程、定时触发器线程和异步http请求线程。页面绘制和JS运算是互斥的线程，两者不能同时进行。  
   - 2）React15使用JS的函数调用栈(Stack Reconciler)递归渲染界面，因此在处理DOM元素过多的复杂页面的频繁更新时，大量同步进行的任务(树diff和页面render)会导致界面更新阻塞、事件响应延迟、动画卡顿等，因此React团队在16版本重写了React Reconciler架构。
 
 #### React16问题解决
 
-![FiberReconciler](http://nojsja.gitee.io/static-resources/images/react/FiberReconciler.jpg)
+![FiberReconciler](http://nojsja.github.io/static-resources/images/react/FiberReconciler.jpg)
  - 1）`Fiber Reconciler`架构可以允许同步阻塞的任务拆分成多个小任务，每个任务占用一小段时间片，任务执行完成后判断有无空闲时间，有则继续执行下一个任务，否则将控制权交由浏览器以让浏览器去处理更高优先级的任务，等下次拿到时间片后，其它子任务继续执行。整个流程类似CPU调度逻辑，底层是使用了浏览器API`requestIdleCallback`。  
 - 2）为了实现整个Diff和Render的流程可中断和恢复，单纯的VirtualDom Tree不再满足需求，React16引入了采用单链表结构的Fiber树，如下图所示。
 - 3）FiberReconciler架构将更新流程划分成了两个阶段：1.diff(由多个diff任务组成，任务时间片消耗完后被可被中断，中断后由requestIdleCallback再次唤醒) => 2.commit(diff完毕后拿到fiber tree更新结果触发DOM渲染，不可被中断)。左边灰色部分的树即为一颗fiber树，右边的workInProgress为中间态，它是在diff过程中自顶向下构建的树形结构，可用于断点恢复，所有工作单元都更新完成之后，生成的workInProgress树会成为新的fiber tree。
@@ -48,14 +48,14 @@ date: 2021-01-25 11:16:47
 }
 ```
 
-![FiberTree](http://nojsja.gitee.io/static-resources/images/react/FiberTree.png)
+![FiberTree](http://nojsja.github.io/static-resources/images/react/FiberTree.png)
 
 ### ➣ React新旧生命周期
 --------------------
 
 #### React16.3之前的生命周期
 
-![](http://nojsja.gitee.io/static-resources/images/react/react-lifecycle-old.png)
+![](http://nojsja.github.io/static-resources/images/react/react-lifecycle-old.png)
 
 1. componentWillMount()  
 此生命周期函数会在在组件挂载之前被调用，整个生命周期中只被触发一次。开发者通常用来进行一些数据的预请求操作，以减少请求发起时间，建议的替代方案是考虑放入constructor构造函数中，或者componentDidMount后；另一种情况是在在使用了外部状态管理库时，如Mobx，可以用于重置Mobx Store中的的已保存数据，替代方案是使用生命周期componentWilUnmount在组件卸载时自动执行数据清理。
@@ -146,7 +146,7 @@ class EmailInput extends Component {
 此生命周期发生在组件卸载之前，组件生命周期中只会触发一次。开发者可以在此函数中执行一些数据清理重置、取消页面组件的事件订阅等。
 
 #### React16.3之后的生命周期
-![](http://nojsja.gitee.io/static-resources/images/react/react-lifecycle.png)
+![](http://nojsja.github.io/static-resources/images/react/react-lifecycle.png)
 
 React16.3之后React的`Reconciler`架构被重写(Reconciler用于处理生命周期钩子函数和DOM DIFF)，之前版本采用函数调用栈递归同步渲染机制即Stack Reconciler，dom的diff阶段不能被打断，所以不利于动画执行和事件响应。React团队使用Fiber Reconciler架构之后，diff阶段根据虚拟DOM节点拆分成包含多个工作任务单元(FiberNode)的Fiber树(以链表实现)，实现了Fiber任务单元之间的任意切换和任务之间的打断及恢复等等。Fiber架构下的异步渲染导致了`componentWillMount`、`componentWillReceiveProps`、`componentWillUpdate`三个生命周期在实际渲染之前可能会被调用多次，产生不可预料的调用结果，因此这三个不安全生命周期函数不建议被使用。取而代之的是使用全新的两个生命周期函数：`getDerivedStateFromProps`和`getSnapshotBeforeUpdate`。
 

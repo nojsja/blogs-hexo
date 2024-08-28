@@ -4,7 +4,7 @@ catalog: true
 toc_nav_num: true
 subtitle: fileupload node fs
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 tags:
   - upload
   - node
@@ -32,7 +32,7 @@ updateDate: 2020-03-26 16:18:00
 ### 预览
 -------
 
-![upload](https://nojsja.gitee.io/static-resources/images/upload/upload.png)
+![upload](https://nojsja.github.io/static-resources/images/upload/upload.png)
 
 ### 概述
 -------
@@ -233,7 +233,7 @@ router.post('/resource/object/detailinfo/all', function(req, res, next) {
 #### 大文件转存为静态资源
 > Node.js支持文件流操作，包含可读流、可写流以及可读可写流，如果在处理大文件的时候直接把数据放入内存，就会出现中间层内存爆满的情况，这里先声明接口返回数据为可读流，然后通过本地静态资源路径创建可写流，最后为了避免由于可读流的数据写入可写流时由于读取速度和写入速度的差异问题导致的数据丢失情况，使用管道pipe连接可读流和可写流再进行数据传输。
 1. Node Pipe管道的概念
-![node pipe](https://nojsja.gitee.io/static-resources/images/upload/node_pipe.png)
+![node pipe](https://nojsja.github.io/static-resources/images/upload/node_pipe.png)
 
 2. 请求header注意设置`resType: "stream"`
 

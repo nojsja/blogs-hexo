@@ -5,7 +5,7 @@ catalog: true
 comments: true
 indexing: true
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
 tags:
@@ -51,11 +51,11 @@ date: 2021-11-29 10:30:21
 
 ### 1. 查看模式
 
-![react-hooks1.png](https://nojsja.gitee.io/static-resources/images/react/react-hooks1.png)
+![react-hooks1.png](https://nojsja.github.io/static-resources/images/react/react-hooks1.png)
 
 ### 2. 编辑模式
 
-![react-hooks2.png](https://nojsja.gitee.io/static-resources/images/react/react-hooks2.png)
+![react-hooks2.png](https://nojsja.github.io/static-resources/images/react/react-hooks2.png)
 
 ## 四、预备知识：Antd Form 组件的 initialValues 和 resetFields
 
@@ -222,7 +222,7 @@ export default () => {
 
 因为要实现字段编辑实时校验功能，可以使用 Form 组件配合 Table 组件，Form.FormItem 自带字段验证功能：
 
-![react-hooks3.png](https://nojsja.gitee.io/static-resources/images/react/react-hooks3.png)
+![react-hooks3.png](https://nojsja.github.io/static-resources/images/react/react-hooks3.png)
 
 因此在生成表格列的函数 getColumns 中需要使用 Form.FormItem 进行组件包裹，注意的是每个 Form.Item 都需要有唯一的 name 属性，否则不会触发字段验证功能：
 
@@ -362,7 +362,7 @@ const getComputeValues = (values, id) => {
 
 全选模式即我们在编辑模式中选择全选可以全部选中表格中的某一列，由于之前提到表格内部组件并非处于完全受控模式中，因此当触发全选操作的时候，我们需要设置 allChecked 属性，然后使用 useEffect 监听 allChecked 属性的更新，触发表格列的重新渲染即可。
 
-![react-hooks4.png](https://nojsja.gitee.io/static-resources/images/react/react-hooks4.png)
+![react-hooks4.png](https://nojsja.github.io/static-resources/images/react/react-hooks4.png)
 
 ```javascript
 
@@ -407,7 +407,7 @@ const getComputeValues = (values, id) => {
 
 因此这里我们使用自定义 React hooks 组件对原生的 react-quill 组件进行一层包裹，在组件内部通过 useRef、useCallback hooks 以及 React.memo 组件进行缓存优化，这样就可以避免每次渲染都重新创建富文本组件，从而提高性能。
 
-![react-hooks1.png](https://nojsja.gitee.io/static-resources/images/react/react-hooks1.png)
+![react-hooks1.png](https://nojsja.github.io/static-resources/images/react/react-hooks1.png)
 
 整个组件实现代码如下：
 

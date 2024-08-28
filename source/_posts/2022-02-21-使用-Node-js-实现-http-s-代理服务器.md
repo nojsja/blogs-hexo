@@ -5,7 +5,7 @@ catalog: true
 comments: true
 indexing: true
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 top: false
 tocnum: true
 tags:
@@ -46,9 +46,9 @@ date: 2022-02-21 14:40:18
 
 最近在开发一款跨平台桌面软件 - [shadowsocks-electron](https://github.com/nojsja/shadowsocks-electron) 时需要用到 Node.js 来实现 http(s) 代理服务器来转发客户端网络请求，为此加深学习了一下 http 协议，也浅显了解了 socks 代理的原理。
 
-![](https://nojsja.gitee.io/static-resources/images/shadowsocks/shadowsocks-electron-light.png)
+![](https://nojsja.github.io/static-resources/images/shadowsocks/shadowsocks-electron-light.png)
 
-![](https://nojsja.gitee.io/static-resources/images/shadowsocks/shadowsocks-electron-dark.png)
+![](https://nojsja.github.io/static-resources/images/shadowsocks/shadowsocks-electron-dark.png)
 
 
 ## III. 理论基础
@@ -57,9 +57,9 @@ date: 2022-02-21 14:40:18
 
 TCP/IP体系结构分为五层，将 OSI 模型的应用层、表示层和回话层统一为应用层，层次相对要简单得多。
 
-![](https://nojsja.gitee.io/static-resources/images/http/osi7.png)
+![](https://nojsja.github.io/static-resources/images/http/osi7.png)
 
-![](https://nojsja.gitee.io/static-resources/images/http/tcpip5.png)
+![](https://nojsja.github.io/static-resources/images/http/tcpip5.png)
 
 
 __1）应用层：__ OSI参考模型中最靠近用户的一层，为应用程序提供网络服务。我们常见应用层的网络服务协议有：HTTP，HTTPS，FTP，POP3、SMTP等。

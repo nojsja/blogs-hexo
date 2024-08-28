@@ -5,7 +5,7 @@ catalog: true
 comments: true
 indexing: true
 header-img: >-
-  https://nojsja.gitee.io/static-resources/images/hexo/article_header/article_header.jpg
+  https://nojsja.github.io/static-resources/images/hexo/article_header/article_header.jpg
 top: true
 tocnum: true
 tags:
@@ -34,15 +34,15 @@ date: 2021-10-04 21:13:09
 
 > 预览
 
-![main](https://nojsja.gitee.io/static-resources/images/shadowsocks/main.png)
+![main](https://nojsja.github.io/static-resources/images/shadowsocks/main.png)
 
-![settings](https://nojsja.gitee.io/static-resources/images/shadowsocks/settings.png)
+![settings](https://nojsja.github.io/static-resources/images/shadowsocks/settings.png)
 
-![add_server](https://nojsja.gitee.io/static-resources/images/shadowsocks/add_server.png)
+![add_server](https://nojsja.github.io/static-resources/images/shadowsocks/add_server.png)
 
-![server_config](https://nojsja.gitee.io/static-resources/images/shadowsocks/server_config.png)
+![server_config](https://nojsja.github.io/static-resources/images/shadowsocks/server_config.png)
 
-![share](https://nojsja.gitee.io/static-resources/images/shadowsocks/share.png)
+![share](https://nojsja.github.io/static-resources/images/shadowsocks/share.png)
 
 ## Contents
 
@@ -405,7 +405,7 @@ parseSSContent(uri: string): Proxy | null {
 
 ### 2. 将已有的服务器配置生成二维码图片进行分享
 
-![share](https://nojsja.gitee.io/static-resources/images/shadowsocks/share.png)
+![share](https://nojsja.github.io/static-resources/images/shadowsocks/share.png)
 
 上一步解析成功后可以得到服务器配置，实例数据如下：
 
@@ -461,7 +461,7 @@ QRCode.toDataURL(url, function (err, _dataURL) {
 
 ### 3. 读取二维码导入 Shadowsocks 服务器配置
 
-![add_server](https://nojsja.gitee.io/static-resources/images/shadowsocks/add_server.gif)
+![add_server](https://nojsja.github.io/static-resources/images/shadowsocks/add_server.gif)
 
 扫描屏幕二维码导入功能实现起来稍复杂些。
 
@@ -745,7 +745,7 @@ const spawnClient = async (config: Config, settings: Settings) : Promise<{code: 
 
 - 如果你正在使用 Ubuntu 操作系统的话可以依次打开：`设置 - 网络 - 网络DaiLi(拼音手动和谐)`，里面可以选择：`自动 / 手动 / 禁用` 三种模式，其中**自动**即为 pac 模式，我们可以填入在线或本地pac文件的地址，例如：`http://localhost:1090/proxy.pac`，然后系统就会智能化分配流量了；**手动**就是全局 proxy，里面可以配置各种 proxy 的地址(http / https / socks / ftp)，如：`socks5://127.0.0.1:1080`；**禁用**不用多说就是禁止系统 proxy，直接根据访问目标走 dns 系统查询到的 IP 地址。
 
-![system_proxy](https://nojsja.gitee.io/static-resources/images/shadowsocks/system_proxy.png)
+![system_proxy](https://nojsja.github.io/static-resources/images/shadowsocks/system_proxy.png)
 
 - 如果你正在使用 Mac 操作系统的话其实也大同小异，可以从：`系统偏好设置 - 网络 - 高级 - DaiLi(拼音手动和谐)` 处找到相关设置。
 
@@ -888,7 +888,7 @@ app.setLoginItemSettings({
 
 Ubuntu 我还是用的比较熟悉的，毕业后一直用于工作和日常使用。加上之前也做过一个 Ubuntu 版本的类似电脑管家的[小桌面应用](https://github.com/nojsja/electronux)，因此对 Gnome 桌面和 Electron 方面的交互有一定经验。Ubuntu 上面要想实现应用开机自启需要自己定制一个配置文件到 `~/.config/autostart/` 路径下，比如 `~/.config/autostart/shasowsocks-electron.desktop`：
 
-![autostart](https://nojsja.gitee.io/static-resources/images/shadowsocks/autostart.png)
+![autostart](https://nojsja.github.io/static-resources/images/shadowsocks/autostart.png)
 
 ```conf
 [Desktop Entry]
@@ -951,13 +951,13 @@ export const setStartupOnBoot_linux = (on: boolean) => {
 
 `devtron` github 主页贴着项目不再维护，寻求热心的开源开发者继续维护的消息。`devtron` 最近的一次版本在我使用的 `electron@13.4.0` 上也直接歇菜了🤪。我遇到 `devtron` 报错打不开的情况后索性突发奇想将所有原生的 `ipc` 通信方式(on / once / send / sendTo / invoke / handle...) 使用我自己之前开发的进程管理工具 `electron-re` 替代，感兴趣的可以看看 [github 仓库](https://github.com/nojsja/electron-re)。迁移到 `electron-re` 之后，我在项目中开了一个 `dev` 分支专门用于支持`ipc` 通信记录功能，其实适配工作量不大，写个UI界面，然后在原有的数据采集模块新增一点逻辑即可。
 
-![process_manager](https://nojsja.gitee.io/static-resources/images/shadowsocks/process_manager.png)
+![process_manager](https://nojsja.github.io/static-resources/images/shadowsocks/process_manager.png)
 
-![ipc](https://nojsja.gitee.io/static-resources/images/shadowsocks/ipc.png)
+![ipc](https://nojsja.github.io/static-resources/images/shadowsocks/ipc.png)
 
 这里顺便打个广告🤏，`electron-re` 主要是作为一个进程管理器和 `ipc` 通信工具开发的，除了支持 Electron 应用中主进程、渲染进程、service 进程(`electron-re` 引入)、child 进程(`electron-re` 引入) 的资源占用情况动态统计功能，也提供了一个 ipc 通信工具 `MessageChannel`，它基于 electron 原生 ipc 通信开发。除此之外它还提供了一个简单实现的进程池工具 `ChildProcessPool` 和与之配套使用的 `ProcessHost` 消息工具。这次针对 `shadowsocks-electron` 和其他 Electron 应用开发的 ipc 通信记录面板功能就是在 `MessageChannel` 通信工具中通过新增通信记录上报逻辑来实现的。
 
-![process_manager](https://nojsja.gitee.io/static-resources/images/shadowsocks/electron-re.png)
+![process_manager](https://nojsja.github.io/static-resources/images/shadowsocks/electron-re.png)
 
 ## Others
 
@@ -965,7 +965,7 @@ export const setStartupOnBoot_linux = (on: boolean) => {
 
 ### 1. Mac 虚拟机真是难装
 
-![virtualbox_detail](https://nojsja.gitee.io/static-resources/images/shadowsocks/virtualbox_detail.png)
+![virtualbox_detail](https://nojsja.github.io/static-resources/images/shadowsocks/virtualbox_detail.png)
 
 安装 Mac 虚拟机足足折磨了我一天多，实体机安装 Ubuntu 双系统 40 分钟就能解决的事儿，从下载 virtualbox 可用的 `MacOS 10.15` 开始，龟速百度网盘。安装 ISO 时很容易卡住或者报错，最后查了很多资料整理出以下步骤：
 
@@ -975,7 +975,7 @@ export const setStartupOnBoot_linux = (on: boolean) => {
 - 2）启动虚拟机创建向导，选择类型 - `Mac OS X`，版本 -`Mac OS x64`。
 - 3）其余什么内存、磁盘之类的按照自己需求大概配置一下，格外注意的是网络不要选择`桥接网卡`，选中默认的`NAT`网络模式，否则 Ubuntu20.04 操作系统下可能会在运行虚拟机的时候卡死宿主机。`NAT` 模式不能分配和宿主机同网段的独立 IP，因此如果要通过 SSH 访问虚拟机的话可以在虚拟机设置里面开启端口转发，比如我将宿主机端口 `2222` 映射到虚拟机内部 ssh 的默认端口 `22`，这样就可以在宿主机通过命令：`ssh -p 2222 nojsja@127.0.0.1` 来连接了。
 
-![virtualbox_nat](https://nojsja.gitee.io/static-resources/images/shadowsocks/virtualbox_nat.png)
+![virtualbox_nat](https://nojsja.github.io/static-resources/images/shadowsocks/virtualbox_nat.png)
 
 - 4）虚拟机创建好后注意在虚拟机设置中`存储`页面添加下载好的 ISO 光盘镜像作为开机引导。
 - 5）以上步骤准备好后，有一个比较关键的操作，设置虚拟机相关配置，不然安装很可能出错：
@@ -1225,7 +1225,7 @@ declare module 'editable-tree-antd' {
 
 `shadowsocks-electron` 客户端的图标是 GF 工作之余帮忙处理的，好看的渐变色小飞机图标！
 
-![logo](https://nojsja.gitee.io/static-resources/images/shadowsocks/logo.png)
+![logo](https://nojsja.github.io/static-resources/images/shadowsocks/logo.png)
 
 ### 6. 延伸阅读
 
@@ -1242,7 +1242,7 @@ declare module 'editable-tree-antd' {
 
 客户端目前已经发布了 `v1.0.0` 版本，支持 **Mac** 和 **Ubuntu** x64 平台，主要测试环境是：**Ubuntu20.04 amd64** 和 **MacOS catalina x64**。
 
-![release](https://nojsja.gitee.io/static-resources/images/shadowsocks/release.png)
+![release](https://nojsja.github.io/static-resources/images/shadowsocks/release.png)
 
 后期会持续支持，喜欢的话可以去 [github 仓库](https://github.com/nojsja/shadowsocks-electron) star ⭐ ！
 
